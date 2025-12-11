@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌲 Secret Grove</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'slalom': {
+                            blue: '#0C62FB',
+                            red: '#FF4D5F',
+                            cyan: '#1BE1F2',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .game-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .grid-cell {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            transition: all 0.1s ease;
+        }
+        
+        .tile {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border-radius: 8px;
+            transition: all 0.12s ease-out;
+        }
+        
+        .tile-2 { background: #eee4da; color: #776e65; }
+        .tile-4 { background: #ede0c8; color: #776e65; }
+        .tile-8 { background: #f2b179; color: #f9f6f2; }
+        .tile-16 { background: #f59563; color: #f9f6f2; }
+        .tile-32 { background: #f67c5f; color: #f9f6f2; }
+        .tile-64 { background: #f65e3b; color: #f9f6f2; }
+        .tile-128 { background: #edcf72; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.3); }
+        .tile-256 { background: #edcc61; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.4); }
+        .tile-512 { background: #edc850; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.5); }
+        .tile-1024 { background: #edc53f; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.6); }
+        .tile-2048 { background: #edc22e; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.7); }
+        .tile-4096 { background: #3c3a32; color: #f9f6f2; }
+        .tile-8192 { background: #3c3a32; color: #f9f6f2; }
+        
+        .tile-new {
+            animation: pop 0.2s ease;
+        }
+        
+        .tile-merged {
+            animation: pulse 0.2s ease;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        
+        .game-over-overlay {
+            background: rgba(255,255,255,0.9);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .btn-game {
+            transition: all 0.15s ease;
+        }
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-game:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen game-container flex flex-col items-center justify-center p-4">
+    
+    <!-- Back Link (subtle) -->
+    <a href="./" class="absolute top-4 left-4 text-white/60 hover:text-white text-sm flex items-center gap-1 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Tools
+    </a>
+    
+    <!-- Game Header -->
+    <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-white mb-1">🌲 Secret Grove</h1>
+        <p class="text-white/70 text-sm">You found the hidden game! Merge the tiles to reach 2048.</p>
+    </div>
+    
+    <!-- Score & Controls -->
+    <div class="flex items-center gap-4 mb-4 w-full max-w-md justify-between px-2">
+        <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
+            <div class="text-white/70 text-xs uppercase tracking-wider">Score</div>
+            <div id="score" class="text-white text-2xl font-bold">0</div>
+        </div>
+        <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
+            <div class="text-white/70 text-xs uppercase tracking-wider">Best</div>
+            <div id="best" class="text-white text-2xl font-bold">0</div>
+        </div>
+        <button id="newGameBtn" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">
+            New Game
+        </button>
+    </div>
+    
+    <!-- Game Board -->
+    <div class="relative">
+        <div id="grid" class="grid grid-cols-4 gap-3 p-3 bg-white/10 rounded-xl backdrop-blur-sm" style="width: 320px; height: 320px;">
+            <!-- Empty cells -->
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>
+        </div>
+        
+        <!-- Tiles Container -->
+        <div id="tiles" class="absolute inset-3"></div>
+        
+        <!-- Game Over Overlay -->
+        <div id="gameOver" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
+            <div class="text-2xl font-bold text-gray-800 mb-2">Game Over!</div>
+            <div class="text-gray-600 mb-4">Final Score: <span id="finalScore">0</span></div>
+            <button id="tryAgainBtn" class="btn-game bg-slalom-blue text-white font-semibold px-6 py-2 rounded-lg">
+                Try Again
+            </button>
+        </div>
+        
+        <!-- Win Overlay -->
+        <div id="winOverlay" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
+            <div class="text-3xl font-bold text-yellow-500 mb-2">🎉 You Won!</div>
+            <div class="text-gray-600 mb-4">You reached 2048!</div>
+            <div class="flex gap-2">
+                <button id="keepPlayingBtn" class="btn-game bg-green-500 text-white font-semibold px-4 py-2 rounded-lg">
+                    Keep Playing
+                </button>
+                <button id="newGameWinBtn" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">
+                    New Game
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="mt-6 text-center text-white/60 text-sm max-w-md">
+        <p><strong>How to play:</strong> Use arrow keys or swipe to move tiles.</p>
+        <p>Tiles with the same number merge when they collide!</p>
+    </div>
+
+    <script>
+        const GRID_SIZE = 4;
+        const CELL_SIZE = 65; // (320 - 24 padding - 36 gaps) / 4 = 260/4 = 65
+        const GAP = 12;
+        
+        let grid = [];
+        let score = 0;
+        let best = parseInt(localStorage.getItem('merge2048Best') || '0');
+        let gameWon = false;
+        let gameOver = false;
+        
+        const tilesContainer = document.getElementById('tiles');
+        const scoreEl = document.getElementById('score');
+        const bestEl = document.getElementById('best');
+        const gameOverEl = document.getElementById('gameOver');
+        const winOverlayEl = document.getElementById('winOverlay');
+        const finalScoreEl = document.getElementById('finalScore');
+        
+        // Initialize
+        function init() {
+            grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+            score = 0;
+            gameWon = false;
+            gameOver = false;
+            updateScore();
+            bestEl.textContent = best;
+            gameOverEl.classList.add('hidden');
+            gameOverEl.classList.remove('flex');
+            winOverlayEl.classList.add('hidden');
+            winOverlayEl.classList.remove('flex');
+            tilesContainer.innerHTML = '';
+            addRandomTile();
+            addRandomTile();
+        }
+        
+        // Add random tile
+        function addRandomTile() {
+            const emptyCells = [];
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    if (!grid[r][c]) emptyCells.push({r, c});
+                }
+            }
+            if (emptyCells.length === 0) return;
+            
+            const {r, c} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            const value = Math.random() < 0.9 ? 2 : 4;
+            
+            grid[r][c] = { value, id: Date.now() + Math.random() };
+            renderTile(r, c, grid[r][c], true);
+        }
+        
+        // Render a tile
+        function renderTile(row, col, tile, isNew = false) {
+            const el = document.createElement('div');
+            el.className = `tile tile-${tile.value} ${isNew ? 'tile-new' : ''}`;
+            el.id = `tile-${tile.id}`;
+            el.style.width = `${CELL_SIZE}px`;
+            el.style.height = `${CELL_SIZE}px`;
+            el.style.left = `${col * (CELL_SIZE + GAP)}px`;
+            el.style.top = `${row * (CELL_SIZE + GAP)}px`;
+            el.style.fontSize = tile.value >= 1000 ? '20px' : tile.value >= 100 ? '26px' : '32px';
+            el.textContent = tile.value;
+            tilesContainer.appendChild(el);
+        }
+        
+        // Update tile position
+        function updateTilePosition(tile, row, col, merged = false) {
+            const el = document.getElementById(`tile-${tile.id}`);
+            if (el) {
+                el.style.left = `${col * (CELL_SIZE + GAP)}px`;
+                el.style.top = `${row * (CELL_SIZE + GAP)}px`;
+                if (merged) {
+                    el.classList.add('tile-merged');
+                    setTimeout(() => el.classList.remove('tile-merged'), 200);
+                }
+            }
+        }
+        
+        // Update tile value
+        function updateTileValue(tile) {
+            const el = document.getElementById(`tile-${tile.id}`);
+            if (el) {
+                el.className = `tile tile-${tile.value}`;
+                el.style.fontSize = tile.value >= 1000 ? '20px' : tile.value >= 100 ? '26px' : '32px';
+                el.textContent = tile.value;
+            }
+        }
+        
+        // Remove tile
+        function removeTile(tile) {
+            const el = document.getElementById(`tile-${tile.id}`);
+            if (el) el.remove();
+        }
+        
+        // Move tiles
+        function move(direction) {
+            if (gameOver) return;
+            
+            let moved = false;
+            const mergedThisTurn = new Set();
+            
+            const traverse = (callback) => {
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    for (let j = 0; j < GRID_SIZE; j++) {
+                        callback(i, j);
+                    }
+                }
+            };
+            
+            const getVector = () => {
+                switch(direction) {
+                    case 'up': return {r: -1, c: 0};
+                    case 'down': return {r: 1, c: 0};
+                    case 'left': return {r: 0, c: -1};
+                    case 'right': return {r: 0, c: 1};
+                }
+            };
+            
+            const vector = getVector();
+            
+            // Build traversal order
+            const rows = [], cols = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                rows.push(i);
+                cols.push(i);
+            }
+            if (vector.r === 1) rows.reverse();
+            if (vector.c === 1) cols.reverse();
+            
+            rows.forEach(row => {
+                cols.forEach(col => {
+                    const tile = grid[row][col];
+                    if (!tile) return;
+                    
+                    let newRow = row;
+                    let newCol = col;
+                    
+                    // Find furthest position
+                    while (true) {
+                        const nextRow = newRow + vector.r;
+                        const nextCol = newCol + vector.c;
+                        
+                        if (nextRow < 0 || nextRow >= GRID_SIZE || nextCol < 0 || nextCol >= GRID_SIZE) break;
+                        
+                        const nextTile = grid[nextRow][nextCol];
+                        
+                        if (!nextTile) {
+                            newRow = nextRow;
+                            newCol = nextCol;
+                        } else if (nextTile.value === tile.value && !mergedThisTurn.has(`${nextRow},${nextCol}`)) {
+                            // Merge!
+                            newRow = nextRow;
+                            newCol = nextCol;
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    if (newRow !== row || newCol !== col) {
+                        moved = true;
+                        
+                        const targetTile = grid[newRow][newCol];
+                        grid[row][col] = null;
+                        
+                        if (targetTile) {
+                            // Merge
+                            const newValue = tile.value * 2;
+                            score += newValue;
+                            
+                            // Move the current tile to merge position, then remove it
+                            updateTilePosition(tile, newRow, newCol);
+                            setTimeout(() => removeTile(tile), 100);
+                            
+                            // Update target tile
+                            targetTile.value = newValue;
+                            updateTileValue(targetTile);
+                            updateTilePosition(targetTile, newRow, newCol, true);
+                            
+                            mergedThisTurn.add(`${newRow},${newCol}`);
+                            
+                            // Check win
+                            if (newValue === 2048 && !gameWon) {
+                                gameWon = true;
+                                setTimeout(showWin, 300);
+                            }
+                        } else {
+                            // Just move
+                            grid[newRow][newCol] = tile;
+                            updateTilePosition(tile, newRow, newCol);
+                        }
+                    }
+                });
+            });
+            
+            if (moved) {
+                updateScore();
+                setTimeout(() => {
+                    addRandomTile();
+                    if (isGameOver()) {
+                        showGameOver();
+                    }
+                }, 150);
+            }
+        }
+        
+        // Update score
+        function updateScore() {
+            scoreEl.textContent = score;
+            if (score > best) {
+                best = score;
+                bestEl.textContent = best;
+                localStorage.setItem('merge2048Best', best.toString());
+            }
+        }
+        
+        // Check if game over
+        function isGameOver() {
+            // Check for empty cells
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    if (!grid[r][c]) return false;
+                }
+            }
+            
+            // Check for possible merges
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const tile = grid[r][c];
+                    // Check right
+                    if (c < GRID_SIZE - 1 && grid[r][c + 1] && grid[r][c + 1].value === tile.value) return false;
+                    // Check down
+                    if (r < GRID_SIZE - 1 && grid[r + 1][c] && grid[r + 1][c].value === tile.value) return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Show game over
+        function showGameOver() {
+            gameOver = true;
+            finalScoreEl.textContent = score;
+            gameOverEl.classList.remove('hidden');
+            gameOverEl.classList.add('flex');
+        }
+        
+        // Show win
+        function showWin() {
+            winOverlayEl.classList.remove('hidden');
+            winOverlayEl.classList.add('flex');
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp': e.preventDefault(); move('up'); break;
+                case 'ArrowDown': e.preventDefault(); move('down'); break;
+                case 'ArrowLeft': e.preventDefault(); move('left'); break;
+                case 'ArrowRight': e.preventDefault(); move('right'); break;
+            }
+        });
+        
+        // Touch/swipe support
+        let touchStartX, touchStartY;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', (e) => {
+            if (!touchStartX || !touchStartY) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            const minSwipe = 50;
+            
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (Math.abs(deltaX) > minSwipe) {
+                    move(deltaX > 0 ? 'right' : 'left');
+                }
+            } else {
+                if (Math.abs(deltaY) > minSwipe) {
+                    move(deltaY > 0 ? 'down' : 'up');
+                }
+            }
+            
+            touchStartX = null;
+            touchStartY = null;
+        }, { passive: true });
+        
+        // Buttons
+        document.getElementById('newGameBtn').addEventListener('click', init);
+        document.getElementById('tryAgainBtn').addEventListener('click', init);
+        document.getElementById('keepPlayingBtn').addEventListener('click', () => {
+            winOverlayEl.classList.add('hidden');
+            winOverlayEl.classList.remove('flex');
+        });
+        document.getElementById('newGameWinBtn').addEventListener('click', init);
+        
+        // Start game
+        init();
+    </script>
+</body>
+</html>
