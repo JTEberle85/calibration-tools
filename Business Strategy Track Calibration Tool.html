@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slalom Business Strategy Track - Role Calibration Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+        .font-slalom { font-family: 'Open Sans', sans-serif; }
+        .gradient-header { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
+        .section-card { border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .section-content { border-radius: 0 0 16px 16px; }
+        .competency-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .diff-highlight-a { 
+            background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%); 
+            color: #0e7490; 
+            padding: 2px 4px; 
+            border-radius: 4px; 
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .diff-highlight-b { 
+            background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); 
+            color: #0f766e; 
+            padding: 2px 4px; 
+            border-radius: 4px; 
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .proficiency-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 9999px; font-weight: 600; text-transform: uppercase; }
+        .proficiency-beginner { background-color: #cffafe; color: #0e7490; }
+        .proficiency-foundational { background-color: #a5f3fc; color: #0e7490; }
+        .proficiency-intermediate { background-color: #67e8f9; color: #155e75; }
+        .proficiency-advanced { background-color: #22d3ee; color: #164e63; }
+        .proficiency-expert { background-color: #06b6d4; color: white; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'slalom-cyan': '#06b6d4',
+                        'slalom-cyan-light': '#22d3ee',
+                        'slalom-cyan-dark': '#0891b2',
+                        'slalom-teal': '#14b8a6',
+                        'slalom-orange': '#f97316',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // --- Icons ---
+        const IconWrapper = ({ children, className = "", size = 24 }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+        const ArrowRight = (props) => <IconWrapper {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconWrapper>;
+        const Users = (props) => <IconWrapper {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconWrapper>;
+        const Briefcase = (props) => <IconWrapper {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></IconWrapper>;
+        const TrendingUp = (props) => <IconWrapper {...props}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></IconWrapper>;
+        const ChevronDown = (props) => <IconWrapper {...props}><path d="m6 9 6 6 6-6"/></IconWrapper>;
+        const ChevronUp = (props) => <IconWrapper {...props}><path d="m18 15-6-6-6 6"/></IconWrapper>;
+        const CheckCircle = (props) => <IconWrapper {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></IconWrapper>;
+        const Layout = (props) => <IconWrapper {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></IconWrapper>;
+        const Eye = (props) => <IconWrapper {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconWrapper>;
+        const Sparkles = (props) => <IconWrapper {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></IconWrapper>;
+        const Building = (props) => <IconWrapper {...props}><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></IconWrapper>;
+        const Target = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconWrapper>;
+        const Info = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></IconWrapper>;
+        const Settings = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></IconWrapper>;
+        const Wrench = (props) => <IconWrapper {...props}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></IconWrapper>;
+
+        // --- Diff Logic (Market Solutions approach) ---
+        const tokenize = (text) => text.split(/([\s,.!?;:()]+)/).filter(t => t);
+        const isSimilar = (t1, t2) => {
+            const clean1 = t1.trim().toLowerCase().replace(/[^\w]/g, '');
+            const clean2 = t2.trim().toLowerCase().replace(/[^\w]/g, '');
+            if (!clean1 && !clean2) return t1.trim() === t2.trim();
+            return clean1 === clean2;
+        };
+        const getLCS = (arr1, arr2) => {
+            const dp = Array(arr1.length + 1).fill(null).map(() => Array(arr2.length + 1).fill(0));
+            for (let i = 1; i <= arr1.length; i++) {
+                for (let j = 1; j <= arr2.length; j++) {
+                    if (isSimilar(arr1[i - 1], arr2[j - 1])) dp[i][j] = dp[i - 1][j - 1] + 1;
+                    else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+            return dp;
+        };
+        const computeDiff = (text1, text2) => {
+            const arr1 = tokenize(text1);
+            const arr2 = tokenize(text2);
+            const dp = getLCS(arr1, arr2);
+            let i = arr1.length;
+            let j = arr2.length;
+            const result1 = [];
+            const result2 = [];
+            while (i > 0 || j > 0) {
+                if (i > 0 && j > 0 && isSimilar(arr1[i - 1], arr2[j - 1])) {
+                    result1.unshift({ text: arr1[i - 1], type: 'common' });
+                    result2.unshift({ text: arr2[j - 1], type: 'common' });
+                    i--; j--;
+                } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+                    result2.unshift({ text: arr2[j - 1], type: 'unique' });
+                    j--;
+                } else if (i > 0 && (j === 0 || dp[i][j - 1] < dp[i - 1][j])) {
+                    result1.unshift({ text: arr1[i - 1], type: 'unique' });
+                    i--;
+                }
+            }
+            return { diffA: result1, diffB: result2 };
+        };
+        const DiffText = ({ segments, highlightClass }) => (
+            <span>
+                {segments.map((seg, idx) => (
+                    <span key={idx} className={seg.type === 'unique' ? highlightClass : ''}>
+                        {seg.text}
+                    </span>
+                ))}
+            </span>
+        );
+        const findBestMatch = (target, candidates) => {
+            let bestIdx = -1;
+            let maxScore = 0;
+            const getWords = (str) => new Set(str.toLowerCase().split(/[\s,.!?;:()]+/).filter(w => w.length > 2));
+            const targetWords = getWords(target);
+            candidates.forEach((cand, idx) => {
+                const candWords = getWords(cand);
+                let intersection = 0;
+                targetWords.forEach(w => { if (candWords.has(w)) intersection++; });
+                const union = new Set([...targetWords, ...candWords]).size;
+                const score = union === 0 ? 0 : intersection / union;
+                if (score > maxScore) { maxScore = score; bestIdx = idx; }
+            });
+            return maxScore > 0.08 ? bestIdx : -1;
+        };
+
+        // --- DIFFERENTIATORS ---
+        const DIFFERENTIATORS = {
+            "Associate Chief of Staff->Chief of Staff": {
+                "Deliver Exceptionally": {
+                    "Core Expectations": "Associate CoS is responsible for project outcomes and analyzes problems. Chief of Staff influences functional objectives, sets priorities, and plans complex multi-step strategic approaches to problems.",
+                    "Skills": "Associate CoS works at Intermediate level across all skills. Chief of Staff advances to Advanced in Prioritization, Personal Accountability, Problem Solving, and Decision Making."
+                },
+                "Grow Expertise": {
+                    "Core Expectations": "Associate CoS supports teams and coaches within their domain. Chief of Staff is recognized as a 'person to ask' for complex issues and makes meaningful contributions to intellectual capital.",
+                    "Skills": "Associate CoS has Intermediate skills. Chief of Staff advances Coaching/Mentoring and Learning to Advanced level."
+                },
+                "Grow Slalom": {
+                    "Core Expectations": "Associate CoS co-creates team vision and implements innovative thinking. Chief of Staff leads development of strategic solutions with meaningful functional impact and may lead process/policy evolution.",
+                    "Skills": "Associate CoS has Foundational Strategic Thinking. Chief of Staff advances to Intermediate Strategic Thinking and Advanced Innovation."
+                },
+                "Lead": {
+                    "Core Expectations": "Associate CoS builds skills to mitigate bias and models feedback habits. Chief of Staff proactively models bias mitigation, maintains confidence/humility balance, and prompts productive conflict.",
+                    "Skills": "Both roles operate at Intermediate level. Focus shifts from building skills to proactively modeling behaviors."
+                }
+            },
+            "Chief of Staff->Senior Chief of Staff": {
+                "Deliver Exceptionally": {
+                    "Core Expectations": "Chief of Staff influences functional objectives and plans complex approaches. Senior CoS influences prioritization of functional initiatives, models consensus building with executives, and is accountable for tactical and financial performance.",
+                    "Skills": "Chief of Staff has Advanced Prioritization. Senior CoS advances to Expert Prioritization and Advanced Stakeholder Management and Communication & Influence."
+                },
+                "Grow Expertise": {
+                    "Core Expectations": "Chief of Staff is recognized within their functional domain. Senior CoS partners with experts across functions, contributes to cross-Slalom communities, and develops knowledge management practices.",
+                    "Skills": "Chief of Staff has Intermediate Global Business Acumen. Senior CoS advances to Advanced Global Business Acumen."
+                },
+                "Grow Slalom": {
+                    "Core Expectations": "Chief of Staff leads strategic solutions for functional impact. Senior CoS aligns team and stakeholders on shared purposes as part of larger vision, sets team strategy, and leads meaningful process innovation.",
+                    "Skills": "Chief of Staff has Intermediate Relationship Building. Senior CoS advances to Advanced Relationship Building."
+                },
+                "Lead": {
+                    "Core Expectations": "Chief of Staff models behaviors and shares development practices. Senior CoS modifies communication to lead with empathy, normalizes upward feedback, and leads with growth mindset in uncertainty.",
+                    "Skills": "Chief of Staff operates at Intermediate level. Senior CoS advances ALL Lead skills to Advanced level - significant expansion in leadership capability."
+                }
+            }
+        };
+
+
+        // --- Main Component ---
+        const CalibrationTool = () => {
+            const [activeTab, setActiveTab] = useState('compare'); 
+            const [roleA, setRoleA] = useState('Associate Chief of Staff');
+            const [roleB, setRoleB] = useState('Chief of Staff');
+            const [showDiff, setShowDiff] = useState(false);
+            const [selectedCompetency, setSelectedCompetency] = useState('Deliver Exceptionally');
+            const [expandedSections, setExpandedSections] = useState({
+                'Deliver Exceptionally': true,
+                'Grow Expertise': false,
+                'Grow Slalom': false,
+                'Lead': false
+            });
+
+            const roles = [
+                "Associate Chief of Staff",
+                "Chief of Staff", 
+                "Senior Chief of Staff"
+            ];
+
+            const competencies = [
+                "Deliver Exceptionally",
+                "Grow Expertise",
+                "Grow Slalom",
+                "Lead"
+            ];
+
+            // Check if roles are consecutive to show the middle column
+            const isConsecutive = useMemo(() => {
+                const idxA = roles.indexOf(roleA);
+                const idxB = roles.indexOf(roleB);
+                return (idxB === idxA + 1);
+            }, [roleA, roleB, roles]);
+
+            const getDifferentiator = (comp, sub) => {
+                const key = `${roleA}->${roleB}`;
+                if (DIFFERENTIATORS[key] && DIFFERENTIATORS[key][comp] && DIFFERENTIATORS[key][comp][sub]) {
+                    return DIFFERENTIATORS[key][comp][sub];
+                }
+                return null;
+            };
+
+            // --- ROLE EXPECTATIONS DATA ---
+            const data = {
+                "Associate Chief of Staff": {
+                    "summary": "An Associate Chief of Staff supports and delivers complex work to meet business objectives and drive efficiencies and improvements. They develop Business Strategy knowledge and skills to innovate high-quality solutions. They demonstrate values-based leadership, and actively work to mentor and coach team members and/or direct reports.",
+                    "Deliver Exceptionally": {
+                        "Core Expectations": ["Responsible for overall solution/project outcomes.", "Communicates maturely and intentionally in contexts that may require negotiation and diplomacy to influence stakeholder expectations and understanding.", "Guides work for themselves and others to ensure proper prioritization, quality, and accuracy and proactively address obstacles to unblock the team.", "Analyzes complex problems and their context to understand potential risks and solutions to identify the best path forward."],
+                        "Skills": [
+                            { name: "Prioritization", level: "Intermediate", description: "Independently prioritizes by understanding objectives, communicates complexity and dependencies." },
+                            { name: "Personal Accountability", level: "Intermediate", description: "Adapts to evolving expectations, takes ownership when expectations are missed, navigates uncertainty." },
+                            { name: "Stakeholder Management", level: "Intermediate", description: "Communicates complex problems to influence expectations, navigates organizational dynamics." },
+                            { name: "Problem Solving", level: "Intermediate", description: "Analyzes problems and context for risks/solutions, knows when/how to escalate." },
+                            { name: "Communication & Influence", level: "Intermediate", description: "Develops influential communication, adapts style, inspires innovative approaches." },
+                            { name: "Decision Making", level: "Intermediate", description: "Makes complex decisions considering multiple factors, influences collaborative exchanges." }
+                        ]
+                    },
+                    "Grow Expertise": {
+                        "Core Expectations": ["Guides or supports teams in developing high-quality solutions by leveraging functional expertise, Slalom best practices, and knowledge of current industry/subject matter trends.", "Supports peers and coaches or mentors others within their functional domain.", "Supports others in defining their path forward, leveraging previous experiences and thoughtful questions.", "Captures outcomes and/or project deliverables timely and accurately."],
+                        "Skills": [
+                            { name: "Global Business Acumen", level: "Intermediate", description: "Understands how work evolves in different contexts, leverages business model understanding." },
+                            { name: "Coaching and Mentoring", level: "Intermediate", description: "Identifies when to coach vs mentor, shares experience, leverages powerful questions." },
+                            { name: "Learning", level: "Intermediate", description: "Utilizes reflection tools, knows strengths and growth areas, coaches others through reflection." }
+                        ]
+                    },
+                    "Grow Slalom": {
+                        "Core Expectations": ["Co-creates team vision, strategy, and targeted outcomes, including clearly defined roles and impact.", "Engages in internal Slalom events and/or Slalom core courses, seeks opportunities to share knowledge, and encourages others to participate.", "Creates authentic and trusting relationships within and outside of Slalom.", "Implements innovative thinking and approaches and encourages innovative thinking with teams and/or direct reports."],
+                        "Skills": [
+                            { name: "Strategic Thinking", level: "Foundational", description: "Considers functional and Slalom strategy when planning, seeks function-specific initiatives." },
+                            { name: "Relationship Building", level: "Intermediate", description: "Seeks opportunities to connect, expands internal/external networks in areas of expertise." },
+                            { name: "Innovation", level: "Intermediate", description: "Develops new methods for existing issues, collaborates on best ideas, puts ideas into practice." }
+                        ]
+                    },
+                    "Lead": {
+                        "Core Expectations": ["Builds skills to identify and mitigate personal biases and tailor style to collaborate with others.", "Openly and authentically shares values, assumptions, and imperfections with others.", "Models the habit of regularly requesting and providing feedback to others.", "Proactively removes barriers to create space for productive conflict and minimize unproductive conflict.", "Proactively supports connecting employees to meaningful development experiences.*", "Ensures direct reports understand performance expectations and regularly solicits and provides performance feedback.*", "Experiments with new approaches and takes risks; fails fast and applies learnings to new experiences.", "Celebrates uniqueness and empowers others to bring their whole selves to work.", "Encourages conversations that empower open dialogue and transparency.", "Establishes norms to encourage open-mindedness and non-judgment for team mistakes/setbacks.", "Defines for direct reports how their work connects to and impacts Slalom's and the team's business goals.*", "Clearly translates organizational change for direct reports and supports them navigate the change.*", "* Only applies to people leaders"],
+                        "Skills": [
+                            { name: "Emotional Intelligence", level: "Intermediate", description: "Utilizes reflection tools, knows strengths/growth areas, coaches others through reflection." },
+                            { name: "Growth Mindset", level: "Intermediate", description: "Utilizes reflection tools, identifies resources to navigate ambiguity, coaches individuals." },
+                            { name: "Psychological Safety", level: "Intermediate", description: "Sensitive to cultural norms, mitigates bias impacts, establishes norms for open-mindedness." },
+                            { name: "Conflict Navigation", level: "Intermediate", description: "Steps up to conflicts as opportunity, separates facts from opinions." },
+                            { name: "Meaningful Feedback", level: "Intermediate", description: "Listens to large groups, open to criticism, proactively shares kudos and constructive feedback." },
+                            { name: "Career Development & Advocacy", level: "Intermediate", description: "Uses organizational resources, asks powerful questions, establishes development plans." },
+                            { name: "Connection to Business", level: "Intermediate", description: "Runs effective 1:1s, aligns career goals with organizational objectives." },
+                            { name: "Performance Development", level: "Intermediate", description: "Guides through challenging situations, listens beyond facts, provides frequent feedback." },
+                            { name: "Change Leadership", level: "Intermediate", description: "Considers team perspective, listens to concerns, manages expectations through ambiguity." }
+                        ]
+                    }
+                },
+                "Chief of Staff": {
+                    "summary": "A Chief of Staff leads and delivers work that impacts cross-functional objectives. They apply advanced knowledge, skills, and broad business expertise to develop innovative and high-quality solutions. They provide values-based leadership to team members and/or direct reports.",
+                    "Deliver Exceptionally": {
+                        "Core Expectations": ["Utilizes knowledge and experience to influence functional objectives to set priorities, participate in exchanges to evaluate and share insights, and influence resource allocation for the department/team.", "Communicates persuasively across multiple topics and settings, adjusts style to meet the needs of team and stakeholders, and sets expectations and challenges with stakeholders.", "Accepts accountability for department/team goals and fosters collective responsibility by providing clear direction to team members.", "Plans complex, multi-step, strategic approaches to solving problems, anticipates future problems and creates repeatable solutions for recurring issues."],
+                        "Skills": [
+                            { name: "Prioritization", level: "Advanced", description: "Provides guidance on objectives and priorities, communicates business value and risk." },
+                            { name: "Personal Accountability", level: "Advanced", description: "Defines clear roles/responsibilities, delegates effectively, accepts team accountability." },
+                            { name: "Stakeholder Management", level: "Intermediate", description: "Communicates complex problems to influence expectations, navigates organizational dynamics." },
+                            { name: "Problem Solving", level: "Advanced", description: "Creates repeatable solutions, plans complex strategic approaches, improves processes." },
+                            { name: "Communication & Influence", level: "Intermediate", description: "Develops influential communication, adapts style, inspires innovative approaches." },
+                            { name: "Decision Making", level: "Advanced", description: "Deliberates to make complex decisions, guides collaborative exchanges with stakeholders." }
+                        ]
+                    },
+                    "Grow Expertise": {
+                        "Core Expectations": ["Guides or supports teams in developing high-quality solutions by leveraging functional expertise, Slalom best practices, and a high level of knowledge of current industry/subject matter trends.", "Recognized as a 'person to ask' when complex issues arise within their functional domain. May support or deliver learning opportunities for others.", "Guides others effectively, inspiring and influencing them to learn and take action.", "Makes meaningful contributions to intellectual capital and knowledge management within own functional domain."],
+                        "Skills": [
+                            { name: "Global Business Acumen", level: "Intermediate", description: "Understands how work evolves in different contexts, leverages business model understanding." },
+                            { name: "Coaching and Mentoring", level: "Advanced", description: "Establishes development culture, empowers learning through powerful questions." },
+                            { name: "Learning", level: "Advanced", description: "Shares mistakes and lessons learned, navigates ambiguity for self and others." }
+                        ]
+                    },
+                    "Grow Slalom": {
+                        "Core Expectations": ["Co-creates and defines team norms to facilitate collaboration and enable impact.", "Expands and leverages formal and informal internal and external professional networks in areas of expertise.", "Promotes, guides, and inspires innovative approaches and thinking amongst the team. May lead efforts to evolve processes and policies guided by Slalom values and culture.", "Leads the development of strategic solutions that contribute to meaningful functional impact.", "Engages in internal Slalom events and/or Slalom core courses and encourages others to participate."],
+                        "Skills": [
+                            { name: "Strategic Thinking", level: "Intermediate", description: "Develops roadmaps to achieve objectives, influences strategy within domain." },
+                            { name: "Relationship Building", level: "Intermediate", description: "Seeks opportunities to connect, expands internal/external networks in areas of expertise." },
+                            { name: "Innovation", level: "Advanced", description: "Develops innovative solutions, fosters culture of experimentation and calculated risk-taking." }
+                        ]
+                    },
+                    "Lead": {
+                        "Core Expectations": ["Proactively models how to mitigate biases and tailor work style to collaborate with others.", "Maintains an appropriate balance between self-confidence and humility.", "Thoughtfully approaches receiving and giving challenging feedback, balancing kindness and candor.", "Respectfully and proactively prompts timely, productive conflict in support of coming to the best result.", "Proactively supports connecting employees to meaningful development experiences.*", "Ensures direct reports understand performance expectations and regularly solicits and provides performance feedback.*", "Shares own development opportunities and risk-taking practices with others to normalize a growth mindset.", "Advocates for different points of view and backgrounds to be represented.", "Embraces challenge and conflict in relationships to deepen connections.", "Leverages an open team environment to enable risk-taking and innovation.", "Defines for direct reports how their work connects to and impacts Slalom's and the team's business goals.*", "Clearly translates organizational change for direct reports and supports them navigate the change.*", "* Only applies to people leaders"],
+                        "Skills": [
+                            { name: "Emotional Intelligence", level: "Intermediate", description: "Utilizes reflection tools, knows strengths/growth areas, coaches others through reflection." },
+                            { name: "Growth Mindset", level: "Intermediate", description: "Utilizes reflection tools, identifies resources to navigate ambiguity, coaches individuals." },
+                            { name: "Psychological Safety", level: "Intermediate", description: "Sensitive to cultural norms, mitigates bias impacts, establishes norms for open-mindedness." },
+                            { name: "Conflict Navigation", level: "Intermediate", description: "Steps up to conflicts as opportunity, separates facts from opinions." },
+                            { name: "Meaningful Feedback", level: "Intermediate", description: "Listens to large groups, open to criticism, proactively shares kudos and constructive feedback." },
+                            { name: "Career Development & Advocacy", level: "Intermediate", description: "Uses organizational resources, asks powerful questions, establishes development plans." },
+                            { name: "Connection to Business", level: "Intermediate", description: "Runs effective 1:1s, aligns career goals with organizational objectives." },
+                            { name: "Performance Development", level: "Intermediate", description: "Guides through challenging situations, listens beyond facts, provides frequent feedback." },
+                            { name: "Change Leadership", level: "Intermediate", description: "Considers team perspective, listens to concerns, manages expectations through ambiguity." }
+                        ]
+                    }
+                },
+                "Senior Chief of Staff": {
+                    "summary": "A Senior Chief of Staff drives innovative outcomes that impacts cross-functional and/or organizational objectives aligned to Slalom or Global Team/Market Strategy. They are accountable for a function or program with global team/market, regional or global impact. They are a recognized Business Strategy expert within the Slalom community. They model values-based leadership and may directly lead team members and/or multi-level direct reports.",
+                    "Deliver Exceptionally": {
+                        "Core Expectations": ["Influences the prioritization of functional initiatives by leading collaborative exchanges and managing the impact of scope changes and resource allocation in response.", "Models consensus building, highlighting results, and managing risk with executive leadership on matters of strategic importance.", "Accountable for achieving results that impact tactical and financial performance and goals within functional areas.", "Applies adept problem-solving and conceptual thinking skills to successfully navigate complex and abstract issues."],
+                        "Skills": [
+                            { name: "Prioritization", level: "Expert", description: "Defines functional priorities, provides oversight ensuring business value/risk consideration." },
+                            { name: "Personal Accountability", level: "Advanced", description: "Defines clear roles/responsibilities, delegates effectively, accepts team accountability." },
+                            { name: "Stakeholder Management", level: "Advanced", description: "Sets expectations with stakeholders, handles escalations, models negotiation and influence." },
+                            { name: "Problem Solving", level: "Advanced", description: "Creates repeatable solutions, plans complex strategic approaches, improves processes." },
+                            { name: "Communication & Influence", level: "Advanced", description: "Motivates through compelling vision, facilitates alignment, navigates challenging discussions." },
+                            { name: "Decision Making", level: "Advanced", description: "Deliberates to make complex decisions, guides collaborative exchanges with stakeholders." }
+                        ]
+                    },
+                    "Grow Expertise": {
+                        "Core Expectations": ["Partners with experts to analyze and address functional needs.", "Recognized as a 'person to ask' when difficult issues arise within their functional domain and actively contributes to cross-function or cross-Slalom communities. May manage learning opportunities for others.", "Listens for and helps others navigate challenging situations by supporting them in articulating their obstacles (assumptions, beliefs, and emotions).", "Develops and manages knowledge management practices."],
+                        "Skills": [
+                            { name: "Global Business Acumen", level: "Advanced", description: "Translates strategy into functional operations, connects decisions to business impacts." },
+                            { name: "Coaching and Mentoring", level: "Advanced", description: "Establishes development culture, empowers learning through powerful questions." },
+                            { name: "Learning", level: "Advanced", description: "Shares mistakes and lessons learned, navigates ambiguity for self and others." }
+                        ]
+                    },
+                    "Grow Slalom": {
+                        "Core Expectations": ["Aligns team, collaborators, and stakeholders on shared purposes and goals as part of the larger vision. Sets team strategy and collaborates with peers to enable organizational success.", "Encourages others to engage in internal Slalom and community events and/or Slalom core courses.", "Expands and leverages both formal and informal professional networks. Creates formal networks with key decision makers.", "Promotes, guides, and inspires innovative approaches and thinking amongst the team. Leads meaningful process and policy innovation guided by Slalom values and culture."],
+                        "Skills": [
+                            { name: "Strategic Thinking", level: "Intermediate", description: "Develops roadmaps to achieve objectives, influences strategy within domain." },
+                            { name: "Relationship Building", level: "Advanced", description: "Nurtures strategic relationships, acts as trusted advisor, creates networks with key decision makers." },
+                            { name: "Innovation", level: "Advanced", description: "Develops innovative solutions, fosters culture of experimentation and calculated risk-taking." }
+                        ]
+                    },
+                    "Lead": {
+                        "Core Expectations": ["Modifies communication and behavior to lead with empathy and regulate emotions and behavior appropriately.", "Thoughtfully expresses emotion to promote open/honest conversations and powerful/trusted relationships.", "Normalizes upward feedback by openly sharing development areas and requesting feedback.", "Listens for and helps others navigate challenging situations by supporting them in articulating their obstacles (e.g., assumptions, beliefs, and emotions).", "Encourages others to speak up and challenge the status quo.", "Proactively shares function/team updates to build awareness and support connection to Slalom culture.*", "Builds change agility skills in others and leads by example.*", "Leads with a growth mindset in the face of uncertainty and the unknown.", "Enables and encourages others to develop diverse thoughts and perspectives.", "Models high credibility, reliability, connection, and low self-orientation; extends trust to others.", "Effectively handles emotionally charged issues by leaning in and communicating clearly and respectfully to resolve the conflict.", "Leads by example and thoughtfully guides other people leaders on how to support the long-term development of their directs.*", "Ensures team members create meaningful performance development plans, leveraging feedback from multiple sources.*", "* Only applies to people leaders"],
+                        "Skills": [
+                            { name: "Emotional Intelligence", level: "Advanced", description: "Shares own mistakes/lessons learned, navigates ambiguity, demonstrates continuous growth." },
+                            { name: "Growth Mindset", level: "Advanced", description: "Shares mistakes to normalize stretching, cultivates resilient environment." },
+                            { name: "Psychological Safety", level: "Advanced", description: "Promotes team environment valuing differences, navigates power dynamics effectively." },
+                            { name: "Conflict Navigation", level: "Advanced", description: "Encourages alternative perspectives, finds common ground, diffuses high-tension situations." },
+                            { name: "Meaningful Feedback", level: "Advanced", description: "Adapts communication style, normalizes upward feedback, creates feedback culture." },
+                            { name: "Career Development & Advocacy", level: "Advanced", description: "Encourages developmental opportunities, elevates others, coaches other leaders." },
+                            { name: "Connection to Business", level: "Advanced", description: "Coaches leaders on connecting goals to business, models managing attention zones." },
+                            { name: "Performance Development", level: "Advanced", description: "Asks powerful coaching questions, coaches underperformers, utilizes recognition effectively." },
+                            { name: "Change Leadership", level: "Advanced", description: "Anticipates objections and helps process feelings, communicates ideas for internalization." }
+                        ]
+                    }
+                }
+            };
+
+            const subCompetencies = {
+                "Deliver Exceptionally": ["Core Expectations", "Skills"],
+                "Grow Expertise": ["Core Expectations", "Skills"],
+                "Grow Slalom": ["Core Expectations", "Skills"],
+                "Lead": ["Core Expectations", "Skills"]
+            };
+
+            const toggleSection = (section) => {
+                setExpandedSections(prev => ({
+                    ...prev,
+                    [section]: !prev[section]
+                }));
+            };
+
+            // Safe getter for data
+            const getExpectations = (role, section, subSection) => {
+                try {
+                    if (subSection === "Skills") {
+                        return data[role][section][subSection] || [];
+                    }
+                    return data[role][section][subSection] || ["No specific expectations listed."];
+                } catch (e) {
+                    return subSection === "Skills" ? [] : ["No specific expectations listed."];
+                }
+            };
+
+            // Get competency icon and color - Business Strategy uses cyan/teal
+            const getCompetencyStyle = (comp) => {
+                switch(comp) {
+                    case "Deliver Exceptionally":
+                        return { bg: "bg-emerald-100", iconBg: "bg-emerald-500", text: "text-emerald-700", border: "border-emerald-200" };
+                    case "Grow Expertise":
+                        return { bg: "bg-teal-100", iconBg: "bg-teal-500", text: "text-teal-700", border: "border-teal-200" };
+                    case "Grow Slalom":
+                        return { bg: "bg-cyan-100", iconBg: "bg-cyan-500", text: "text-cyan-700", border: "border-cyan-200" };
+                    case "Lead":
+                        return { bg: "bg-orange-100", iconBg: "bg-orange-500", text: "text-orange-700", border: "border-orange-200" };
+                    default:
+                        return { bg: "bg-gray-100", iconBg: "bg-gray-500", text: "text-gray-700", border: "border-gray-200" };
+                }
+            };
+
+            // Get proficiency badge style
+            const getProficiencyStyle = (level) => {
+                switch(level) {
+                    case "Beginner": return "proficiency-beginner";
+                    case "Foundational": return "proficiency-foundational";
+                    case "Intermediate": return "proficiency-intermediate";
+                    case "Advanced": return "proficiency-advanced";
+                    case "Expert": return "proficiency-expert";
+                    default: return "proficiency-beginner";
+                }
+            };
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 font-slalom text-slate-800">
+                <div className="max-w-7xl mx-auto">
+                    
+                    {/* Header with Slalom Branding */}
+                    <div className="gradient-header rounded-2xl p-8 mb-8 text-white shadow-xl">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+                                        BUSINESS STRATEGY TRACK
+                                    </span>
+                                </div>
+                                <h1 className="text-3xl md:text-4xl font-bold mb-2">Role Calibration Tool</h1>
+                                <p className="text-white/80 text-lg">Compare expectations and skills across Business Strategy roles</p>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl p-1">
+                                <button 
+                                    onClick={() => setActiveTab('compare')}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${activeTab === 'compare' ? 'bg-white text-cyan-600 shadow-lg' : 'text-white hover:bg-white/10'}`}
+                                >
+                                    <Layout size={18} />
+                                    <span className="font-medium">Compare</span>
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('evolution')}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${activeTab === 'evolution' ? 'bg-white text-cyan-600 shadow-lg' : 'text-white hover:bg-white/10'}`}
+                                >
+                                    <Eye size={18} />
+                                    <span className="font-medium">Evolution</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Track Info Banner */}
+                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                        <div className="bg-cyan-100 p-2 rounded-lg">
+                            <Target className="text-cyan-600" size={20} />
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-cyan-900">Business Strategy Track</h3>
+                            <p className="text-sm text-cyan-700">Responsible for guiding cross-functional strategy, people experience, processes, systems, and technologies that enable and scale efficient and effective management of the business to meet day to day and long-term objectives.</p>
+                        </div>
+                    </div>
+
+                    {activeTab === 'compare' ? (
+                        <>
+                            {/* Role Selection */}
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                                <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+                                    <div className="w-full md:w-64">
+                                        <label className="block text-sm font-medium text-slate-500 mb-2">From Role</label>
+                                        <select 
+                                            value={roleA} 
+                                            onChange={(e) => setRoleA(e.target.value)}
+                                            className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-slate-50 font-medium"
+                                        >
+                                            {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-lg">
+                                        <ArrowRight className="text-white" size={24} />
+                                    </div>
+                                    
+                                    <div className="w-full md:w-64">
+                                        <label className="block text-sm font-medium text-slate-500 mb-2">To Role</label>
+                                        <select 
+                                            value={roleB} 
+                                            onChange={(e) => setRoleB(e.target.value)}
+                                            className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-violet-200 transition-all bg-slate-50 font-medium"
+                                        >
+                                            {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                {/* Role Summaries */}
+                                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-cyan-50 rounded-xl p-4">
+                                        <h4 className="font-semibold text-cyan-900 mb-2">{roleA}</h4>
+                                        <p className="text-sm text-cyan-700">{data[roleA]?.summary}</p>
+                                    </div>
+                                    <div className="bg-teal-50 rounded-xl p-4">
+                                        <h4 className="font-semibold text-teal-900 mb-2">{roleB}</h4>
+                                        <p className="text-sm text-teal-700">{data[roleB]?.summary}</p>
+                                    </div>
+                                </div>
+                                
+                                {/* Diff Toggle - Market Solutions style */}
+                                <div className="flex flex-wrap justify-center gap-3 mt-6 pt-6 border-t border-slate-100">
+                                    <button
+                                        onClick={() => setShowDiff(!showDiff)}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all border-2 ${
+                                            showDiff
+                                            ? 'bg-cyan-100 text-cyan-700 border-cyan-300'
+                                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        <Eye size={16} />
+                                        {showDiff ? 'Hide Differences' : 'Highlight Differences'}
+                                    </button>
+                                </div>
+                                
+                                {showDiff && (
+                                    <div className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-6">
+                                        <span className="flex items-center gap-2">
+                                            <span className="inline-block w-4 h-4 bg-gradient-to-r from-indigo-100 to-indigo-200 rounded border border-cyan-300"></span>
+                                            Unique to {roleA}
+                                        </span>
+                                        <span className="flex items-center gap-2">
+                                            <span className="inline-block w-4 h-4 bg-gradient-to-r from-violet-100 to-violet-200 rounded border border-teal-300"></span>
+                                            Unique to {roleB}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Comparison Sections */}
+                            <div className="space-y-4">
+                                {competencies.map(comp => {
+                                    const style = getCompetencyStyle(comp);
+                                    return (
+                                    <div key={comp} className="section-card bg-white overflow-hidden">
+                                        <button 
+                                            onClick={() => toggleSection(comp)}
+                                            className={`w-full p-5 flex items-center justify-between ${style.bg} hover:opacity-90 transition-all text-left`}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`competency-icon ${style.iconBg} shadow-lg`}>
+                                                    {comp === "Deliver Exceptionally" && <CheckCircle className="text-white" size={20} />}
+                                                    {comp === "Grow Expertise" && <Briefcase className="text-white" size={20} />}
+                                                    {comp === "Grow Slalom" && <Building className="text-white" size={20} />}
+                                                    {comp === "Lead" && <Users className="text-white" size={20} />}
+                                                </div>
+                                                <h2 className={`text-lg font-bold ${style.text}`}>{comp}</h2>
+                                            </div>
+                                            <div className={`w-8 h-8 rounded-full ${style.iconBg}/20 flex items-center justify-center`}>
+                                                {expandedSections[comp] ? <ChevronUp className={style.text} /> : <ChevronDown className={style.text} />}
+                                            </div>
+                                        </button>
+
+                                        {expandedSections[comp] && (
+                                            <div className={`section-content p-6 grid ${isConsecutive ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'} gap-8`}>
+                                            {subCompetencies[comp].map(sub => {
+                                                const itemsA = getExpectations(roleA, comp, sub);
+                                                const itemsB = getExpectations(roleB, comp, sub);
+                                                const diffText = getDifferentiator(comp, sub === "Core Expectations" ? "Core Expectations" : "Skills");
+                                                
+                                                return (
+                                                <React.Fragment key={sub}>
+                                                    <div className={`${isConsecutive ? 'col-span-1 lg:col-span-3' : 'col-span-1 md:col-span-2'} mb-2 mt-4 border-b-2 ${style.border} pb-3`}>
+                                                        <h3 className={`text-sm font-bold uppercase tracking-wider ${style.text}`}>{sub}</h3>
+                                                    </div>
+                                                    
+                                                    {/* Role A Column */}
+                                                    <div className="bg-slate-50 rounded-xl p-5">
+                                                        <h4 className="font-semibold text-cyan-600 mb-4 flex items-center gap-2">
+                                                            <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
+                                                            {roleA}
+                                                        </h4>
+                                                        {sub === "Skills" ? (
+                                                            <div className="space-y-3">
+                                                                {itemsA.map((skill, idx) => (
+                                                                    <div key={idx} className="bg-white rounded-lg p-3 border border-slate-200">
+                                                                        <div className="flex items-center justify-between mb-1">
+                                                                            <span className="font-medium text-slate-800 text-sm">{skill.name}</span>
+                                                                            <span className={`proficiency-badge ${getProficiencyStyle(skill.level)}`}>{skill.level}</span>
+                                                                        </div>
+                                                                        <p className="text-xs text-slate-500">{skill.description}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <ul className="space-y-3">
+                                                                {itemsA.map((item, idx) => {
+                                                                    let renderedItem = item;
+                                                                    if (showDiff) {
+                                                                        const bestMatchIdx = findBestMatch(item, itemsB);
+                                                                        if (bestMatchIdx !== -1) {
+                                                                            const { diffA } = computeDiff(item, itemsB[bestMatchIdx]);
+                                                                            renderedItem = <DiffText segments={diffA} highlightClass="diff-highlight-a" />;
+                                                                        } else {
+                                                                            renderedItem = <span className="diff-highlight-a">{item}</span>;
+                                                                        }
+                                                                    }
+                                                                    return (
+                                                                        <li key={idx} className="text-sm text-slate-700 leading-relaxed flex gap-3">
+                                                                            <span className="text-cyan-400 mt-1.5 text-lg leading-none">•</span>
+                                                                            <span>{renderedItem}</span>
+                                                                        </li>
+                                                                    );
+                                                                })}
+                                                            </ul>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Middle Column - Differentiator (only when consecutive) */}
+                                                    {isConsecutive && (
+                                                        <div className="bg-gradient-to-b from-amber-50 to-orange-50 rounded-xl p-5 border-2 border-amber-200">
+                                                            <h4 className="font-semibold text-amber-700 mb-4 flex items-center gap-2">
+                                                                <TrendingUp size={16} />
+                                                                Key Progression
+                                                            </h4>
+                                                            {diffText ? (
+                                                                <p className="text-sm text-amber-800 leading-relaxed">{diffText}</p>
+                                                            ) : (
+                                                                <p className="text-sm text-amber-600 italic">Compare expectations to identify key differences.</p>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Role B Column */}
+                                                    <div className="bg-teal-50/50 rounded-xl p-5 border border-teal-200">
+                                                        <h4 className="font-semibold text-teal-600 mb-4 flex items-center gap-2">
+                                                            <span className="w-2 h-2 bg-teal-500 rounded-full"></span>
+                                                            {roleB}
+                                                        </h4>
+                                                        {sub === "Skills" ? (
+                                                            <div className="space-y-3">
+                                                                {itemsB.map((skill, idx) => {
+                                                                    const skillA = itemsA.find(s => s.name === skill.name);
+                                                                    const levelChanged = skillA && skillA.level !== skill.level;
+                                                                    return (
+                                                                        <div key={idx} className={`bg-white rounded-lg p-3 border ${levelChanged && showDiff ? 'border-teal-300 bg-teal-50' : 'border-slate-200'}`}>
+                                                                            <div className="flex items-center justify-between mb-1">
+                                                                                <span className="font-medium text-slate-800 text-sm">{skill.name}</span>
+                                                                                <div className="flex items-center gap-1">
+                                                                                    {levelChanged && showDiff && (
+                                                                                        <span className={`proficiency-badge ${getProficiencyStyle(skillA.level)} opacity-50 line-through`}>{skillA.level}</span>
+                                                                                    )}
+                                                                                    <span className={`proficiency-badge ${getProficiencyStyle(skill.level)}`}>{skill.level}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <p className="text-xs text-slate-500">{skill.description}</p>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        ) : (
+                                                            <ul className="space-y-3">
+                                                                {itemsB.map((item, idx) => {
+                                                                    let renderedItem = item;
+                                                                    if (showDiff) {
+                                                                        const bestMatchIdx = findBestMatch(item, itemsA);
+                                                                        if (bestMatchIdx !== -1) {
+                                                                            const { diffB } = computeDiff(itemsA[bestMatchIdx], item);
+                                                                            renderedItem = <DiffText segments={diffB} highlightClass="diff-highlight-b" />;
+                                                                        } else {
+                                                                            renderedItem = <span className="diff-highlight-b">{item}</span>;
+                                                                        }
+                                                                    }
+                                                                    return (
+                                                                        <li key={idx} className="text-sm text-slate-700 leading-relaxed flex gap-3">
+                                                                            <span className="text-teal-400 mt-1.5 text-lg leading-none">•</span>
+                                                                            <span>{renderedItem}</span>
+                                                                        </li>
+                                                                    );
+                                                                })}
+                                                            </ul>
+                                                        )}
+                                                    </div>
+                                                </React.Fragment>
+                                                );
+                                            })}
+                                            </div>
+                                        )}
+                                    </div>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    ) : (
+                        /* Evolution View */
+                        <div className="bg-white rounded-2xl shadow-lg p-6">
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-slate-500 mb-2">Select Competency to View Evolution</label>
+                                <select 
+                                    value={selectedCompetency} 
+                                    onChange={(e) => setSelectedCompetency(e.target.value)}
+                                    className="w-full md:w-64 p-3 border-2 border-slate-200 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-slate-50 font-medium"
+                                >
+                                    {competencies.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+
+                            {/* Skills Evolution Matrix */}
+                            {subCompetencies[selectedCompetency].includes("Skills") && (
+                                <div className="mb-8">
+                                    <h3 className="text-lg font-bold text-slate-800 mb-4">Skills Proficiency Progression</h3>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full border-collapse">
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-left p-3 bg-slate-100 rounded-tl-lg font-semibold text-slate-600">Skill</th>
+                                                    {roles.map((role, idx) => (
+                                                        <th key={role} className={`p-3 bg-slate-100 font-semibold text-slate-600 text-center ${idx === roles.length - 1 ? 'rounded-tr-lg' : ''}`}>
+                                                            {role}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {data["Senior Chief of Staff"][selectedCompetency]?.Skills?.map((skill, idx) => (
+                                                    <tr key={skill.name} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                                        <td className="p-3 font-medium text-slate-700 border-b border-slate-100">{skill.name}</td>
+                                                        {roles.map(role => {
+                                                            const roleSkill = data[role][selectedCompetency]?.Skills?.find(s => s.name === skill.name);
+                                                            return (
+                                                                <td key={role} className="p-3 text-center border-b border-slate-100">
+                                                                    {roleSkill && (
+                                                                        <span className={`proficiency-badge ${getProficiencyStyle(roleSkill.level)}`}>
+                                                                            {roleSkill.level}
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Core Expectations Evolution */}
+                            {subCompetencies[selectedCompetency].includes("Core Expectations") && (
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-800 mb-4">Core Expectations by Role</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {roles.map((role, idx) => {
+                                            const expectations = getExpectations(role, selectedCompetency, "Core Expectations");
+                                            const colors = ['bg-cyan-50 border-cyan-200', 'bg-teal-50 border-teal-200', 'bg-emerald-50 border-emerald-200'];
+                                            const textColors = ['text-cyan-700', 'text-teal-700', 'text-emerald-700'];
+                                            return (
+                                                <div key={role} className={`rounded-xl p-4 border-2 ${colors[idx]}`}>
+                                                    <h4 className={`font-bold mb-3 ${textColors[idx]}`}>{role}</h4>
+                                                    <ul className="space-y-2">
+                                                        {expectations.map((exp, i) => (
+                                                            <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+                                                                <span className={textColors[idx]}>•</span>
+                                                                <span>{exp}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Footer */}
+                    <div className="mt-8 text-center text-sm text-slate-400">
+                        <p>Slalom Business Strategy Track Role Calibration Tool • Based on official competency frameworks</p>
+                    </div>
+                </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<CalibrationTool />, document.getElementById('root'));
+    </script>
+</body>
+</html>
