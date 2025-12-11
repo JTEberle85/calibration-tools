@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slalom | Client Delivery Role Calibration & Progression Tool</title>
+    
+    <!-- React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts - Slalom-style professional fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Slalom Brand Colors
+                        'slalom-navy': '#0C2340',
+                        'slalom-navy-light': '#1a3a5c',
+                        'slalom-navy-dark': '#081828',
+                        'slalom-teal': '#00A9CE',
+                        'slalom-teal-light': '#33c4e0',
+                        'slalom-teal-dark': '#008aa8',
+                        'slalom-orange': '#FF6B35',
+                        'slalom-orange-light': '#ff8a5c',
+                        'slalom-gold': '#F5A623',
+                        'slalom-gray': '#4A5568',
+                        'slalom-light': '#F7FAFC',
+                    },
+                    fontFamily: {
+                        'slalom': ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+        }
+        .diff-highlight-a { 
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); 
+            color: #92400E; 
+            padding: 2px 4px; 
+            border-radius: 4px; 
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .diff-highlight-b { 
+            background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); 
+            color: #0E7490; 
+            padding: 2px 4px; 
+            border-radius: 4px; 
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .slalom-gradient {
+            background: linear-gradient(135deg, #0C2340 0%, #1a3a5c 50%, #00A9CE 100%);
+        }
+        .slalom-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(12, 35, 64, 0.1), 0 2px 4px -1px rgba(12, 35, 64, 0.06);
+            border: 1px solid rgba(12, 35, 64, 0.08);
+        }
+        .slalom-btn {
+            transition: all 0.2s ease;
+        }
+        .slalom-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(12, 35, 64, 0.15);
+        }
+        .competency-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+        /* Animation for expanding sections */
+        .section-content {
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // --- Icons ---
+        const IconWrapper = ({ children, size = 20, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+        const ArrowRight = (props) => <IconWrapper {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconWrapper>;
+        const BarChart2 = (props) => <IconWrapper {...props}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></IconWrapper>;
+        const Users = (props) => <IconWrapper {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconWrapper>;
+        const Briefcase = (props) => <IconWrapper {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></IconWrapper>;
+        const TrendingUp = (props) => <IconWrapper {...props}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></IconWrapper>;
+        const ChevronDown = (props) => <IconWrapper {...props}><path d="m6 9 6 6 6-6"/></IconWrapper>;
+        const ChevronUp = (props) => <IconWrapper {...props}><path d="m18 15-6-6-6 6"/></IconWrapper>;
+        const CheckCircle = (props) => <IconWrapper {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></IconWrapper>;
+        const Layout = (props) => <IconWrapper {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></IconWrapper>;
+        const Eye = (props) => <IconWrapper {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconWrapper>;
+        const Sparkles = (props) => <IconWrapper {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></IconWrapper>;
+        const Building = (props) => <IconWrapper {...props}><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></IconWrapper>;
+        const Target = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconWrapper>;
+        const Info = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></IconWrapper>;
+
+        // --- Diff Logic ---
+        const tokenize = (text) => text.split(/([\s,.!?;:()]+)/).filter(t => t);
+        const isSimilar = (t1, t2) => {
+            const clean1 = t1.trim().toLowerCase().replace(/[^\w]/g, '');
+            const clean2 = t2.trim().toLowerCase().replace(/[^\w]/g, '');
+            if (!clean1 && !clean2) return t1.trim() === t2.trim();
+            return clean1 === clean2;
+        };
+        const getLCS = (arr1, arr2) => {
+            const dp = Array(arr1.length + 1).fill(null).map(() => Array(arr2.length + 1).fill(0));
+            for (let i = 1; i <= arr1.length; i++) {
+                for (let j = 1; j <= arr2.length; j++) {
+                    if (isSimilar(arr1[i - 1], arr2[j - 1])) dp[i][j] = dp[i - 1][j - 1] + 1;
+                    else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+            return dp;
+        };
+        const computeDiff = (text1, text2) => {
+            const arr1 = tokenize(text1);
+            const arr2 = tokenize(text2);
+            const dp = getLCS(arr1, arr2);
+            let i = arr1.length;
+            let j = arr2.length;
+            const result1 = [];
+            const result2 = [];
+            while (i > 0 || j > 0) {
+                if (i > 0 && j > 0 && isSimilar(arr1[i - 1], arr2[j - 1])) {
+                    result1.unshift({ text: arr1[i - 1], type: 'common' });
+                    result2.unshift({ text: arr2[j - 1], type: 'common' });
+                    i--; j--;
+                } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+                    result2.unshift({ text: arr2[j - 1], type: 'unique' });
+                    j--;
+                } else if (i > 0 && (j === 0 || dp[i][j - 1] < dp[i - 1][j])) {
+                    result1.unshift({ text: arr1[i - 1], type: 'unique' });
+                    i--;
+                }
+            }
+            return { diffA: result1, diffB: result2 };
+        };
+        const DiffText = ({ segments, highlightClass }) => (
+            <span>
+                {segments.map((seg, idx) => (
+                    <span key={idx} className={seg.type === 'unique' ? highlightClass : ''}>
+                        {seg.text}
+                    </span>
+                ))}
+            </span>
+        );
+        const findBestMatch = (target, candidates) => {
+            let bestIdx = -1;
+            let maxScore = 0;
+            const getWords = (str) => new Set(str.toLowerCase().split(/[\s,.!?;:()]+/).filter(w => w.length > 2));
+            const targetWords = getWords(target);
+            candidates.forEach((cand, idx) => {
+                const candWords = getWords(cand);
+                let intersection = 0;
+                targetWords.forEach(w => { if (candWords.has(w)) intersection++; });
+                const union = new Set([...targetWords, ...candWords]).size;
+                const score = union === 0 ? 0 : intersection / union;
+                if (score > maxScore) { maxScore = score; bestIdx = idx; }
+            });
+            return maxScore > 0.08 ? bestIdx : -1;
+        };
+
+        // --- SYNTHESIZED DIFFERENTIATORS ---
+        // This object holds the "Middle Column" logic - Key progression insights between consecutive roles
+        const DIFFERENTIATORS = {
+            "Associate Consultant->Consultant": {
+                "Deliver Exceptionally": {
+                    "Communication and Influence": "Transition from clarity to tailoring. AC focuses on being clear; Consultant tailors messages to specific audiences and engages stakeholders.",
+                    "Delivery Management": "Shift from guided execution to independent ownership. Consultant organizes work and meets deadlines with minimal oversight.",
+                    "Value-based Delivery": "Move from understanding to linking. Consultant independently links deliverables to client objectives and identifies quick wins.",
+                    "Customer Relationship Management": "Evolution from professional interactions to active listening and expanding relationships beyond immediate contacts.",
+                    "Delivery Quality and Impact": "Shift from applying standards to innovation. Consultant challenges assumptions and explores innovative methods."
+                },
+                "Grow Expertise": {
+                    "Associated Roles": "Growth in depth of functional/technical proficiency.",
+                    "Learning and Development": "Shift from individual learning to sharing. Consultant proactively shares knowledge (e.g., lunch & learns) and supports others.",
+                    "Knowledge Management": "Consistent contribution to KM practices.",
+                    "Solution Enablement": "Beginning to exhibit business/industry expertise on engagements."
+                },
+                "Grow Slalom": {
+                    "Business Development and Sales": "Shift from listening to identifying. Consultant actively spots opportunities to bring more value.",
+                    "Business Strategy and Planning": "Deeper understanding of Slalom strategy beyond basic articulation.",
+                    "Networking and Brand Stewardship": "Transition from internal awareness to external networking and active brand stewardship.",
+                    "Business Operations": "Proactive staffability and bench activity management.",
+                    "Culture and Community": "Deepening connections across broader teams beyond immediate project."
+                },
+                "Lead": {
+                    "Change Leadership": "Increased capacity to navigate ambiguity independently (low levels) and communicating change.",
+                    "Feedback": "Regular practice of giving constructive feedback, not just receiving it.",
+                    "Vision and Strategy": "Connecting individual work to broader internal team vision.",
+                    "Collaboration": "Shift from identifying conflicts to engaging in structured conflict resolution.",
+                    "Self-Management": "Independent management of energy, attention, and changing demands."
+                },
+                "Quantitative Expectations": {
+                    "2025 Expectations": "Delivery track utilization increases from 80% to 85%. Both roles maintain 85% utilization in Build track.",
+                    "2026 Expectations": "Consistent 85% utilization target for both roles."
+                }
+            },
+            "Consultant->Senior Consultant": {
+                "Deliver Exceptionally": {
+                    "Communication and Influence": "Shift to influencing. SC communicates candidly to influence decisions and manage sensitive inclusivity.",
+                    "Delivery Management": "Transition to mentorship. SC guides others to meet commitments and removes obstacles for the team, not just self.",
+                    "Value-based Delivery": "Shift to tangible results. SC highlights cost savings/efficiencies and speaks confidently about logic/outcomes.",
+                    "Customer Relationship Management": "Deeper trust. SC seeks underlying needs and skillfully resolves issues, not just addressing concerns.",
+                    "Delivery Quality and Impact": "Advanced problem solving. SC synthesizes complex info and offers solution input to influence quality."
+                },
+                "Grow Expertise": {
+                    "Associated Roles": "May begin taking on Engagement or Pursuit roles; Potential for People Leadership.",
+                    "Learning and Development": "Transition to Coach. SC coaches/mentors others using critical thinking questions.",
+                    "Knowledge Management": "Capturing and leveraging thought leadership.",
+                    "Solution Enablement": "Actively leveraging industry expertise to enhance delivery."
+                },
+                "Grow Slalom": {
+                    "Business Development and Sales": "Shift to Pursuit exposure. SC seeks exposure to proposals and SOWs.",
+                    "Business Strategy and Planning": "Deeper understanding of strategy including value proposition and priorities.",
+                    "Networking and Brand Stewardship": "Proactively connecting with external experts.",
+                    "Business Operations": "Understanding of financial metrics.",
+                    "Culture and Community": "Broadening connections across geography and outcome teams."
+                },
+                "Lead": {
+                    "Career Development": "New Responsibility: Empowering directs. SC connects members to development experiences.",
+                    "Collaboration": "Navigating differences. SC leverages emotional awareness to tailor style and de-escalate conflicts.",
+                    "Performance Management": "New Responsibility: Identifying performance gaps and collaborating with HR/Leaders.",
+                    "Vision and Strategy": "Flagging risks and opportunities relative to strategy.",
+                    "Change Leadership": "Helping peers interpret change.",
+                    "Feedback": "Holistic 360 feedback; seeking feedback from stakeholders/clients.",
+                    "Self-Management": "Maintains accountability under pressure; displays comfort with sharing mistakes."
+                },
+                "Quantitative Expectations": {
+                    "2025 Expectations": "No change in utilization targets. Both roles maintain 85% across Build and Delivery tracks.",
+                    "2026 Expectations": "Consistent 85% utilization target for both roles."
+                }
+            },
+            "Senior Consultant->Principal": {
+                "Deliver Exceptionally": {
+                    "Communication and Influence": "Command of the room. Principal captures attention and leads strategic communication/coaching.",
+                    "Delivery Management": "Shift to Accountability. Principal is responsible for overall solution/project outcomes and optimizing team velocity.",
+                    "Value-based Delivery": "Creating value. Principal identifies *additional* ways to create value and coaches team on highlighting success.",
+                    "Customer Relationship Management": "Navigating politics. Principal understands informal structures/politics and navigates discrepancies in needs.",
+                    "Delivery Quality and Impact": "Strategic perspective. Principal evaluates complex situations with long-term context (legal/industry).",
+                },
+                "Grow Expertise": {
+                    "Associated Roles": "Development in Pursuit/Engagement roles becomes explicit.",
+                    "Learning and Development": "Sharing risk-taking practices. Principal uses experience as a tool to support others' careers.",
+                    "Knowledge Management": "Setting team standards for KM.",
+                    "Solution Enablement": "Lending expertise to enhance Slalom solutions."
+                },
+                "Grow Slalom": {
+                    "Business Development and Sales": "Leading Pursuits. Principal begins solutioning/scoping and leading presales.",
+                    "Business Strategy and Planning": "Applying strategy to project initiatives.",
+                    "Networking and Brand Stewardship": "Demonstrating credibility via client stories and clear value prop articulation.",
+                    "Business Operations": "Financial Health ownership. Responsible for project margin, revenue, and staffing.",
+                    "Culture and Community": "Intentionally growing network across projects.",
+                },
+                "Lead": {
+                    "Career Development": "Empowering directs to pursue aspirations.",
+                    "Collaboration": "Building skills to identify personal bias; managing complex conflicts.",
+                    "Performance Management": "Calibration. Principal actively participates in calibration to ensure differentiation.",
+                    "Vision and Strategy": "Co-creation. Principal co-creates internal vision/outcomes.",
+                    "Change Leadership": "Translating change. Principal translates change for team and manages expectations.",
+                    "Feedback": "Modeling the habit. Establishing team norms for feedback.",
+                    "Self-Management": "Setting the pace. Models self-discipline and manages complex responsibilities."
+                },
+                "Quantitative Expectations": {
+                    "2025 Expectations": "Introduction of Revenue targets. Principal has $1M Revenue (Delivery). Utilization shifts from 85% to 80-85% depending on track.",
+                    "2026 Expectations": "Principal maintains 85% utilization target."
+                }
+            },
+            "Principal->Senior Principal": {
+                "Deliver Exceptionally": {
+                    "Communication and Influence": "Building Accountability. SP models influence to drive clear decisions and alignment.",
+                    "Delivery Management": "Scale. SP supports multiple projects and manages scope/prioritization impacts on client relationships.",
+                    "Value-based Delivery": "Multi-level value. SP shows value at engagement, partner, and offering levels.",
+                    "Customer Relationship Management": "Trusted Advisor. SP expands relationships beyond immediate client to serve delivery needs.",
+                    "Delivery Quality and Impact": "Guiding teams. SP leverages expertise to guide teams in high-quality solutions.",
+                },
+                "Grow Expertise": {
+                    "Associated Roles": "Deepening mastery in multiple roles.",
+                    "Learning and Development": "Talent needs. SP delivers learning specifically to meet talent needs.",
+                    "Knowledge Management": "Ensuring teams contribute to knowledge capital.",
+                    "Solution Enablement": "Informing new solutions based on market insights."
+                },
+                "Grow Slalom": {
+                    "Business Development and Sales": "Shaping deals. SP helps shape RFPs and ensures transition to delivery.",
+                    "Business Strategy and Planning": "Reading the market. SP understands how solutions align to customer needs.",
+                    "Networking and Brand Stewardship": "Upholding brand in all interactions.",
+                    "Business Operations": "Oversight. SP oversees project financials and ensures healthy margins.",
+                    "Culture and Community": "Helping others build relationships.",
+                },
+                "Lead": {
+                    "Career Development": "Tailoring development. SP helps tailor opportunities for team members.",
+                    "Collaboration": "Regulating behaviors. SP modifies comms to collaborate and navigates org dynamics.",
+                    "Performance Management": "Consistency. SP ensures consistency in team performance evaluation.",
+                    "Vision and Strategy": "Collective accountability. SP provides clear direction.",
+                    "Change Leadership": "Coaching through change. SP equips teams to navigate uncertainty.",
+                    "Feedback": "Accountability. SP holds self and teams accountable for feedback.",
+                    "Self-Management": "Role model. SP models self-management, resilience, and accountability."
+                },
+                "Quantitative Expectations": {
+                    "2025 Expectations": "Major revenue increase. SP moves to $2.5M+ Revenue. Utilization decreases (80%/75%/60% by track). Blended utilization (75%) introduced.",
+                    "2026 Expectations": "Revenue contribution range introduced: $1.5M-$3.5M. Utilization target 80%."
+                }
+            },
+            "Senior Principal->Director": {
+                "Deliver Exceptionally": {
+                    "Communication and Influence": "Cross-functional Influence. Director influences cross-functional teams in complex discussions.",
+                    "Delivery Management": "Low- and High-Touch. Director is responsible for projects across capabilities/geographies.",
+                    "Value-based Delivery": "Strategic Tie-In. Director leads discussions on engagement outcomes tied to business strategy.",
+                    "Customer Relationship Management": "Expertise depth. Well-networked across client org, known for expertise.",
+                    "Delivery Quality and Impact": "Best practices. Director generates best practices and encourages experimentation.",
+                },
+                "Grow Expertise": {
+                    "Associated Roles": "Deepening mastery in multiple roles (Expert in 1+).",
+                    "Learning and Development": "Sought out for expertise. Mentors by sharing insights and providing shadowing.",
+                    "Knowledge Management": "Managing KM practices for the capability.",
+                    "Solution Enablement": "Shaping solutions. Director collaborates to shape/enhance solutions."
+                },
+                "Grow Slalom": {
+                    "Business Development and Sales": "ROI Focus. Director factors in customer strengths/ROI in opportunities.",
+                    "Business Strategy and Planning": "Educating others. Director educates on Slalom strategy.",
+                    "Networking and Brand Stewardship": "Mentoring on Brand. Director mentors team on maintaining brand integrity.",
+                    "Business Operations": "Capability Health. Director manages ops health of capability (utilization, bill rates).",
+                    "Culture and Community": "Well-networked leader. Recognized for expertise across delivery areas.",
+                },
+                "Lead": {
+                    "Career Development": "Organizational Impact. Director connects growth to org impact.",
+                    "Collaboration": "Constructive Tension. Director fosters culture where tension leads to results.",
+                    "Performance Management": "Leading Calibration. Director leads/co-leads calibration discussions.",
+                    "Vision and Strategy": "Setting Strategy. Director sets internal team strategy.",
+                    "Change Leadership": "Leading with Empathy. Director anticipates fears and mitigates resistance.",
+                    "Feedback": "Normalizing Upward Feedback. Director normalizes feedback to senior leaders.",
+                    "Self-Management": "Empowering others. Director empowers teams to manage ambiguity."
+                },
+                "Quantitative Expectations": {
+                    "2025 Expectations": "Revenue doubles to $5M+. Utilization decreases further (60%/70%/40% by track).",
+                    "2026 Expectations": "Revenue contribution range: $3.5M-$8.5M. Utilization target 70%."
+                }
+            },
+            "Director->Senior Director": {
+                "Deliver Exceptionally": {
+                    "Communication and Influence": "High-Stakes Influence. SD influences senior leaders in high-stakes engagements.",
+                    "Delivery Management": "Program Governance. SD integrates governance driving delivery excellence at scale.",
+                    "Value-based Delivery": "Market Trends. SD connects impact to market trends and thought leadership.",
+                    "Customer Relationship Management": "Transformational. SD drives implementation of transformational Customer Love strategies.",
+                    "Delivery Quality and Impact": "Forward-Looking. SD fosters culture of critical thinking/innovation driving differentiation.",
+                },
+                "Grow Expertise": {
+                    "Associated Roles": "Expert level.",
+                    "Learning and Development": "Leading Communities. SD leads communities/SteerCos.",
+                    "Knowledge Management": "Optimizing KM. SD optimizes how teams leverage knowledge.",
+                    "Solution Enablement": "Guiding Evolution. SD guides evolution of key solutions."
+                },
+                "Grow Slalom": {
+                    "Business Development and Sales": "Partnering. SD partners with Industry/Account leaders to shape deals.",
+                    "Business Strategy and Planning": "Translating Strategy. SD translates business performance/insights for the capability.",
+                    "Networking and Brand Stewardship": "Leveraging Broad Network. SD leverages network of senior peers/partners.",
+                    "Business Operations": "Strategic Review. SD conducts semi-annual strategic margin reviews.",
+                    "Culture and Community": "Sponsoring Initiatives. SD sponsors initiatives/ERGs.",
+                },
+                "Lead": {
+                    "Career Development": "Future Pipeline. SD builds strong pipeline of leaders.",
+                    "Collaboration": "Restoring Trust. SD takes action to restore trust if disrupted.",
+                    "Performance Management": "Alignment. SD ensures alignment with org performance standards.",
+                    "Vision and Strategy": "Org Awareness. SD builds org awareness of team updates.",
+                    "Change Leadership": "Embedding Agility. SD manages transformation by embedding agility.",
+                    "Feedback": "Co-creative Learning. SD treats feedback as co-creative learning.",
+                    "Self-Management": "Creating Systems. SD creates systems to help others manage energy."
+                },
+                "Quantitative Expectations": {
+                    "2025 Expectations": "Revenue doubles again to $10M-$12.5M+. Utilization decreases to 20-60% by track. Strategic leadership focus.",
+                    "2026 Expectations": "Revenue contribution range: $8.5M-$16.5M. Utilization target 60%."
+                }
+            }
+        };
+
+
+        // --- Main Component ---
+        const CalibrationTool = () => {
+            const [activeTab, setActiveTab] = useState('compare'); 
+            const [roleA, setRoleA] = useState('Consultant');
+            const [roleB, setRoleB] = useState('Senior Consultant');
+            const [showDiff, setShowDiff] = useState(false);
+            const [selectedCompetency, setSelectedCompetency] = useState('Deliver Exceptionally');
+            const [expandedSections, setExpandedSections] = useState({
+                'Quantitative Expectations': false,
+                'Deliver Exceptionally': true,
+                'Grow Expertise': false,
+                'Grow Slalom': false,
+                'Lead': false
+            });
+
+            const roles = [
+                "Associate Consultant",
+                "Consultant",
+                "Senior Consultant",
+                "Principal",
+                "Senior Principal",
+                "Director",
+                "Senior Director"
+            ];
+
+            const competencies = [
+                "Quantitative Expectations",
+                "Deliver Exceptionally",
+                "Grow Expertise",
+                "Grow Slalom",
+                "Lead"
+            ];
+
+            // Check if roles are consecutive to show the middle column
+            const isConsecutive = useMemo(() => {
+                const idxA = roles.indexOf(roleA);
+                const idxB = roles.indexOf(roleB);
+                return (idxB === idxA + 1);
+            }, [roleA, roleB, roles]);
+
+            const getDifferentiator = (comp, sub) => {
+                const key = `${roleA}->${roleB}`;
+                if (DIFFERENTIATORS[key] && DIFFERENTIATORS[key][comp] && DIFFERENTIATORS[key][comp][sub]) {
+                    return DIFFERENTIATORS[key][comp][sub];
+                }
+                return null;
+            };
+
+            // --- ROLE EXPECTATIONS DATA ---
+            const data = {
+                "Associate Consultant": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Delivers clear written and visual communications.", "Can communicate about project scope and impact.", "Can articulate own and team roles, responsibilities, and expectations.", "Exhibits active listening to understand needs and concerns, and provides support to address them where appropriate."],
+                        "Delivery Management": ["Follows guidance to meet delivery commitments, soliciting ideas to inform decisions and plans.", "Seeks and accepts help when in need of support.", "Manages tasks based on given priorities, seeking guidance when faced with conflicting demands.", "Maintains a consistent personal velocity.", "Reports issues or challenges appropriately to leadership, and learns from them.", "Demonstrates ability to quickly acclimate and start contributing to delivery on a new client project."],
+                        "Value-based Delivery": ["Demonstrates an introductory understanding of the project's scope, objectives, and deliverables.", "Articulates the immediate benefits of project tasks and how they contribute to the team's and client's objectives.", "Shows curiosity toward the client's goals and needs and asks questions to understand basic client expectations."],
+                        "Customer Relationship Management": ["Begins building authentic relationships with clients.", "Demonstrates professionalism in client-facing situations and adapts to team norms (e.g., in-person, on-camera, etc.)."],
+                        "Delivery Quality and Impact": ["Uses knowledge, guidance, and examples to build solutions.", "Identifies problems and follows structured approaches to identify options.", "Learns and applies quality standards.", "Explores ways to be more innovative in day-to-day work.", "Learns about solution impact and outcomes.", "Applies critical thinking to evaluate information, challenge assumptions, and make informed decisions.", "Leverages emerging technologies (e.g., AI, AI agents) to enhance productivity and delivery outcomes."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Explores and develops in Functional/Technical roles."],
+                        "Learning and Development": ["Brings existing knowledge to the table and takes initiative to explore and learn new skills, tools, and processes.", "Learns from mistakes and failures, and applies those learnings to future work.", "Demonstrates openness to coaching and mentoring.", "Begins exploring emerging technologies (e.g., AI, AI agents) with team guidance and recommended resources."],
+                        "Knowledge Management": ["Learns about knowledge management practices, reviewing and/or contributing to knowledge management."],
+                        "Solution Enablement": []
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Learns to listen for client needs."],
+                        "Business Strategy and Planning": ["Works to understand elements of capability (e.g., sub-capabilities, disciplines).", "Works to understand and start to articulate Slalom business (e.g., capabilities, clients, industries, solutions) and strategy (e.g., how Slalom goes to market, value proposition, strategic priorities and initiatives)."],
+                        "Networking and Brand Stewardship": ["Builds awareness of Slalom brand, as well as client and networking landscapes.", "Listens to others deliver elevator pitches and client stories to build familiarity with value messaging."],
+                        "Business Operations": ["Follows guidance to maximize staffability (e.g., profile updates, staffing conversations) and engages in meaningful bench activity (e.g., skill development).", "Enters time and expenses accurately and on time; plans and seeks approval for time off.", "Begins to learn about Slalom-wide financial metrics and foundational business operational knowledge."],
+                        "Culture and Community": ["Works to understand Slalom culture, core values, strategic initiatives, and client impact.", "Builds connections across Slalom teams, actively engaging in Slalom events and initiatives (e.g., employee resource groups, hackathons)."],
+                        "Talent Strategy": []
+                    },
+                    "Lead": {
+                        "Change Leadership": ["Exhibits flexibility when change occurs, seeking support and communicating openly with leaders.", "Capable of navigating ambiguity with appropriate oversight and direction."],
+                        "Feedback": ["Regularly requests and listens to feedback with an open mind - and works to apply it.", "Thoughtfully responds to requests for feedback.", "Uses the Situation-Behavior-Impact (SBI) framework to structure their feedback and give timely, specific feedback, both positive and constructive."],
+                        "Vision and Strategy": ["Seeks to clearly understand internal team vision and strategy, and how their work supports it."],
+                        "Collaboration": ["Builds collaborative relationships by trying to understand and appreciate others' perspectives and contributions.", "Identifies conflicts and avoids reactivity, seeking guidance to navigate disagreements with empathy, curiosity, and courage.", "Supports collaborative efforts when appropriate to help achieve shared outcomes."],
+                        "Self-Management": ["Learns and applies personal energy and attention management practices (e.g., manages time and tasks with guidance, stays organized and meets deadlines).", "Takes responsibility for continuous learning and professional growth, seeking guidance.", "Has self-awareness and understanding of own behaviors."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 85%+ Utilization (Self)", "Delivery Track: 80%+ Utilization (Self)"],
+                        "2026 Expectations": ["85%+ Utilization (Self)"]
+                    }
+                },
+                "Consultant": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Delivers audience-tailored, high-quality written and visual communications, role modeling effective practices in ensuring audience engagement and clarity, and using communications to align stakeholders.", "Communicates effectively with the team and external stakeholders, ensuring mutual understanding.", "Articulates project scope, goals, plans, and status to clients and stakeholders.", "Applies active listening and thoughtful communication techniques to understand audience needs, influence discussions, and encourage clear decision-making within the team."],
+                        "Delivery Management": ["Proactively contributes to delivery, partnering with teams and clients to meet and exceed delivery commitments.", "Organizes and prioritizes work effectively, balancing multiple tasks while meeting deadlines with minimal oversight.", "Optimizes personal velocity and sets an example in consistency for teammates.", "Anticipates and addresses delivery issues/risks, escalating appropriately to leadership.", "Onboards efficiently to new projects and immediately starts contributing to delivery and project success."],
+                        "Value-based Delivery": ["Begins to independently link project deliverables to the client's short-term objectives.", "Explains the purpose and benefit of own work to colleagues and, with guidance, to clients.", "Asks clarifying questions to better understand client concerns.", "Contributes in client meetings by sharing updates in a concise manner.", "Identifies early indicators (e.g., quick wins) that show how individual contributions create measurable benefits.", "References initial client feedback or positive outcomes to illustrate value."],
+                        "Customer Relationship Management": ["Builds and expands authentic relationships with clients by using active listening strategies.", "Addresses client concerns promptly and responds non-defensively, seeking support as needed.", "Learns and embraces various cultures within the client organization by being flexible and adjusting to varying client settings."],
+                        "Delivery Quality and Impact": ["Uses knowledge, guidance, and examples to build solutions.", "Learns and applies quality standards.", "Explores ways to be more innovative in day-to-day work.", "Learns about solution impact and outcomes.", "Applies critical thinking to evaluate information, challenge assumptions, and make informed decisions.", "Leverages emerging technologies (e.g., AI, AI agents) to enhance productivity and delivery outcomes."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Deepens and/or broadens in Functional/Technical roles (e.g., Proficient+ in 1+)."],
+                        "Learning and Development": ["Proactively seeks learning and growth opportunities, demonstrating a spirit and application of continuous growth, learning, and goal setting.", "Seeks opportunities to share content and knowledge with fellow team members (e.g., lunch and learns).", "Provides support to team members who seek out mentorship through their work.", "Shows an emerging interest in new technologies (e.g., AI, AI agents), following team guidance to explore related resources."],
+                        "Knowledge Management": ["Learns about knowledge management practices, reviewing and/or contributing to knowledge management."],
+                        "Solution Enablement": ["May contribute to Slalom solutioning (e.g., perspectives, offerings, accelerators) for a capability, industry, or customer outcome, if requested and prioritized.", "Builds and exhibits expertise of client's business and industry on engagements."]
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Begins to identify opportunities to bring more value to the client in delivery environments; sharing with project / account leads."],
+                        "Business Strategy and Planning": ["Demonstrates basic understanding of Slalom business (e.g., capabilities, clients, industries, solutions) and strategy (e.g., how Slalom goes to market, value proposition, strategic priorities and initiatives)."],
+                        "Networking and Brand Stewardship": ["Maintains client relationships and begins developing external professional network.", "Is a steward of the Slalom brand (e.g., culture, core values, strategic initiatives, solutions, impact, the value Slalom offers to clients), actively promoting it outside the organization.", "Able to deliver a basic elevator pitch for Slalom's services and share one client example from their capability area to illustrate impact."],
+                        "Business Operations": ["Proactively maximizes staffability by regularly updating profile, initiating staffing conversations, and engaging in meaningful bench activity (e.g., skill development, solutioning).", "Enters time and expenses accurately and on time; plans and seeks approval for time off.", "Learns about Slalom-wide financial metrics and foundational business operational knowledge."],
+                        "Culture and Community": ["Deepens and broadens connections across Slalom, on projects and across capability, geography, outcome and industry teams.", "Shapes Slalom culture by demonstrating core values and actively engaging in Slalom events and initiatives (e.g., employee resource groups, hackathons)."],
+                        "Talent Strategy": []
+                    },
+                    "Lead": {
+                        "Change Leadership": ["Consistently demonstrates flexibility with changing priorities, staying open to new ways of working.", "Communicates openly with team or stakeholders when navigating change.", "Capable of navigating moderate and high levels of ambiguity with appropriate oversight and direction, functioning independently under low levels of ambiguity."],
+                        "Feedback": ["Regularly gives and receives feedback with an open mind, curiosity, and respect - and actions on it.", "Uses the Situation-Behavior-Impact (SBI) framework to structure their feedback and give timely, specific feedback, both positive and constructive."],
+                        "Vision and Strategy": ["Understands how work contributes to internal team vision and strategy."],
+                        "Collaboration": ["Attentively listens, working to incorporate others' points of view and minimize self-orientation.", "Engages in structured and respectful conflict resolution, balancing multiple viewpoints in team and client interactions.", "Seeks to collaborate where appropriate to deliver outcomes more effectively and efficiently."],
+                        "Self-Management": ["Improves personal energy and attention management practices (e.g., prioritizes workload effectively, independently manages tasks and adjusts to changing demands).", "Identifies and acts on growth opportunities identified via development and career goals, self-reflection, feedback, and performance processes.", "Seeks to understand the impact of own behavior on others."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 85%+ Utilization (Self)", "Delivery Track: 85%+ Utilization (Self)"],
+                        "2026 Expectations": ["85%+ Utilization (Self)"]
+                    }
+                },
+                "Senior Consultant": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Delivers high-quality written and visual communications.", "Communicates effectively across varying perspectives, organizing thoughts and articulating alternatives/tradeoffs.", "Communicates productively and candidly, showing sensitivity to being inclusive in communications.", "Applies active listening and thoughtful communication techniques to influence discussions based on audience needs as well as encourage clear decision-making with teams and clients."],
+                        "Delivery Management": ["Guides teams and clients to meet and exceed delivery commitments.", "Independently manages competing priorities, making informed trade-offs to optimize outcomes for clients and teams.", "Identifies issues and problem solves to maintain velocity.", "Proactively removes obstacles for self, manages escalations appropriately, and co-creates solutions with leadership.", "Onboards efficiently to new projects, immediately contributes to delivery and project success, and supports effective onboarding for team members."],
+                        "Value-based Delivery": ["Discusses how project outcomes align with the client's broader strategic goals.", "Highlights tangible results (e.g., cost savings, efficiency improvements) in team or client updates.", "Confidently speaks about the project's outcomes and the logic behind them and relevant client stories or use cases.", "Proactively seeks opportunities to showcase the successes of colleagues and the project team."],
+                        "Customer Relationship Management": ["Embraces various cultures within the client organization by being flexible and adjusting to varying client settings.", "Builds trust with clients by helping them understand Slalom processes and approach.", "Seeks and applies information about underlying client needs.", "Skillfully resolves client issues promptly and responds non-defensively, escalating when appropriate."],
+                        "Delivery Quality and Impact": ["Applies Slalom and industry best practices to quality work products.", "Offers solution input and influences work quality and accuracy.", "Synthesizes complex information from multiple sources to develop well-rounded insights and employs advanced problem-solving techniques to address challenges.", "Effectively leverages emerging technologies (e.g., AI, AI agents) to enhance productivity and delivery outcomes.", "Considers and develops new, better, or unique methods, bringing creative solutions to meet client needs.", "Designs and monitors success measures (qualitative and quantitative)."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Deepens and/or broadens in Functional/Technical roles (e.g., Advanced+ in 1+).", "May explore and develop in Engagement roles (e.g., Delivery Solution Lead, Engagement Lead) and Pursuit roles (e.g., Sales Solution Lead, Pursuit Lead).", "May be a People Leader (e.g., w/ mastery and business need)."],
+                        "Learning and Development": ["Is recognized in area of expertise and shares knowledge with team members and clients.", "Seeks opportunities to upskill and stretch beyond comfort zone, optimizing for own learning style.", "Coaches or mentors others by asking thoughtful questions to encourage critical thinking and a growth mindset.", "May lend expertise to develop or deliver learning opportunities for the capability, industry, solution, customer outcome, if prioritized.", "Demonstrates curiosity about emerging technologies (e.g., AI, AI agents) by actively seeking guidance from mentors and available resources."],
+                        "Knowledge Management": ["Captures and leverages Slalom thought leadership, stories, and assets to support knowledge management."],
+                        "Solution Enablement": ["May lend expertise to enhance Slalom solutions (e.g., perspectives, offerings, accelerators) for a capability, industry, or customer outcome, if prioritized.", "Builds and actively leverages expertise on client's business and industry to enhance delivery and partnership with clients."]
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Continues to identify opportunities in delivery environments, sharing with project / account leads.", "Seeks exposure to sales process, proposals, and statements of work (SOW) that set delivery expectations."],
+                        "Business Strategy and Planning": ["Demonstrates deeper understanding of Slalom business (e.g., capabilities, clients, industries, solutions) and strategy (e.g., how Slalom goes to market, value proposition, strategic priorities and initiatives)."],
+                        "Networking and Brand Stewardship": ["Maintains client relationships and proactively connects with external experts and networks in areas of interest or expertise.", "Is a steward of the Slalom brand (e.g., culture, core values, strategic initiatives, solutions, impact, the value Slalom offers to clients), actively promoting it outside the organization.", "Effectively communicates Slalom's value by delivering a clear elevator pitch and sharing relevant client stories from their capability area."],
+                        "Business Operations": ["Has a basic understanding of Slalom-wide financial metrics and foundational business operational knowledge.", "Proactively maximizes staffability by regularly updating profile, initiating staffing conversations, and engaging in meaningful bench activity (e.g., skill development, solutioning, Learning and Development, pursuits).", "Enters time and expenses accurately and on time; plans and seeks approval for time off."],
+                        "Culture and Community": ["Deepens and broadens connections across Slalom, on projects and across capability, geography, outcome and industry teams.", "Shapes Slalom culture by demonstrating core values and actively engaging in Slalom events and initiatives (e.g., employee resource groups, hackathons)."],
+                        "Talent Strategy": ["May support team's people processes (e.g., onboarding, staffing, and performance management)."]
+                    },
+                    "Lead": {
+                        "Career Development": ["Understands team member career aspirations, interests, skills, and skill gaps.", "Actively connects team members to appropriate development experiences and others they can learn from.", "Empowers directs to identify and pursue their career aspirations at Slalom by sharing perspective on potential career directions and providing support and resources to enable their career development."],
+                        "Collaboration": ["Leverages awareness of own and others' emotions to navigate differences successfully, and tailors style to collaborate with others.", "Manages and de-escalates conflicts independently, fostering collaboration and coaching others.", "Collaborates where appropriate to deliver outcomes more effectively and efficiently."],
+                        "Performance Management": ["Ensures directs understand performance expectations, and guides them to understand and action on strengths and opportunities uncovered in performance processes via ongoing feedback and coaching.", "Proactively identifies early signs of performance gaps and collaborates with leaders and HR to support course correction.", "Assesses directs' performance against defined expectations and outcomes, actively participating in calibration discussions to ensure fair and objective evaluation and differentiation of top performers."],
+                        "Vision and Strategy": ["Ensures work contributes to internal team vision and strategy, while flagging risks and opportunities."],
+                        "Change Leadership": ["Helps peers and teams interpret and stay open to change and new ways of working.", "Communicates openly with teams or stakeholders when navigating change.", "Capable of navigating high levels of ambiguity with appropriate oversight and direction, and moderate functioning independently under low levels of ambiguity."],
+                        "Feedback": ["Uses the Situation-Behavior-Impact (SBI) framework to structure their feedback and give timely, specific feedback, both positive and constructive.", "Regularly gives and seeks feedback in a holistic, 360' fashion - and actions on it.", "Receives feedback with an open mind, curiosity, and respect, and follows up as needed to ensure the feedback is actionable."],
+                        "Self-Management": ["Balances multiple priorities, proactively solves problems and maintains accountability under pressure.", "Identifies and acts on growth opportunities identified via development and career goals, self-reflection, feedback, and performance processes.", "Displays comfort with sharing mistakes and weaknesses."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 85%+ Utilization (Self)", "Delivery Track: 85%+ Utilization (Self)"],
+                        "2026 Expectations": ["85%+ Utilization (Self)"]
+                    }
+                },
+                "Principal": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Delivers high-quality written and visual communications.", "Communicates with confidence and clarity, organizing thoughts and articulating alternatives/tradeoffs.", "Demonstrates the ability to capture and maintain the attention of others in a room.", "Leads by example in active listening and strategic communication, coaching others to understand audience dynamics, navigate complex interactions, and drive critical decisions cohesively."],
+                        "Delivery Management": ["Responsible for solution and/or overall project outcomes.", "Aligns team priorities with business and client needs, ensuring most critical work gets focus and resources.", "Optimizes team velocity by identifying levers to pull.", "Proactively removes obstacles for self and others, manages escalations regarding scope, schedule, or people with leadership, and resolves issues.", "Leads and role models effective engagement onboarding, enabling team members to efficiently start delivering value on new projects."],
+                        "Value-based Delivery": ["Proactively identifies additional ways to create value for the client and connects those ideas to the project's objectives.", "Crafts messages that resonate with diverse client stakeholders, focusing on benefits and tangible metrics.", "Coaches less experienced team members in highlighting project successes and value created on the project.", "Demonstrates strong client engagement by listening to feedback and aligning the team's approach to address evolving needs."],
+                        "Customer Relationship Management": ["Creates authentic, trusting relationships at many levels in the client organization.", "Navigates discrepancies in client and Slalom needs.", "Understands informal organizational structures, people, cultures, and constraints, adjusting behavior as needed to accommodate them.", "Skillfully resolves client issues promptly responds non-defensively, escalating when appropriate."],
+                        "Delivery Quality and Impact": ["Creatively applies best practices to ensure clients' needs are met.", "Critically evaluates complex situations with a strategic perspective, considering long-term impacts and broader contexts (e.g., organizational, industry, legal issues).", "Skillfully applies emerging technologies (e.g., AI, AI agents) to enhance productivity and delivery outcomes.", "Guides work (self and others) for prioritization, quality, and accuracy.", "Implements innovative thinking and approaches (self and others).", "Persuasively communicates project impacts using success measures (qualitative and quantitative)."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Deepens and/or broadens in Functional/Technical roles (e.g., Advanced+ in 1+).", "Explores and develops in Engagement roles (e.g., Delivery Solution Lead, Engagement Lead) and Pursuit roles (e.g., Sales Solution Lead, Pursuit Lead).", "May be a People Leader (e.g., w/ mastery and business need)."],
+                        "Learning and Development": ["Is recognized in areas of expertise and shares knowledge with team members and clients.", "Works to expand areas of expertise, sharing own development opportunities and risk-taking practices with others.", "Coaches or mentors others by using their experience as a tool to support others in their career journey.", "May lend expertise to develop or deliver learning opportunities for the capability, industry, solution, customer outcome, if prioritized.", "Independently learns about emerging technologies (e.g., AI, AI agents) and related trends as needed to support their own work."],
+                        "Knowledge Management": ["May set team standards for knowledge management, role modeling how to leverage knowledge management assets.", "Demonstrates and leverages in-depth understanding of the client's business environment, including their peers, competitors, and industry trends.", "Ensures Slalom thought leadership, stories, and assets are captured timely and accurately."],
+                        "Solution Enablement": ["May lend expertise to enhance Slalom solutions (e.g., perspectives, offerings, accelerators) for a capability, industry, or customer outcome, if prioritized."]
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Proactively identifies opportunities for Slalom in delivery environments and/or area of expertise.", "Begins solutioning for and/or leading pursuits (e.g., presales scoping, estimation, SME).", "Communicates our expertise in context of current delivery with customers, including sharing industry knowledge and trends with clients where appropriate."],
+                        "Business Strategy and Planning": ["Applies knowledge of Slalom business (e.g., capabilities, clients, industries, solutions) and strategy (e.g., how Slalom goes to market, value proposition, strategic priorities and initiatives) to project and capability initiatives."],
+                        "Networking and Brand Stewardship": ["Intentionally grows and leverages professional network in delivery environments and areas of interest or expertise.", "Is a steward of the Slalom brand (e.g., culture, core values, strategic initiatives, solutions, impact, the value Slalom offers to clients), actively promoting it within and outside the organization.", "Comfortably articulates Slalom's value proposition with a clear elevator pitch and multiple relevant client stories to demonstrate credibility."],
+                        "Business Operations": ["Demonstrates an understanding of Slalom-wide financial metrics and foundational business operational knowledge.", "Proactively maximizes staffability (self and others) and engages in meaningful bench activity (e.g., skill development, solutioning, Learning and Development, pursuits).", "May be responsible for aspects of project financial and operational health (e.g., margin, managed revenue, staffing, engagement)."],
+                        "Culture and Community": ["Intentionally grows and leverages Slalom network across projects and capability / geography teams.", "Shapes Slalom culture by modeling core values and encouraging others to engage in Slalom events and initiatives (e.g., employee resource groups, hackathons)."],
+                        "Talent Strategy": ["Support team's people processes (e.g., onboarding, staffing, and performance management)."]
+                    },
+                    "Lead": {
+                        "Career Development": ["Understands team member career aspirations, interests, skills, and skill gaps.", "Empowers directs to identify and pursue their career aspirations at Slalom by sharing perspective on potential career directions and providing support and resources to enable their career development.", "Actively connects team members to appropriate development experiences and others they can learn from."],
+                        "Collaboration": ["Builds skills to identify and mitigate personal bias, tailors style to collaborate with others, and thoughtfully understands others' perspectives.", "Manages resolution of complex conflicts to ensure collaboration and guides less-experienced colleagues.", "Collaborates and encourages collaboration where appropriate to deliver outcomes more effectively and efficiently."],
+                        "Performance Management": ["Assesses directs' performance against defined expectations and outcomes, actively participating in calibration discussions to ensure fair and objective evaluation and differentiation of top performers.", "Ensures directs understand performance expectations, and guides them to understand and action on strengths and opportunities uncovered in performance processes via ongoing feedback and coaching.", "Proactively identifies early signs of performance gaps and collaborates with leaders and HR to support course correction."],
+                        "Vision and Strategy": ["Co-creates internal vision, strategy, and targeted outcomes, including clearly defined roles and impacts."],
+                        "Change Leadership": ["Translates change for team members and helps them navigate by managing expectations and bringing changes to life.", "Communicates and escalates appropriately when larger change impacts are identified.", "Capable of navigating high levels of ambiguity independently."],
+                        "Feedback": ["Proactively seeks and gives timely feedback in a holistic, 360' fashion from leaders, team members, and stakeholders (e.g., clients) - and actions on it.", "Models the habit of regularly providing feedback to others and establishes team norms for feedback, including leveraging the Situation-Behavior-Impact (SBI) framework to give timely, specific feedback, both positive and constructive.", "Receives feedback with an open mind, curiosity, and respect, and follows up as needed to ensure the feedback is actionable."],
+                        "Self-Management": ["Demonstrates strong self-discipline, by setting the pace for others while managing complex responsibilities with minimal oversight.", "Identifies and acts on growth opportunities identified via development and career goals, self-reflection, feedback, and performance processes, with increased intentionality on one's focus in the business.", "Experiments with behavior adjustments, by trying new approaches based on previous experiences and reflections."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 85%+ Utilization (Self), No Revenue", "Delivery Track: 80%+ Utilization (Self), $1M Revenue"],
+                        "2026 Expectations": ["85%+ Utilization (Self)"]
+                    }
+                },
+                "Senior Principal": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Develops clear, concise, and structured written communications.", "Models the ability to read an audience and influence team members and clients to build trust, create accountability, and drive clear decisions.", "Adapts messages for different audiences to ensure alignment and clarity, while effectively defining and conveying client value."],
+                        "Delivery Management": ["Responsible for solution and/or overall project outcomes, and/or expands support across multiple projects.", "Coaches and optimizes delivery efficiency, velocity and predictability.", "Manages the impact of scope and prioritization changes on client relationships.", "Identifies and mitigates risks, escalating issues appropriately while ensuring minimal disruption to delivery.", "Optimizes project structures, roles, planning and estimation, and ways of working, driving Delivery Excellence."],
+                        "Value-based Delivery": ["Demonstrates the ability to show value at multiple levels (e.g., engagement, partner solutions, broader Slalom offerings).", "Crafts compelling narratives and case studies that highlight the success of engagements and consistently highlights relevant lessons learned that apply to a client's context.", "Mentors junior team members on articulating value, from discussions of ROI to storytelling techniques."],
+                        "Customer Relationship Management": ["Expands trusted relationships beyond immediate clients to serve delivery needs.", "Understands client business priorities and challenges, while positioning Slalom as a trusted advisor and introducing the right SMEs.", "Identifies and acts on Customer Love priorities within engagements."],
+                        "Delivery Quality and Impact": ["Leverages expertise, Slalom and industry best practices, and emerging technologies to guide teams in developing high-quality solutions.", "Solves complex challenges by applying structured problem-solving, critical analysis, and creative thinking to improve delivery and outcomes.", "Implements innovative thinking and approaches (self and others).", "Guides team in defining and tracking success measures (qualitative and quantitative) and articulating how solution outcomes advance client business goals.", "Effectively leverages emerging technologies (e.g., AI, AI agents) to enhance productivity and delivery outcomes."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Deepens and/or broadens mastery in Functional / Technical roles (e.g., Advanced+ in 2+).", "Develops in Engagement roles (e.g., Delivery Solution Lead, Engagement Lead).", "Develops in Pursuit Roles (e.g., Sales Solution Lead).", "Develops and upskills as a People Leader."],
+                        "Learning and Development": ["Coaches others on Functional / Technical roles and delivery methodologies (e.g., Delivery Excellence).", "Leads with curiosity, proactively deepening current state knowledge and trends related to capability, industry, and/or solutions.", "Supports and/or delivers learning opportunities directly in service of talent needs to encourage rapid learning and skill development.", "Actively develops understanding of capability, solution, and/or industry trends and best practices to support their own work."],
+                        "Knowledge Management": ["Applies strong knowledge management practices, ensuring self and teams are contributing to and leveraging Slalom's knowledge capital."],
+                        "Solution Enablement": ["Shares expertise, market, and/or delivery insights with capability and market solutions leaders to inform existing and/or new Slalom solutions (e.g., perspectives, offerings, accelerators)."]
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Proactively identifies and relays opportunities for Slalom in delivery environments.", "Helps shape deals (e.g., responding to RFPs) and ensure a smooth transition from sales to delivery.", "Contributes to sales solutioning for pursuits, especially in the context of delivery environments."],
+                        "Business Strategy and Planning": ["Understands Slalom's business and strategy, especially in context of capability. Proactively reads the market to understand how solutions align to customer needs.", "Shares expertise and delivery learnings with capability and market solutions leaders to inform discipline, sub-capability, and capability planning."],
+                        "Networking and Brand Stewardship": ["Intentionally grows and leverages professional network in delivery environments and areas of interest and expertise.", "Upholds Slalom's brand in interactions with professional network and client engagements."],
+                        "Business Operations": ["Understands key delivery metrics / drivers (e.g., revenue, Customer Love, continuous quality).", "Supports capability operational and financial health (e.g., staffing, utilization, billable hours, team size, bill rates), with a focus on direct reporting team.", "When managing an engagement, effectively oversees project financials and ensures healthy margins by tracking hours and revenue, updating forecasts, ensuring accurate invoicing, and addressing over- or under-burn scenarios."],
+                        "Culture and Community": ["Intentionally grows and leverages Slalom network across projects and capability / geography teams; helps others build relationship across communities.", "Encourages others to engage in Slalom events and internal initiatives (e.g., employee resource groups, learning events).", "Shapes Slalom culture by modeling core values on engagements and within teams, creating meaningful connections in both physical and digital environments."],
+                        "Talent Strategy": ["Supports talent management processes in discipline, sub-capability, and capability (e.g., talent acquisition, onboarding, staffing, performance management, engagement, retention)."]
+                    },
+                    "Lead": {
+                        "Career Development": ["Understands team member career aspirations, interests, skills, and skill gaps.", "Actively supports team member career development planning and helps tailor development opportunities."],
+                        "Collaboration": ["Effectively regulates and modifies communications and behaviors to collaborate with others.", "Navigates organizational dynamics.", "Focuses on solutions to resolve challenges, and respectfully prompts productive conflict to achieve the best result."],
+                        "Performance Management": ["Ensures directs understand performance expectations and helps leaders within people tree set and uphold performance expectations.", "Proactively identifies early signs of performance gaps, ensuring leaders within people tree take action on concerns, and drives accountability.", "Assesses directs' performance against defined expectations and outcomes.", "Contributes insights in calibration discussions and drives consistency in team performance evaluation and differentiation."],
+                        "Vision and Strategy": ["Ensures collective accountability for team strategy by providing clear direction.", "Proactively shares team updates to build awareness and support connection to Slalom priorities."],
+                        "Change Leadership": ["Manages expectations both up and down with confidence and non-attachment.", "Coaches teams through change, equipping them with tools to navigate uncertainty, build resilience, and sustain performance."],
+                        "Feedback": ["Holds self and teams accountable for giving and requesting clear and constructive feedback (e.g., on-demand, performance reviews, end-of-engagement).", "Seeks out constructive feedback, challenging oneself to consider alternatives and maintaining an open mind."],
+                        "Self-Management": ["Models self-management, resilience, and accountability for others.", "Prioritizes and proactively manages workload, balancing client and internal activities.", "Reflects to promote a deeper understanding of self and awareness of own agency.", "Proactively addresses growth opportunities and engages in career development planning."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 80%+ Utilization (Self), No Revenue", "Delivery Track: 75%+ Utilization (Self), $2.5M+ Revenue (Primarily Managed)", "Account & Capability: 60%+ Utilization (Self), 75%+ Blended, $2.5M+ Revenue (Primarily Sold)"],
+                        "2026 Expectations": ["80%+ Utilization (Self)", "$1.5M - $3.5M Contribution"]
+                    }
+                },
+                "Director": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Develops precise and audience-tailored written communications, adjusting tone and detail for cross-functional teams and leadership, to drive alignment on strategic initiatives and clearly articulate the value delivered to clients.", "Demonstrates the ability to read an audience and influence cross-functional teams to build trust, create accountability, and drive clear decisions in complex business discussions."],
+                        "Delivery Management": ["Manages the impact of scope and prioritization changes on client relationships.", "Oversees risk management, ensuring teams proactively identify risks and follow structured escalation paths.", "Responsible for delivery and management of low- and high-touch projects within or across capabilities, geographies, outcomes and/or industries.", "Optimizes project structures, roles, planning and estimation, and ways of working, driving Delivery Excellence.", "Coaches and optimizes delivery efficiency, velocity and predictability."],
+                        "Value-based Delivery": ["Leads discussions on how engagement outcomes tie into the client's overarching business strategy and potential long-term gains.", "Helps grow client relationships through consistent demonstration of impact and alignment with their strategic goals.", "Mentors and coaches team members of all levels on articulating value, from discussions of ROI to storytelling techniques."],
+                        "Customer Relationship Management": ["Well-networked across the client organization to serve delivery needs; known for depth of expertise.", "Understands client business priorities and challenges, making connections, infusing industry / partner expertise, and acting as a challenger (as appropriate).", "Enables engagement and capability teams in implementing Customer Love strategies."],
+                        "Delivery Quality and Impact": ["Leverages expertise, Slalom and industry best practices, and emerging technologies to guide teams in developing high-quality solutions, generating best practices.", "Balances strategic and analytical thinking, adopts new methodologies, and encourages experimentation and innovation.", "Ensures teams are chasing the right outcomes, redirecting as needed, so solutions drive measurable and sustainable impact.", "Encourages and role models the use of emerging technologies (e.g., AI, AI agents) and related best practices to enhance productivity and delivery outcomes."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Deepens and/or broadens mastery in Functional / Technical roles (e.g., Advanced+ 2+; Expert in 1+).", "Develops in Engagement roles (e.g., Delivery Solution Lead, Engagement Lead, Accountable Executive).", "Develops in Pursuit Roles (e.g., Sales Solution Lead, Accountable Executive).", "Develops and upskills as a People Leader."],
+                        "Learning and Development": ["Coaches others on Functional / Technical roles and delivery methodologies (e.g., Delivery Excellence).", "Collaborates with others to identify, develop, and implement learning initiatives that close capability talent gaps and build emerging skills.", "Actively develops their team's understanding of capability, solution, and/or industry trends and best practices in a way that supports their work.", "Leads with curiosity, proactively deepening current state knowledge and trends related to capability, industry, and/or solutions.", "Sought out for delivery expertise internally, mentoring colleagues by sharing insights and providing opportunities for shadowing."],
+                        "Knowledge Management": ["Manages knowledge management practices, ensuring delivery and capability teams are contributing to and leveraging Slalom's knowledge capital."],
+                        "Solution Enablement": ["Collaborates with capability and market solutions leaders to shape and enhance solutions, providing real-world perspectives on effectiveness, scalability, and client impact."]
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Proactively identifies and relays opportunities for Slalom through client relationships while factoring in customer strengths and ROI considerations.", "Contributes to sales solutioning and/or oversee pursuits, especially in the context of delivery environments.", "Partners with Industry, Account, Market Solutions leaders to help proactively shape deals and ensure a smooth transition from sales to delivery."],
+                        "Business Strategy and Planning": ["Educates others about Slalom's business and strategy, especially in context of capability.", "Shares expertise and delivery learnings with capability and market solutions leaders to inform discipline, sub-capability, and capability planning.", "Proactively identifies market needs and recommends adjustments to solutions and strategy to meet demand accordingly."],
+                        "Networking and Brand Stewardship": ["Intentionally grows and leverages professional network in delivery environments and areas of interest and expertise to increase collaboration and delivery impact.", "Mentors team members on best practices for maintaining brand integrity in project execution, enhancing client satisfaction and loyalty."],
+                        "Business Operations": ["Educates others about key delivery metrics / drivers (e.g., revenue, Customer Love, continuous quality).", "Manages operational and financial health of capability (e.g., staffing, utilization, billable hours, team size, bill rates), with a focus on direct reporting team.", "When managing an engagement, effectively oversees project financials and mentors team members on engagement financial management best practices."],
+                        "Culture and Community": ["Shapes Slalom culture by modeling core values on engagements and within teams, creating meaningful connections in both physical and digital environments.", "Well-networked across relevant Slalom delivery / capability areas and recognized for expertise; helps others navigate communities.", "Encourages others to engage in Slalom events and internal initiatives (e.g., employee resource groups, learning events)."],
+                        "Talent Strategy": ["Manages talent management processes in discipline, sub-capability, and capability (e.g., talent acquisition, onboarding, staffing, performance management, engagement, retention).", "Supports new and emerging leader growth in alignment with future leader needs and decisions outlined by capability leaders."]
+                    },
+                    "Lead": {
+                        "Career Development": ["Understands team member career aspirations and interests, growth trajectory, engagement, and organizational impact.", "Actively supports team member career development planning and helps tailor development opportunities for individual and business impact."],
+                        "Collaboration": ["Models curiosity for multiple perspectives to mitigate bias and improve relationships.", "Maintains appropriate balance of self-confidence and humility.", "Fosters a culture where constructive tension leads to best results."],
+                        "Performance Management": ["Ensures directs understand performance expectations and helps leaders within people tree set and uphold performance expectations.", "Proactively identifies early signs of performance gaps, ensuring leaders within people tree take action on concerns, and drives accountability.", "Assess directs' performance against defined expectations and outcomes.", "Leads or co-leads calibration discussions, ensuring alignment with organizational performance standards, and drives consistency in team performance evaluation and differentiation."],
+                        "Vision and Strategy": ["Sets internal team strategy and collaborates with peers to enable organizational success.", "Facilitates alignment between team actions and business outcomes.", "Proactively shares team updates to broader audiences in order to build awareness and support connection to Slalom priorities."],
+                        "Change Leadership": ["Leads with empathy by anticipating fears and concerns, approaching team members with compassion.", "Manages and navigates change across groups, ensuring alignment, mitigating resistance, and fostering adoption through clear communication."],
+                        "Feedback": ["Holds self and teams accountable for giving and requesting clear and constructive feedback (e.g., on-demand, performance reviews, end-of-engagement).", "Normalizes providing upward feedback (e.g., to managers or senior leaders)."],
+                        "Self-Management": ["Models self-management, resilience, and accountability for others.", "Models prioritization and empowers teams with strategies for managing ambiguity and balancing workload.", "Reflects to promote a deeper understanding of self and awareness of own agency.", "Proactively addresses growth opportunities and engages in career development planning."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 60%+ Utilization (Self), $5M Revenue (project/team leadership and/or sales involvement)", "Delivery Track: 70%+ Utilization (Self), $5M+ Revenue (Primarily Managed)", "Account & Capability: 40%+ Utilization (Self), 75%+ Blended, $5M+ Revenue (Primarily Sold)"],
+                        "2026 Expectations": ["70%+ Utilization (Self)", "$3.5M - $8.5M Contribution"]
+                    }
+                },
+                "Senior Director": {
+                    "Deliver Exceptionally": {
+                        "Communication and Influence": ["Demonstrates expertise in writing with clarity and brevity, distilling complex information into executive-ready summaries and strategic recommendations for senior leaders. Effectively highlights the value and impact for clients.", "Exemplifies the ability to read an audience and influence senior leaders to build trust, create accountability, and drive clear decisions in high-stakes client engagements and executive-level interactions."],
+                        "Delivery Management": ["Oversees and integrates project / program governance, driving Delivery Excellence.", "Manages prioritization and deliberate tradeoffs at scale.", "Accountable for risk management, balancing business, client, and operational risks.", "Accountable for delivery and management of high-touch and complex projects across capabilities, geographies, outcomes and/or industries."],
+                        "Value-based Delivery": ["Expands the conversation beyond the immediate engagement to drive high value outcomes and cross-capability engagements.", "Positions Slalom as a trusted advisor through compelling narratives that connect project impact to market trends and thought leadership.", "Champions the creation of comprehensive client success stories for marketing, new business pursuits, and internal communications."],
+                        "Customer Relationship Management": ["Well-networked across the client organization and leadership structures to serve delivery needs; known for depth of expertise.", "Serves as trusted advisor, influencing client strategy and guiding decision-making.", "Drives engagement and capability teams in implementing Customer Love strategies, in particular the transformational."],
+                        "Delivery Quality and Impact": ["Guides teams in developing high-quality solutions that provide long-term value and scalability; may play an active role in the Delivery Quality Review process.", "Highly forward-looking, fostering a culture of critical thinking and innovation that drives differentiation and growth.", "Convincingly articulates short- and long-term solution outcomes and impacts on client businesses. Institutionalizes measurement frameworks that prioritize client value realization.", "Institutionalizes the use of emerging technologies (e.g., AI, AI agents) and related best practices to enhance productivity and delivery outcomes within their teams and across their domain of expertise."]
+                    },
+                    "Grow Expertise": {
+                        "Associated Roles": ["Deepens and/or broadens mastery in Functional / Technical roles (e.g., Advanced+ 2+; Expert in 1+).", "Develops in Engagement roles (e.g., Delivery Solution Lead, Engagement Lead, Accountable Executive).", "Develops in Pursuit Roles (e.g., Sales Solution Lead, Accountable Executive).", "Develops and upskills as a People Leader."],
+                        "Learning and Development": ["Participates in and/or leads communities focused on capability and delivery best practices (e.g., capability-specific, Delivery Excellence, PEM SteerCo, etc.).", "Sought out for expertise internally and externally, mentoring colleagues by sharing insights and providing shadowing opportunities.", "Actively develops their team's understanding of capability, solution, and/or industry trends and best practices in a way that supports Slalom and their team's strategies and ways of working.", "Sponsors learning opportunities to close capability talent gaps, build emerging skills, and reskill, ensuring alignment with business needs.", "Role models curiosity within the team, proactively building and leveraging wealth of capability, industry, and/or solution knowledge."],
+                        "Knowledge Management": ["Optimizes knowledge management practices and the way delivery and capability teams contribute to and leverage it."],
+                        "Solution Enablement": ["Guides the evolution of key solutions by integrating teams' delivery learnings and ensuring perspectives, offerings, and accelerators remain practical, adaptable, and high-value for clients."]
+                    },
+                    "Grow Slalom": {
+                        "Business Development and Sales": ["Contributes to sales solutioning and/or oversee pursuits, especially in the context of delivery environments.", "Partners with Industry, Account, Market Solutions leaders to help proactively shape deals and ensure a smooth transition from sales to delivery.", "Proactively identifies and relays opportunities for Slalom in a variety of delivery environments and/or areas of expertise."],
+                        "Business Strategy and Planning": ["Helps translate Slalom and capability strategy, business performance, and insights for the capability, ensuring teams' understanding. Sets capability/sub-capability strategy based on indicators of capability maturity and market demand.", "Leads business strategy and planning for discipline, sub-capability, and capability, applying it in context of office or geography."],
+                        "Networking and Brand Stewardship": ["Actively leverages broad professional network of senior-level peers, experts, partners, and clients.", "Identifies and implements opportunities for improving Slalom brand stewardship practices, driving innovation and high-quality brand representation."],
+                        "Business Operations": ["Responsible for operational and financial health of discipline or sub-capability (e.g., staffing, utilization, billable hours, team size, bill rates). Conducts semi-annual strategic review of margin by business and by level.", "Educates other leaders on Slalom financial and performance KPI measurement.", "Able to effectively oversee complex engagement financials, controls cost of service (e.g., bill rates), and mentors team members on engagement financial management best practices."],
+                        "Culture and Community": ["Well-networked across capability, geography, outcome and industry leadership structures and recognized for expertise; helps other navigate communities.", "Sponsors Slalom initiatives internally and/or in the community (e.g., employee resource groups, learning events); inspires participation, ownership, and innovation at all levels.", "Shapes and evolves culture across capability by integrating Slalom values into business operations, leadership practices, and employee experiences."],
+                        "Talent Strategy": ["Understands capability talent landscape within purview.", "Responsible for capability talent strategy, processes, and decisions (e.g., talent acquisition, staffing, performance management, engagement, retention).", "Identifies future leader needs on the team, communicates and facilitates future leader decisions on the team, and identifies growth opportunities and trajectories of relevant leaders."]
+                    },
+                    "Lead": {
+                        "Career Development": ["Understands team member career aspirations and interests, growth trajectory, engagement, and organizational impact.", "Actively supports team member career development planning and helps tailor development opportunities for individual and business impact.", "Anticipates future needs at Slalom and builds a strong pipeline of leaders."],
+                        "Collaboration": ["Models how to collaborate, mitigate bias, and lead with compassion.", "Takes prompt and meaningful action to restore trust in teams, if something disrupts it.", "Coaches others on how to enable productive conflict and sets up practices to anticipate and minimize unproductive conflict."],
+                        "Performance Management": ["Ensures directs understand performance expectations and helps leaders within people tree set and uphold performance expectations.", "Proactively identifies early signs of performance gaps, ensuring leaders within people tree take action on concerns, and drives accountability.", "Assess directs' performance against defined expectations and outcomes.", "Leads or co-leads calibration discussions, ensuring alignment with organizational performance standards, and drives consistency in team performance evaluation and differentiation."],
+                        "Vision and Strategy": ["Sets internal team vision and strategy, in alignment with Slalom's strategic priorities.", "Ensures alignment between team actions and business outcomes.", "Proactively shares team updates to build organizational awareness and support connection to Slalom priorities."],
+                        "Change Leadership": ["Co-creates and embraces change with confidence and non-attachment, committing to the best-case outcome.", "Manages transformation by embedding agility, fostering change resilience, and ensuring sustained business performance."],
+                        "Feedback": ["Models behaviors expected of leaders and seeks feedback as a co-creative learning process that deepens mutual growth."],
+                        "Self-Management": ["Creates systems and processes that help others effectively manage their energy and attention.", "Empowers teams with strategies for managing ambiguity and balancing workload, navigating complex prioritization and tradeoffs.", "Reflection integrates multiple perspectives; models reflection for others.", "Proactively engages in career development planning, with intentional focus on current and future business leadership needs."]
+                    },
+                    "Quantitative Expectations": {
+                        "2025 Expectations": ["Build Track: 20%+ Utilization (Self), $10M Revenue (project/team leadership and/or sales involvement)", "Delivery Track: 60%+ Utilization (Self), $12.5M+ Revenue (Primarily Managed)", "Account & Capability: 20%+ Utilization (Self), 75%+ Blended, $12.5M+ Revenue (Primarily Sold)"],
+                        "2026 Expectations": ["60%+ Utilization (Self)", "$8.5M - $16.5M Contribution"]
+                    }
+                }
+            };
+
+            const subCompetencies = {
+                "Quantitative Expectations": ["2025 Expectations", "2026 Expectations"],
+                "Deliver Exceptionally": Object.keys(data["Director"]["Deliver Exceptionally"]),
+                "Grow Expertise": Object.keys(data["Director"]["Grow Expertise"]),
+                "Grow Slalom": Object.keys(data["Director"]["Grow Slalom"]),
+                "Lead": Object.keys(data["Director"]["Lead"])
+            };
+
+            const toggleSection = (section) => {
+                setExpandedSections(prev => ({
+                    ...prev,
+                    [section]: !prev[section]
+                }));
+            };
+
+            // Safe getter for data
+            const getExpectations = (role, section, subSection) => {
+                try {
+                    return data[role][section][subSection] || ["No specific expectations listed."];
+                } catch (e) {
+                    return ["No specific expectations listed."];
+                }
+            };
+
+            // Get competency icon and color
+            const getCompetencyStyle = (comp) => {
+                switch(comp) {
+                    case "Quantitative Expectations":
+                        return { bg: "bg-amber-100", iconBg: "bg-amber-500", text: "text-amber-700", border: "border-amber-200" };
+                    case "Deliver Exceptionally":
+                        return { bg: "bg-emerald-100", iconBg: "bg-emerald-500", text: "text-emerald-700", border: "border-emerald-200" };
+                    case "Grow Expertise":
+                        return { bg: "bg-violet-100", iconBg: "bg-violet-500", text: "text-violet-700", border: "border-violet-200" };
+                    case "Grow Slalom":
+                        return { bg: "bg-slalom-teal/10", iconBg: "bg-slalom-teal", text: "text-slalom-teal-dark", border: "border-slalom-teal/30" };
+                    case "Lead":
+                        return { bg: "bg-orange-100", iconBg: "bg-slalom-orange", text: "text-orange-700", border: "border-orange-200" };
+                    default:
+                        return { bg: "bg-gray-100", iconBg: "bg-gray-500", text: "text-gray-700", border: "border-gray-200" };
+                }
+            };
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 font-slalom text-slate-800">
+                <div className="max-w-7xl mx-auto">
+                    
+                    {/* Header with Slalom Branding */}
+                    <div className="mb-8">
+                        <div className="slalom-gradient rounded-2xl p-6 md:p-8 text-white mb-6">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                            <BarChart2 className="text-white" size={24} />
+                                        </div>
+                                        <div>
+                                            <p className="text-slalom-teal-light text-sm font-semibold tracking-wide uppercase">Client Delivery Track</p>
+                                            <h1 className="text-2xl md:text-3xl font-bold">Role Calibration & Progression</h1>
+                                        </div>
+                                    </div>
+                                    <p className="text-white/80 mt-2 max-w-xl">
+                                        Compare role expectations and visualize growth paths across Slalom's core competencies.
+                                    </p>
+                                </div>
+                                
+                                {/* View Mode Toggles */}
+                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-1.5 flex">
+                                    <button
+                                        onClick={() => setActiveTab('compare')}
+                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                                            activeTab === 'compare' 
+                                            ? 'bg-white text-slalom-navy shadow-lg' 
+                                            : 'text-white/80 hover:bg-white/10'
+                                        }`}
+                                    >
+                                        <Layout size={16} />
+                                        Direct Comparison
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('evolution')}
+                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                                            activeTab === 'evolution' 
+                                            ? 'bg-white text-slalom-navy shadow-lg' 
+                                            : 'text-white/80 hover:bg-white/10'
+                                        }`}
+                                    >
+                                        <TrendingUp size={16} />
+                                        Competency Evolution
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* --- COMPARISON VIEW --- */}
+                    {activeTab === 'compare' && (
+                    <div className="space-y-6">
+                        
+                        {/* Role Selectors & Controls */}
+                        <div className="slalom-card p-6">
+                            <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-slalom-navy/60 mb-2 uppercase tracking-wide">Current Role</label>
+                                    <select 
+                                        value={roleA} 
+                                        onChange={(e) => setRoleA(e.target.value)}
+                                        className="w-full p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50 focus:ring-2 focus:ring-slalom-teal focus:border-slalom-teal focus:outline-none font-semibold text-slalom-navy transition-all"
+                                    >
+                                        {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                                    </select>
+                                </div>
+
+                                <div className="flex items-end justify-center pb-2">
+                                    <div className="w-12 h-12 rounded-full bg-slalom-navy flex items-center justify-center shadow-lg">
+                                        <ArrowRight className="text-white" size={20} />
+                                    </div>
+                                </div>
+
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-slalom-navy/60 mb-2 uppercase tracking-wide">Target Role</label>
+                                    <select 
+                                        value={roleB} 
+                                        onChange={(e) => setRoleB(e.target.value)}
+                                        className="w-full p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50 focus:ring-2 focus:ring-slalom-teal focus:border-slalom-teal focus:outline-none font-semibold text-slalom-navy transition-all"
+                                    >
+                                        {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                                
+                            {/* Tool Bar */}
+                            <div className="flex flex-wrap justify-center gap-3 mt-6 pt-6 border-t border-slate-100">
+                                <button
+                                    onClick={() => setShowDiff(!showDiff)}
+                                    className={`slalom-btn flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all border-2 ${
+                                        showDiff
+                                        ? 'bg-slalom-teal/10 text-slalom-teal-dark border-slalom-teal/30'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <Eye size={16} />
+                                    {showDiff ? 'Hide Differences' : 'Highlight Differences'}
+                                </button>
+                            </div>
+                            
+                            {showDiff && (
+                                <div className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-6">
+                                    <span className="flex items-center gap-2">
+                                        <span className="inline-block w-4 h-4 bg-gradient-to-r from-amber-100 to-amber-200 rounded border border-amber-300"></span>
+                                        Unique to {roleA}
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <span className="inline-block w-4 h-4 bg-gradient-to-r from-cyan-100 to-cyan-200 rounded border border-cyan-300"></span>
+                                        Unique to {roleB}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Content Blocks */}
+                        <div className="space-y-4">
+                        {competencies.map((comp) => {
+                            const style = getCompetencyStyle(comp);
+                            return (
+                            <div key={comp} className="slalom-card overflow-hidden">
+                                <button 
+                                    onClick={() => toggleSection(comp)}
+                                    className={`w-full p-5 flex items-center justify-between ${style.bg} hover:opacity-90 transition-all text-left`}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`competency-icon ${style.iconBg} shadow-lg`}>
+                                            {comp === "Quantitative Expectations" && <BarChart2 className="text-white" size={20} />}
+                                            {comp === "Deliver Exceptionally" && <CheckCircle className="text-white" size={20} />}
+                                            {comp === "Grow Expertise" && <Briefcase className="text-white" size={20} />}
+                                            {comp === "Grow Slalom" && <Building className="text-white" size={20} />}
+                                            {comp === "Lead" && <Users className="text-white" size={20} />}
+                                        </div>
+                                        <h2 className={`text-lg font-bold ${style.text}`}>{comp}</h2>
+                                    </div>
+                                    <div className={`w-8 h-8 rounded-full ${style.iconBg}/20 flex items-center justify-center`}>
+                                        {expandedSections[comp] ? <ChevronUp className={style.text} /> : <ChevronDown className={style.text} />}
+                                    </div>
+                                </button>
+
+                                {expandedSections[comp] && (
+                                    <div className={`section-content p-6 grid ${isConsecutive ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'} gap-8`}>
+                                    {subCompetencies[comp].map(sub => {
+                                        const itemsA = getExpectations(roleA, comp, sub);
+                                        const itemsB = getExpectations(roleB, comp, sub);
+                                        const diffText = getDifferentiator(comp, sub);
+                                        
+                                        return (
+                                        <React.Fragment key={sub}>
+                                            <div className={`${isConsecutive ? 'col-span-1 lg:col-span-3' : 'col-span-1 md:col-span-2'} mb-2 mt-4 border-b-2 ${style.border} pb-3`}>
+                                                <h3 className={`text-sm font-bold uppercase tracking-wider ${style.text}`}>{sub}</h3>
+                                            </div>
+                                            
+                                            {/* Role A Column */}
+                                            <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-200">
+                                                <div className="font-bold text-slalom-navy/60 text-xs mb-3 uppercase tracking-wide">{roleA}</div>
+                                                <ul className="space-y-3">
+                                                    {itemsA.map((item, idx) => {
+                                                        let renderedItem = item;
+                                                        if (showDiff) {
+                                                            const bestMatchIdx = findBestMatch(item, itemsB);
+                                                            if (bestMatchIdx !== -1) {
+                                                                const { diffA } = computeDiff(item, itemsB[bestMatchIdx]);
+                                                                renderedItem = <DiffText segments={diffA} highlightClass="diff-highlight-a" />;
+                                                            } else {
+                                                                renderedItem = <span className="diff-highlight-a">{item}</span>;
+                                                            }
+                                                        }
+                                                        return (
+                                                            <li key={idx} className="text-sm text-slate-700 leading-relaxed flex gap-3">
+                                                                <span className="text-slalom-navy/30 mt-1.5 text-lg leading-none">•</span>
+                                                                <span>{renderedItem}</span>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </div>
+
+                                            {/* MIDDLE COLUMN: Key Differentiators (Only if consecutive) */}
+                                            {isConsecutive && (
+                                                <div className="bg-gradient-to-br from-slalom-navy/5 to-slalom-teal/10 p-5 rounded-xl border border-slalom-teal/20 flex flex-col justify-center relative">
+                                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 py-1.5 rounded-full border border-slalom-teal/30 text-[10px] font-bold text-slalom-teal-dark uppercase tracking-widest shadow-sm">
+                                                        Key Differentiator
+                                                    </div>
+                                                    {diffText ? (
+                                                        <div className="text-sm text-slalom-navy font-medium leading-relaxed flex gap-3 items-start">
+                                                            <div className="w-6 h-6 rounded-full bg-slalom-teal/20 flex items-center justify-center shrink-0 mt-0.5">
+                                                                <Sparkles size={14} className="text-slalom-teal" />
+                                                            </div>
+                                                            <span>{diffText}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-xs text-slate-400 text-center italic">No key differentiator listed.</div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Role B Column */}
+                                            <div className="bg-slalom-teal/5 p-5 rounded-xl border border-slalom-teal/20">
+                                                <div className="font-bold text-slalom-teal-dark text-xs mb-3 uppercase tracking-wide">{roleB}</div>
+                                                <ul className="space-y-3">
+                                                    {itemsB.map((item, idx) => {
+                                                        let renderedItem = item;
+                                                        if (showDiff) {
+                                                            const bestMatchIdx = findBestMatch(item, itemsA);
+                                                            if (bestMatchIdx !== -1) {
+                                                                const { diffB } = computeDiff(itemsA[bestMatchIdx], item);
+                                                                renderedItem = <DiffText segments={diffB} highlightClass="diff-highlight-b" />;
+                                                            } else {
+                                                                renderedItem = <span className="diff-highlight-b">{item}</span>;
+                                                            }
+                                                        }
+                                                        return (
+                                                            <li key={idx} className="text-sm text-slate-700 leading-relaxed flex gap-3">
+                                                                <span className="text-slalom-teal/50 mt-1.5 text-lg leading-none">•</span>
+                                                                <span>{renderedItem}</span>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        </React.Fragment>
+                                        );
+                                    })}
+                                    </div>
+                                )}
+                            </div>
+                        )})}
+                        </div>
+                    </div>
+                    )}
+
+                    {/* --- EVOLUTION VIEW --- */}
+                    {activeTab === 'evolution' && (
+                    <div className="space-y-6">
+                        {/* Controls */}
+                        <div className="slalom-card p-6 sticky top-4 z-10">
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <div className="w-full md:w-1/3">
+                                    <label className="block text-xs font-bold text-slalom-navy/60 mb-2 uppercase tracking-wide">Core Competency</label>
+                                    <select 
+                                        value={selectedCompetency} 
+                                        onChange={(e) => setSelectedCompetency(e.target.value)}
+                                        className="w-full p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50 focus:ring-2 focus:ring-slalom-teal focus:border-slalom-teal focus:outline-none font-semibold text-slalom-navy transition-all"
+                                    >
+                                        {competencies.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Progression Grid */}
+                        <div className="overflow-x-auto pb-6">
+                            <div className="min-w-[1200px]">
+                                {subCompetencies[selectedCompetency].map(sub => (
+                                <div key={sub} className="slalom-card mb-8 overflow-hidden">
+                                    <div className="bg-slate-50 p-4 border-b border-slate-200">
+                                        <h3 className="font-bold text-lg text-slalom-navy flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-slalom-teal/20 flex items-center justify-center">
+                                                <TrendingUp size={18} className="text-slalom-teal"/>
+                                            </div>
+                                            {sub}
+                                        </h3>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-7 divide-x divide-slate-200">
+                                    {roles.map((role, i) => (
+                                        <div key={role} className="bg-white">
+                                            <div className={`p-3 text-center text-xs font-bold uppercase text-white ${
+                                                i < 2 ? 'bg-slate-500' : 
+                                                i === 2 ? 'bg-slate-600' : 
+                                                i === 3 ? 'bg-slalom-teal' : 
+                                                i === 4 ? 'bg-slalom-navy-light' : 
+                                                i === 5 ? 'bg-slalom-navy' : 'bg-slalom-navy-dark'
+                                            }`}>
+                                                {role}
+                                            </div>
+                                            <div className="p-4">
+                                                <ul className="space-y-3">
+                                                    {getExpectations(role, selectedCompetency, sub).map((item, idx) => (
+                                                    <li key={idx} className="text-xs text-slate-600 leading-relaxed border-l-2 border-slalom-teal/30 pl-3">
+                                                        {item}
+                                                    </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    </div>
+                                </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    )}
+
+                    {/* Footer */}
+                    <div className="mt-12 text-center pb-8">
+                        <div className="inline-flex items-center gap-2 text-sm text-slate-400">
+                            <Building size={16} />
+                            <span>Slalom Client Delivery Track • Role Expectations Tool</span>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CalibrationTool />);
+    </script>
+</body>
+</html>
