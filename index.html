@@ -30,10 +30,10 @@
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
         .track-card { transition: all 0.2s ease; }
         .track-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-        .role-step { 
-            display: flex;
+        .role-chip { 
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             padding: 6px 12px;
             background: white;
             border: 1px solid #E6E6E6;
@@ -42,17 +42,11 @@
             font-weight: 500;
             white-space: nowrap;
         }
-        .timeline-line {
-            flex: 1;
-            height: 2px;
-            background: #E6E6E6;
-            min-width: 20px;
-        }
         .step-number {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
@@ -60,20 +54,24 @@
             color: white;
             flex-shrink: 0;
         }
+        .arrow {
+            color: #E6E6E6;
+            font-size: 18px;
+            margin: 0 4px;
+        }
     </style>
 </head>
 <body class="bg-white min-h-screen flex flex-col">
     
     <!-- Header -->
     <header class="border-b border-slalom-gray-light">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center">
             <div class="flex items-center gap-2">
                 <svg class="w-8 h-8 text-slalom-blue" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
                 <span class="text-xl font-semibold text-slalom-gray">Role Calibration Tools</span>
             </div>
-            <div class="text-sm text-slalom-gray">DC-Chesapeake Market</div>
         </div>
     </header>
 
@@ -106,42 +104,21 @@
                     </div>
                 </div>
                 
-                <!-- Role Timeline -->
-                <div class="flex items-center flex-wrap gap-2">
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">1</span>
-                        <span class="role-step">Associate Consultant</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">2</span>
-                        <span class="role-step">Consultant</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">3</span>
-                        <span class="role-step">Senior Consultant</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">4</span>
-                        <span class="role-step">Principal</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">5</span>
-                        <span class="role-step">Senior Principal</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">6</span>
-                        <span class="role-step">Director</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-blue">7</span>
-                        <span class="role-step">Senior Director</span>
-                    </div>
+                <!-- Role Flow -->
+                <div class="flex flex-wrap items-center gap-y-3">
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">1</span> Associate Consultant</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">2</span> Consultant</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">3</span> Senior Consultant</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">4</span> Principal</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">5</span> Senior Principal</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">6</span> Director</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-blue">7</span> Senior Director</span>
                 </div>
             </a>
 
@@ -159,47 +136,23 @@
                     </div>
                 </div>
                 
-                <!-- Role Timeline -->
-                <div class="flex items-center flex-wrap gap-2">
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">1</span>
-                        <span class="role-step">Associate Consultant</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">2</span>
-                        <span class="role-step">Consultant</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">3</span>
-                        <span class="role-step">Senior Consultant</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">4</span>
-                        <span class="role-step">Principal</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">5</span>
-                        <span class="role-step">Senior Principal</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">6</span>
-                        <span class="role-step">Director</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">7</span>
-                        <span class="role-step">Senior Director</span>
-                    </div>
-                    <div class="timeline-line hidden lg:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-slalom-red">8</span>
-                        <span class="role-step">Managing Director</span>
-                    </div>
+                <!-- Role Flow -->
+                <div class="flex flex-wrap items-center gap-y-3">
+                    <span class="role-chip"><span class="step-number bg-slalom-red">1</span> Associate Consultant</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">2</span> Consultant</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">3</span> Senior Consultant</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">4</span> Principal</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">5</span> Senior Principal</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">6</span> Director</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">7</span> Senior Director</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-slalom-red">8</span> Managing Director</span>
                 </div>
             </a>
 
@@ -217,27 +170,15 @@
                     </div>
                 </div>
                 
-                <!-- Role Timeline -->
-                <div class="flex items-center flex-wrap gap-2">
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-purple-500">1</span>
-                        <span class="role-step">Coordinator</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-purple-500">2</span>
-                        <span class="role-step">Specialist</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-purple-500">3</span>
-                        <span class="role-step">Senior Specialist</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-purple-500">4</span>
-                        <span class="role-step">Lead</span>
-                    </div>
+                <!-- Role Flow -->
+                <div class="flex flex-wrap items-center gap-y-3">
+                    <span class="role-chip"><span class="step-number bg-purple-500">1</span> Coordinator</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-purple-500">2</span> Specialist</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-purple-500">3</span> Senior Specialist</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-purple-500">4</span> Lead</span>
                 </div>
             </a>
 
@@ -255,22 +196,13 @@
                     </div>
                 </div>
                 
-                <!-- Role Timeline -->
-                <div class="flex items-center flex-wrap gap-2">
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-cyan-500">1</span>
-                        <span class="role-step">Associate Chief of Staff</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-cyan-500">2</span>
-                        <span class="role-step">Chief of Staff</span>
-                    </div>
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div class="flex items-center gap-1">
-                        <span class="step-number bg-cyan-500">3</span>
-                        <span class="role-step">Senior Chief of Staff</span>
-                    </div>
+                <!-- Role Flow -->
+                <div class="flex flex-wrap items-center gap-y-3">
+                    <span class="role-chip"><span class="step-number bg-cyan-500">1</span> Associate Chief of Staff</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-cyan-500">2</span> Chief of Staff</span>
+                    <span class="arrow">→</span>
+                    <span class="role-chip"><span class="step-number bg-cyan-500">3</span> Senior Chief of Staff</span>
                 </div>
             </a>
 
