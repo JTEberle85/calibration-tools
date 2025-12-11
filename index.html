@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slalom Role Calibration Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Open Sans', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                <span class="text-white/80 text-sm font-medium">Slalom DC-Chesapeake Market</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Role Calibration Tools</h1>
+            <p class="text-xl text-slate-300 max-w-2xl mx-auto">Interactive tools for comparing expectations and skills across career track levels. Select a track below to get started.</p>
+        </div>
+
+        <!-- Tool Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            
+            <!-- Client Delivery -->
+            <a href="Client Delivery Track Calibration Tool.html" class="card-hover block bg-white rounded-2xl p-6 shadow-xl">
+                <div class="flex items-start gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">Client Delivery</h2>
+                        <p class="text-slate-500 text-sm mb-3">Analyst → Consultant → Senior Consultant → Principal</p>
+                        <span class="inline-flex items-center text-blue-600 font-medium text-sm">
+                            Open Tool
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Market Solutions -->
+            <a href="Market Solution Track Calibration Tool.html" class="card-hover block bg-white rounded-2xl p-6 shadow-xl">
+                <div class="flex items-start gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">Market Solutions</h2>
+                        <p class="text-slate-500 text-sm mb-3">Coordinator → Specialist → Senior Specialist → Lead</p>
+                        <span class="inline-flex items-center text-emerald-600 font-medium text-sm">
+                            Open Tool
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Team Operations -->
+            <a href="TeamOperationsCalibrationsV2.html" class="card-hover block bg-white rounded-2xl p-6 shadow-xl">
+                <div class="flex items-start gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">Team Operations</h2>
+                        <p class="text-slate-500 text-sm mb-3">Coordinator → Specialist → Senior Specialist → Lead</p>
+                        <span class="inline-flex items-center text-violet-600 font-medium text-sm">
+                            Open Tool
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Business Strategy -->
+            <a href="Business Strategy Track Calibration Tool.html" class="card-hover block bg-white rounded-2xl p-6 shadow-xl">
+                <div class="flex items-start gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">Business Strategy</h2>
+                        <p class="text-slate-500 text-sm mb-3">Associate CoS → Chief of Staff → Senior Chief of Staff</p>
+                        <span class="inline-flex items-center text-cyan-600 font-medium text-sm">
+                            Open Tool
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-slate-400 text-sm">
+            <p>Built for Slalom Learning & Development • Based on official competency frameworks</p>
+            <p class="mt-2">Questions? Contact Josh Eberle</p>
+        </div>
+    </div>
+</body>
+</html>
