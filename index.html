@@ -59,187 +59,37 @@
             font-size: 18px;
             margin: 0 4px;
         }
+        
+        /* Fixed landscape footer */
+        .landscape-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Main content scrolls over the footer */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            background: white;
+        }
+        
+        /* Spacer to reveal the footer at bottom */
+        .footer-reveal {
+            height: 280px;
+            background: transparent;
+            position: relative;
+            z-index: 0;
+        }
     </style>
 </head>
-<body class="bg-white min-h-screen flex flex-col">
+<body class="bg-white min-h-screen">
     
-    <!-- Header -->
-    <header class="border-b border-slalom-gray-light">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center">
-            <div class="flex items-center gap-2">
-                <svg class="w-8 h-8 text-slalom-blue" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                <span class="text-xl font-semibold text-slalom-gray">Role Calibration Tools</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-12 flex-1">
-        
-        <!-- Page Title -->
-        <div class="mb-10">
-            <h1 class="text-3xl font-bold text-black mb-3">Career Track Calibration</h1>
-            <p class="text-slalom-gray text-lg max-w-3xl">
-                Interactive tools for understanding role expectations and competency progressions across Slalom career tracks. 
-                Select a track below to compare roles side-by-side.
-            </p>
-        </div>
-
-        <!-- Track Cards -->
-        <div class="space-y-6">
-
-            <!-- Client Delivery Track -->
-            <a href="Client Delivery Track Calibration Tool.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-slalom-blue">
-                <div class="flex items-start gap-4 mb-5">
-                    <div class="w-12 h-12 bg-slalom-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-6 h-6 text-slalom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-semibold text-slalom-blue mb-1">Client Delivery Track</h2>
-                        <p class="text-slalom-gray text-sm">Delivery of capability/client outcomes</p>
-                    </div>
-                </div>
-                
-                <!-- Role Flow -->
-                <div class="flex flex-wrap items-center gap-y-3">
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">1</span> Associate Consultant</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">2</span> Consultant</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">3</span> Senior Consultant</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">4</span> Principal</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">5</span> Senior Principal</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">6</span> Director</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-blue">7</span> Senior Director</span>
-                </div>
-            </a>
-
-            <!-- Market Solutions Track -->
-            <a href="Market Solution Track Calibration Tool.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-slalom-red">
-                <div class="flex items-start gap-4 mb-5">
-                    <div class="w-12 h-12 bg-slalom-red/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-6 h-6 text-slalom-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-semibold text-slalom-red mb-1">Market Solutions Track</h2>
-                        <p class="text-slalom-gray text-sm">Leaders focus on sales and solutions</p>
-                    </div>
-                </div>
-                
-                <!-- Role Flow -->
-                <div class="flex flex-wrap items-center gap-y-3">
-                    <span class="role-chip"><span class="step-number bg-slalom-red">1</span> Associate Consultant</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">2</span> Consultant</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">3</span> Senior Consultant</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">4</span> Principal</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">5</span> Senior Principal</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">6</span> Director</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">7</span> Senior Director</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-slalom-red">8</span> Managing Director</span>
-                </div>
-            </a>
-
-            <!-- Team Operations Track -->
-            <a href="TeamOperationsCalibrationsV2.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-purple-400">
-                <div class="flex items-start gap-4 mb-5">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-semibold text-purple-500 mb-1">Team Operations Track</h2>
-                        <p class="text-slalom-gray text-sm">Culture, employee experience, and operations</p>
-                    </div>
-                </div>
-                
-                <!-- Role Flow -->
-                <div class="flex flex-wrap items-center gap-y-3">
-                    <span class="role-chip"><span class="step-number bg-purple-500">1</span> Coordinator</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-purple-500">2</span> Specialist</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-purple-500">3</span> Senior Specialist</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-purple-500">4</span> Lead</span>
-                </div>
-            </a>
-
-            <!-- Business Strategy Track -->
-            <a href="Business Strategy Track Calibration Tool.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-cyan-400">
-                <div class="flex items-start gap-4 mb-5">
-                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-semibold text-cyan-500 mb-1">Business Strategy Track</h2>
-                        <p class="text-slalom-gray text-sm">Cross-functional strategy and business management</p>
-                    </div>
-                </div>
-                
-                <!-- Role Flow -->
-                <div class="flex flex-wrap items-center gap-y-3">
-                    <span class="role-chip"><span class="step-number bg-cyan-500">1</span> Associate Chief of Staff</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-cyan-500">2</span> Chief of Staff</span>
-                    <span class="arrow">→</span>
-                    <span class="role-chip"><span class="step-number bg-cyan-500">3</span> Senior Chief of Staff</span>
-                </div>
-            </a>
-
-        </div>
-
-        <!-- How to Use -->
-        <div class="mt-12 bg-gray-50 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-black mb-4">How to Use These Tools</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="flex gap-3">
-                    <div class="w-8 h-8 bg-slalom-blue text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0">1</div>
-                    <div>
-                        <h3 class="font-medium text-black mb-1">Select Two Roles</h3>
-                        <p class="text-sm text-slalom-gray">Choose a "from" and "to" role to compare expectations side-by-side</p>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <div class="w-8 h-8 bg-slalom-blue text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0">2</div>
-                    <div>
-                        <h3 class="font-medium text-black mb-1">Expand Competencies</h3>
-                        <p class="text-sm text-slalom-gray">Click each competency area to see detailed requirements</p>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <div class="w-8 h-8 bg-slalom-blue text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0">3</div>
-                    <div>
-                        <h3 class="font-medium text-black mb-1">Highlight Differences</h3>
-                        <p class="text-sm text-slalom-gray">Toggle diff view to see exactly what changes between levels</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Illustrated Landscape Footer -->
-    <footer class="relative overflow-hidden mt-auto">
+    <!-- Fixed Landscape Footer (behind everything) -->
+    <footer class="landscape-footer">
         <svg class="w-full h-auto" viewBox="0 0 1440 280" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
             <!-- Sky gradient -->
             <defs>
@@ -315,6 +165,187 @@
             </p>
         </div>
     </footer>
+
+    <!-- Main Content (scrolls over footer) -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="border-b border-slalom-gray-light bg-white">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center">
+                <div class="flex items-center gap-2">
+                    <svg class="w-8 h-8 text-slalom-blue" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span class="text-xl font-semibold text-slalom-gray">Role Calibration Tools</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="max-w-7xl mx-auto px-6 py-12 bg-white">
+            
+            <!-- Page Title -->
+            <div class="mb-10">
+                <h1 class="text-3xl font-bold text-black mb-3">Career Track Calibration</h1>
+                <p class="text-slalom-gray text-lg max-w-3xl">
+                    Interactive tools for understanding role expectations and competency progressions across Slalom career tracks. 
+                    Select a track below to compare roles side-by-side.
+                </p>
+            </div>
+
+            <!-- Track Cards -->
+            <div class="space-y-6">
+
+                <!-- Client Delivery Track -->
+                <a href="Client Delivery Track Calibration Tool.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-slalom-blue">
+                    <div class="flex items-start gap-4 mb-5">
+                        <div class="w-12 h-12 bg-slalom-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-slalom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-slalom-blue mb-1">Client Delivery Track</h2>
+                            <p class="text-slalom-gray text-sm">Delivery of capability/client outcomes</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Role Flow -->
+                    <div class="flex flex-wrap items-center gap-y-3">
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">1</span> Associate Consultant</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">2</span> Consultant</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">3</span> Senior Consultant</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">4</span> Principal</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">5</span> Senior Principal</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">6</span> Director</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-blue">7</span> Senior Director</span>
+                    </div>
+                </a>
+
+                <!-- Market Solutions Track -->
+                <a href="Market Solution Track Calibration Tool.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-slalom-red">
+                    <div class="flex items-start gap-4 mb-5">
+                        <div class="w-12 h-12 bg-slalom-red/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-slalom-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-slalom-red mb-1">Market Solutions Track</h2>
+                            <p class="text-slalom-gray text-sm">Leaders focus on sales and solutions</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Role Flow -->
+                    <div class="flex flex-wrap items-center gap-y-3">
+                        <span class="role-chip"><span class="step-number bg-slalom-red">1</span> Associate Consultant</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">2</span> Consultant</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">3</span> Senior Consultant</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">4</span> Principal</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">5</span> Senior Principal</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">6</span> Director</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">7</span> Senior Director</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-slalom-red">8</span> Managing Director</span>
+                    </div>
+                </a>
+
+                <!-- Team Operations Track -->
+                <a href="TeamOperationsCalibrationsV2.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-purple-400">
+                    <div class="flex items-start gap-4 mb-5">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-purple-500 mb-1">Team Operations Track</h2>
+                            <p class="text-slalom-gray text-sm">Culture, employee experience, and operations</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Role Flow -->
+                    <div class="flex flex-wrap items-center gap-y-3">
+                        <span class="role-chip"><span class="step-number bg-purple-500">1</span> Coordinator</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-purple-500">2</span> Specialist</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-purple-500">3</span> Senior Specialist</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-purple-500">4</span> Lead</span>
+                    </div>
+                </a>
+
+                <!-- Business Strategy Track -->
+                <a href="Business Strategy Track Calibration Tool.html" class="track-card block bg-white border border-slalom-gray-light rounded-xl p-6 hover:border-cyan-400">
+                    <div class="flex items-start gap-4 mb-5">
+                        <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-cyan-500 mb-1">Business Strategy Track</h2>
+                            <p class="text-slalom-gray text-sm">Cross-functional strategy and business management</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Role Flow -->
+                    <div class="flex flex-wrap items-center gap-y-3">
+                        <span class="role-chip"><span class="step-number bg-cyan-500">1</span> Associate Chief of Staff</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-cyan-500">2</span> Chief of Staff</span>
+                        <span class="arrow">→</span>
+                        <span class="role-chip"><span class="step-number bg-cyan-500">3</span> Senior Chief of Staff</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- How to Use -->
+            <div class="mt-12 bg-gray-50 rounded-xl p-6">
+                <h2 class="text-lg font-semibold text-black mb-4">How to Use These Tools</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 bg-slalom-blue text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0">1</div>
+                        <div>
+                            <h3 class="font-medium text-black mb-1">Select Two Roles</h3>
+                            <p class="text-sm text-slalom-gray">Choose a "from" and "to" role to compare expectations side-by-side</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 bg-slalom-blue text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0">2</div>
+                        <div>
+                            <h3 class="font-medium text-black mb-1">Expand Competencies</h3>
+                            <p class="text-sm text-slalom-gray">Click each competency area to see detailed requirements</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 bg-slalom-blue text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0">3</div>
+                        <div>
+                            <h3 class="font-medium text-black mb-1">Highlight Differences</h3>
+                            <p class="text-sm text-slalom-gray">Toggle diff view to see exactly what changes between levels</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+    <!-- Spacer to reveal the fixed footer when scrolled to bottom -->
+    <div class="footer-reveal"></div>
 
 </body>
 </html>
