@@ -67,106 +67,122 @@
             left: 0;
             right: 0;
             z-index: 0;
-            pointer-events: none;
+            height: 200px;
         }
         
-        /* Main content scrolls over the footer */
+        /* Main content area */
         .main-content {
             position: relative;
             z-index: 1;
+            min-height: calc(100vh - 200px);
             background: white;
         }
         
-        /* Spacer to reveal the footer at bottom */
-        .footer-reveal {
-            height: 280px;
-            background: transparent;
+        /* Bottom edge fade */
+        .content-fade {
             position: relative;
-            z-index: 0;
+            z-index: 1;
+            height: 40px;
+            background: linear-gradient(to bottom, white, transparent);
+        }
+        
+        /* Easter egg tree - clickable */
+        .secret-tree {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .secret-tree:hover {
+            transform: scale(1.1) translateY(-3px);
+            filter: brightness(1.1);
         }
     </style>
 </head>
-<body class="bg-white min-h-screen">
+<body class="bg-gradient-to-b from-white to-blue-50 min-h-screen">
     
-    <!-- Fixed Landscape Footer (behind everything) -->
+    <!-- Fixed Landscape Footer -->
     <footer class="landscape-footer">
-        <svg class="w-full h-auto" viewBox="0 0 1440 280" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-full h-full" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
             <!-- Sky gradient -->
             <defs>
                 <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#f0f9ff;stop-opacity:1" />
+                    <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:1" />
                 </linearGradient>
             </defs>
-            <rect width="1440" height="280" fill="url(#skyGradient)"/>
+            <rect width="1440" height="200" fill="url(#skyGradient)"/>
             
             <!-- Distant mountains (light coral) -->
-            <path d="M0,240 L100,190 L200,210 L350,150 L500,190 L650,130 L800,170 L950,110 L1100,160 L1250,120 L1350,150 L1440,130 L1440,280 L0,280 Z" fill="#fecaca" opacity="0.4"/>
+            <path d="M0,160 L100,120 L200,140 L350,90 L500,120 L650,70 L800,100 L950,50 L1100,90 L1250,60 L1350,85 L1440,65 L1440,200 L0,200 Z" fill="#fecaca" opacity="0.4"/>
             
             <!-- Mid mountains (coral/pink) -->
-            <path d="M0,260 L150,210 L300,235 L450,180 L600,225 L750,170 L900,215 L1050,165 L1200,205 L1350,175 L1440,195 L1440,280 L0,280 Z" fill="#FF4D5F" opacity="0.25"/>
+            <path d="M0,175 L150,135 L300,155 L450,110 L600,145 L750,100 L900,135 L1050,95 L1200,125 L1350,100 L1440,115 L1440,200 L0,200 Z" fill="#FF4D5F" opacity="0.25"/>
             
             <!-- City buildings (coral/red) -->
             <g fill="#FF4D5F" opacity="0.7">
                 <!-- Left city cluster -->
-                <rect x="80" y="210" width="25" height="70" rx="2"/>
-                <rect x="110" y="190" width="20" height="90" rx="2"/>
-                <rect x="135" y="220" width="30" height="60" rx="2"/>
-                <rect x="170" y="200" width="22" height="80" rx="2"/>
-                <rect x="197" y="215" width="18" height="65" rx="2"/>
+                <rect x="80" y="140" width="20" height="60" rx="2"/>
+                <rect x="105" y="125" width="16" height="75" rx="2"/>
+                <rect x="125" y="150" width="24" height="50" rx="2"/>
+                <rect x="154" y="135" width="18" height="65" rx="2"/>
+                <rect x="177" y="148" width="14" height="52" rx="2"/>
                 
                 <!-- Center city cluster -->
-                <rect x="550" y="195" width="28" height="85" rx="2"/>
-                <rect x="583" y="210" width="22" height="70" rx="2"/>
-                <rect x="610" y="180" width="35" height="100" rx="2"/>
-                <rect x="650" y="205" width="20" height="75" rx="2"/>
-                <rect x="675" y="220" width="25" height="60" rx="2"/>
+                <rect x="550" y="130" width="22" height="70" rx="2"/>
+                <rect x="577" y="142" width="18" height="58" rx="2"/>
+                <rect x="600" y="118" width="28" height="82" rx="2"/>
+                <rect x="633" y="138" width="16" height="62" rx="2"/>
+                <rect x="654" y="150" width="20" height="50" rx="2"/>
                 
                 <!-- Right city cluster -->
-                <rect x="1050" y="200" width="30" height="80" rx="2"/>
-                <rect x="1085" y="215" width="22" height="65" rx="2"/>
-                <rect x="1112" y="185" width="28" height="95" rx="2"/>
-                <rect x="1145" y="210" width="20" height="70" rx="2"/>
+                <rect x="1050" y="132" width="24" height="68" rx="2"/>
+                <rect x="1079" y="145" width="18" height="55" rx="2"/>
+                <rect x="1102" y="122" width="22" height="78" rx="2"/>
+                <rect x="1129" y="140" width="16" height="60" rx="2"/>
             </g>
             
             <!-- Green hills (foreground) -->
-            <path d="M0,255 L200,235 L400,250 L600,230 L800,245 L1000,225 L1200,240 L1440,220 L1440,280 L0,280 Z" fill="#86efac" opacity="0.8"/>
+            <path d="M0,175 L200,160 L400,172 L600,155 L800,168 L1000,152 L1200,165 L1440,148 L1440,200 L0,200 Z" fill="#86efac" opacity="0.8"/>
             
-            <!-- Trees (darker green) -->
+            <!-- Trees (darker green) - regular trees -->
             <g fill="#22c55e">
                 <!-- Left trees -->
-                <path d="M50,280 L62,240 L74,280 Z"/>
-                <path d="M80,280 L95,235 L110,280 Z"/>
-                <path d="M250,280 L268,230 L286,280 Z"/>
-                <path d="M300,280 L314,242 L328,280 Z"/>
+                <path d="M50,200 L60,168 L70,200 Z"/>
+                <path d="M78,200 L90,162 L102,200 Z"/>
+                <path d="M250,200 L265,158 L280,200 Z"/>
+                <path d="M295,200 L308,170 L321,200 Z"/>
                 
                 <!-- Center trees -->
-                <path d="M450,280 L468,228 L486,280 Z"/>
-                <path d="M500,280 L512,245 L524,280 Z"/>
-                <path d="M750,280 L772,225 L794,280 Z"/>
-                <path d="M810,280 L825,248 L840,280 Z"/>
+                <path d="M450,200 L465,155 L480,200 Z"/>
+                <path d="M495,200 L507,172 L519,200 Z"/>
+                <path d="M750,200 L768,152 L786,200 Z"/>
+                <path d="M802,200 L816,168 L830,200 Z"/>
                 
-                <!-- Right trees -->
-                <path d="M950,280 L970,230 L990,280 Z"/>
-                <path d="M1010,280 L1026,240 L1042,280 Z"/>
-                <path d="M1250,280 L1272,225 L1294,280 Z"/>
-                <path d="M1310,280 L1328,238 L1346,280 Z"/>
-                <path d="M1380,280 L1398,242 L1416,280 Z"/>
+                <!-- Right trees (except last one) -->
+                <path d="M950,200 L968,158 L986,200 Z"/>
+                <path d="M1005,200 L1020,168 L1035,200 Z"/>
+                <path d="M1250,200 L1270,152 L1290,200 Z"/>
+                <path d="M1308,200 L1324,165 L1340,200 Z"/>
             </g>
             
+            <!-- SECRET TREE - Easter Egg (clickable, slightly different shade) -->
+            <a href="game.html" class="secret-tree">
+                <path d="M1378,200 L1396,160 L1414,200 Z" fill="#16a34a"/>
+                <path d="M1383,185 L1396,168 L1409,185 Z" fill="#15803d"/>
+            </a>
+            
             <!-- Lighter green foreground strip -->
-            <path d="M0,268 L300,260 L600,268 L900,255 L1200,265 L1440,252 L1440,280 L0,280 Z" fill="#bbf7d0"/>
+            <path d="M0,188 L300,182 L600,188 L900,178 L1200,185 L1440,175 L1440,200 L0,200 Z" fill="#bbf7d0"/>
         </svg>
         
         <!-- Footer text overlay -->
-        <div class="absolute bottom-3 left-0 right-0 text-center">
-            <p class="text-xs text-slalom-gray">
-                Built for Slalom Learning & Development • Questions? Contact Josh Eberle
+        <div class="absolute bottom-2 left-0 right-0 text-center">
+            <p class="text-xs text-slalom-gray/70">
+                Built for Slalom Learning & Development
             </p>
         </div>
     </footer>
 
-    <!-- Main Content (scrolls over footer) -->
+    <!-- Main Content -->
     <div class="main-content">
         <!-- Header -->
         <header class="border-b border-slalom-gray-light bg-white">
@@ -181,7 +197,7 @@
         </header>
 
         <!-- Main Content Area -->
-        <main class="max-w-7xl mx-auto px-6 py-12 bg-white">
+        <main class="max-w-7xl mx-auto px-6 py-12">
             
             <!-- Page Title -->
             <div class="mb-10">
@@ -344,8 +360,11 @@
         </main>
     </div>
     
-    <!-- Spacer to reveal the fixed footer when scrolled to bottom -->
-    <div class="footer-reveal"></div>
+    <!-- Fade to reveal landscape -->
+    <div class="content-fade"></div>
+    
+    <!-- Spacer for the fixed footer -->
+    <div class="h-48"></div>
 
 </body>
 </html>
