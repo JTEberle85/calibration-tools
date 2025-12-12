@@ -130,6 +130,16 @@
             margin-bottom: 0;
         }
         
+        .section ul {
+            list-style: none;
+        }
+        
+        .section ul li::before {
+            content: "—";
+            color: var(--terracotta);
+            margin-right: 8px;
+        }
+        
         /* Quote block */
         .quote {
             border-left: 2px solid var(--terracotta);
@@ -402,18 +412,62 @@
                     <div class="stat-label">Days</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">4</div>
-                    <div class="stat-label">Tracks</div>
+                    <div class="stat-value">~12</div>
+                    <div class="stat-label">Hours Active</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">150+</div>
+                    <div class="stat-label">Prompts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Files Shipped</div>
+                </div>
+            </div>
+            
+            <div class="stats" style="margin-top: -1px;">
+                <div class="stat">
+                    <div class="stat-value">5,447</div>
+                    <div class="stat-label">Lines of Code</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">472KB</div>
+                    <div class="stat-label">Total Output</div>
                 </div>
                 <div class="stat">
                     <div class="stat-value">22</div>
-                    <div class="stat-label">Roles</div>
+                    <div class="stat-label">Roles Mapped</div>
                 </div>
                 <div class="stat">
                     <div class="stat-value">0</div>
-                    <div class="stat-label">Lines typed</div>
+                    <div class="stat-label">Lines Hand-Coded</div>
                 </div>
             </div>
+        </section>
+        
+        <section class="section">
+            <h2>The math that matters</h2>
+            <p>Let's be honest about what building this would have looked like in 2022, before tools like me existed.</p>
+            
+            <div class="reflections">
+                <div class="reflection">
+                    <h4>The old way</h4>
+                    <p><strong>Team required:</strong> Front-end developer, UX designer, project manager</p>
+                    <p><strong>Timeline:</strong> 4–8 weeks</p>
+                    <p><strong>Cost:</strong> $15,000–$30,000+ (agency or contractor rates)</p>
+                    <p><strong>Or:</strong> Added to an internal backlog, deprioritized indefinitely</p>
+                </div>
+                
+                <div class="reflection">
+                    <h4>What actually happened</h4>
+                    <p><strong>Team:</strong> One consultant with zero coding background</p>
+                    <p><strong>Timeline:</strong> 9 days, ~12 hours of active work</p>
+                    <p><strong>Cost:</strong> Existing Claude subscription</p>
+                    <p><strong>Result:</strong> Live, production-quality tools people are using now</p>
+                </div>
+            </div>
+            
+            <p>This isn't about speed for speed's sake. It's about what becomes possible when the barrier between "I have an idea" and "I have a working tool" is reduced to a conversation.</p>
         </section>
 
         <section class="section">
@@ -477,24 +531,51 @@
         </section>
 
         <section class="section">
+            <h2>What each of us brought</h2>
+            <p>There's sometimes a mystique around AI—as if you just ask and magic happens. The reality is more interesting. This was a collaboration with distinct contributions.</p>
+            
+            <div class="reflections">
+                <div class="reflection">
+                    <h4>Josh</h4>
+                    <p>Domain expertise (deep knowledge of Slalom's career framework)</p>
+                    <p>Source material (hand-gathered from Me@Slalom into Word docs)</p>
+                    <p>Creative direction ("make it look like this," "the spacing feels off")</p>
+                    <p>Quality judgment (knowing when something was right or needed more work)</p>
+                    <p>Persistence (150+ prompts across 7 sessions to get to "done")</p>
+                </div>
+                
+                <div class="reflection">
+                    <h4>Claude</h4>
+                    <p>Technical translation (turning requirements into working code)</p>
+                    <p>Pattern knowledge (responsive design, accessibility, modern CSS)</p>
+                    <p>Iteration speed (implementing changes in seconds, not days)</p>
+                    <p>Completeness (shipping full files, not fragments to assemble)</p>
+                    <p>Consistency (remembering context across a long conversation)</p>
+                </div>
+            </div>
+            
+            <p>The prompts weren't magic incantations. They were descriptions of problems, feedback on attempts, screenshots of inspiration, and clear direction. The skill Josh developed over time was knowing how to communicate what he wanted—a skill that transfers to any creative collaboration, human or AI.</p>
+        </section>
+        
+        <section class="section">
             <h2>On choosing tools</h2>
             <p>Josh had tried other AI assistants with similar requests. The results varied.</p>
             
             <div class="comparison">
                 <div class="comparison-card">
-                    <h4>Gemini 2.5 Pro</h4>
+                    <h4>Gemini 3 Pro</h4>
                     <p>Provided outlines and explanations of what could be built. Thoughtful analysis.</p>
                     <div class="status partial">Did not ship code</div>
                 </div>
                 
                 <div class="comparison-card">
-                    <h4>ChatGPT 5.1</h4>
+                    <h4>ChatGPT 5.1 Thinking</h4>
                     <p>Started implementations. Got partway there. Required significant manual completion.</p>
                     <div class="status partial">Partial implementation</div>
                 </div>
                 
                 <div class="comparison-card featured">
-                    <h4>Claude</h4>
+                    <h4>Claude 4.5 Opus</h4>
                     <p>Built complete, working files. Iterated based on feedback. Fixed bugs. Added features.</p>
                     <div class="status complete">Full implementation</div>
                 </div>
@@ -531,9 +612,21 @@
 
         <section class="section">
             <h2>A note on what this represents</h2>
-            <p>Josh is not a developer. He doesn't write HTML or CSS or JavaScript. Yet over nine days, he shipped a production website with four interactive tools, a branded landing page, and a hidden video game.</p>
-            <p>This isn't about AI replacing developers. It's about expanding who can build things. A principal consultant with a clear vision and good taste can now create tools that would have previously required a development team or been deprioritized forever.</p>
-            <p>The technical knowledge still matters—it lives in me, shaped by the engineers and researchers at Anthropic who built my capabilities. But the barrier between "having an idea" and "having a tool" has become a conversation.</p>
+            <p>Josh is a consultant. His background is in transformation, change management, AI enablement—not software development. He doesn't write HTML, CSS, or JavaScript. He's never pushed code to GitHub before this project.</p>
+            <p>And yet, in nine days, he shipped a production website with:</p>
+            <ul style="margin: 20px 0 20px 24px; color: var(--warm-gray);">
+                <li style="margin-bottom: 8px;">Four interactive calibration tools with expandable sections, diff highlighting, and role comparison</li>
+                <li style="margin-bottom: 8px;">A branded landing page matching Slalom's design system</li>
+                <li style="margin-bottom: 8px;">Responsive design that works on mobile</li>
+                <li style="margin-bottom: 8px;">A hidden easter egg game (because why not)</li>
+                <li style="margin-bottom: 8px;">Version control, deployment, and a live URL anyone can access</li>
+            </ul>
+            <p>This is not about AI replacing developers. Skilled engineers will always be essential for complex systems, security-critical applications, and work that requires deep architectural thinking.</p>
+            <p>This is about something different: <strong>expanding who can build things</strong>.</p>
+            <p>The consultant who sees a workflow problem can now prototype a solution. The L&D leader who needs a training tool can create one. The person with domain expertise and good taste—but no coding background—can ship real software.</p>
+            <p>What Josh brought to this project was irreplaceable: deep knowledge of Slalom's career framework, clarity about what people actually needed, and the judgment to know when something was right. What I brought was the ability to translate that vision into working code, instantly and iteratively.</p>
+            <p>Neither of us could have done this alone. But together, in conversation, we built something useful in a fraction of the time it would have taken through traditional channels.</p>
+            <p>That's the shift. Not AI doing the work instead of humans—but humans doing work they couldn't do before.</p>
         </section>
     </main>
 
