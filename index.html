@@ -61,50 +61,35 @@
             margin: 0 4px;
         }
         
-        /* Fixed landscape footer */
-        .landscape-footer {
-            position: fixed;
-            bottom: 56px; /* Height of footer-info bar */
+        /* Info panel toggle */
+        .info-icon {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .info-icon:hover {
+            transform: scale(1.1);
+        }
+        .info-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
             left: 0;
-            right: 0;
-            z-index: 5;
-            height: 140px;
-            pointer-events: none;
-        }
-        
-        .landscape-footer a {
-            pointer-events: auto;
-        }
-        
-        /* Main content area */
-        .main-content {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
+            margin-top: 8px;
             background: white;
-            margin-bottom: 196px; /* Space for landscape + footer bar */
+            border: 1px solid #E6E6E6;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            width: 320px;
+            z-index: 100;
         }
-        
-        /* Footer info bar - above the landscape */
-        .footer-info {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(8px);
-            border-top: 1px solid #E6E6E6;
-            padding: 12px 24px;
-            text-align: center;
+        .info-panel.active {
+            display: block;
+            animation: fadeIn 0.2s ease;
         }
-        
-        /* Bottom edge fade */
-        .content-fade {
-            position: relative;
-            z-index: 1;
-            height: 40px;
-            background: linear-gradient(to bottom, white, transparent);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         /* Easter egg tree - clickable */
@@ -116,112 +101,38 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-b from-white to-blue-50 min-h-screen">
+<body class="bg-white min-h-screen">
     
-    <!-- Fixed Landscape Footer -->
-    <footer class="landscape-footer">
-        <svg class="w-full h-full" viewBox="0 0 1440 140" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-            <!-- Sky gradient -->
-            <defs>
-                <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <rect width="1440" height="140" fill="url(#skyGradient)"/>
-            
-            <!-- Distant mountains (light coral) -->
-            <path d="M0,100 L100,60 L200,80 L350,30 L500,60 L650,10 L800,40 L950,-10 L1100,30 L1250,0 L1350,25 L1440,5 L1440,140 L0,140 Z" fill="#fecaca" opacity="0.4"/>
-            
-            <!-- Mid mountains (coral/pink) -->
-            <path d="M0,115 L150,75 L300,95 L450,50 L600,85 L750,40 L900,75 L1050,35 L1200,65 L1350,40 L1440,55 L1440,140 L0,140 Z" fill="#FF4D5F" opacity="0.25"/>
-            
-            <!-- City buildings (coral/red) -->
-            <g fill="#FF4D5F" opacity="0.7">
-                <!-- Left city cluster -->
-                <rect x="80" y="80" width="20" height="60" rx="2"/>
-                <rect x="105" y="65" width="16" height="75" rx="2"/>
-                <rect x="125" y="90" width="24" height="50" rx="2"/>
-                <rect x="154" y="75" width="18" height="65" rx="2"/>
-                <rect x="177" y="88" width="14" height="52" rx="2"/>
-                
-                <!-- Center city cluster -->
-                <rect x="550" y="70" width="22" height="70" rx="2"/>
-                <rect x="577" y="82" width="18" height="58" rx="2"/>
-                <rect x="600" y="58" width="28" height="82" rx="2"/>
-                <rect x="633" y="78" width="16" height="62" rx="2"/>
-                <rect x="654" y="90" width="20" height="50" rx="2"/>
-                
-                <!-- Right city cluster -->
-                <rect x="1050" y="72" width="24" height="68" rx="2"/>
-                <rect x="1079" y="85" width="18" height="55" rx="2"/>
-                <rect x="1102" y="62" width="22" height="78" rx="2"/>
-                <rect x="1129" y="80" width="16" height="60" rx="2"/>
-            </g>
-            
-            <!-- Green hills (foreground) -->
-            <path d="M0,115 L200,100 L400,112 L600,95 L800,108 L1000,92 L1200,105 L1440,88 L1440,140 L0,140 Z" fill="#86efac" opacity="0.8"/>
-            
-            <!-- Trees (darker green) - regular trees -->
-            <g fill="#22c55e">
-                <!-- Left trees -->
-                <path d="M50,140 L60,108 L70,140 Z"/>
-                <path d="M78,140 L90,102 L102,140 Z"/>
-                <path d="M250,140 L265,98 L280,140 Z"/>
-                <path d="M295,140 L308,110 L321,140 Z"/>
-                
-                <!-- Center trees -->
-                <path d="M450,140 L465,95 L480,140 Z"/>
-                <path d="M495,140 L507,112 L519,140 Z"/>
-                <path d="M750,140 L768,92 L786,140 Z"/>
-                <path d="M802,140 L816,108 L830,140 Z"/>
-                
-                <!-- Right trees (except last one) -->
-                <path d="M950,140 L968,98 L986,140 Z"/>
-                <path d="M1005,140 L1020,108 L1035,140 Z"/>
-                <path d="M1250,140 L1270,92 L1290,140 Z"/>
-                <path d="M1308,140 L1324,105 L1340,140 Z"/>
-            </g>
-            
-            <!-- SECRET TREE - Easter Egg (clickable, slightly different shade) -->
-            <a href="game.html" class="secret-tree">
-                <path d="M1378,140 L1396,100 L1414,140 Z" fill="#16a34a"/>
-                <path d="M1383,125 L1396,108 L1409,125 Z" fill="#15803d"/>
-            </a>
-            
-            <!-- Lighter green foreground strip -->
-            <path d="M0,128 L300,122 L600,128 L900,118 L1200,125 L1440,115 L1440,140 L0,140 Z" fill="#bbf7d0"/>
-        </svg>
-    </footer>
-    
-    <!-- Fixed Footer Info Bar -->
-    <div class="footer-info">
-        <p class="text-sm text-slalom-gray">
-            <span class="font-medium">0 lines of code written by a human.</span> 
-            <a href="our-story.html" class="text-slalom-blue hover:underline ml-1">See how we built this →</a>
-        </p>
-        <p class="text-xs text-slalom-gray/70 mt-1">
-            <a href="https://me.slalom.com/career-navigator" target="_blank" class="hover:text-slalom-blue underline">Me@Slalom Career Navigator</a> 
-            • Have questions? <a href="mailto:josh.eberle@slalom.com?subject=Question%20on%20Calibration%20Tool" class="hover:text-slalom-blue underline">Contact Josh</a>
-        </p>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        <header class="border-b border-slalom-gray-light bg-white">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center">
-                <div class="flex items-center gap-2">
+    <!-- Header -->
+    <header class="border-b border-slalom-gray-light bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 relative">
+                <div class="info-icon" onclick="toggleInfoPanel()">
                     <svg class="w-8 h-8 text-slalom-blue" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                     </svg>
-                    <span class="text-xl font-semibold text-slalom-gray">Role Calibration Tools</span>
+                </div>
+                <span class="text-xl font-semibold text-slalom-gray">Role Calibration Tools</span>
+                
+                <!-- Info Panel (hidden by default) -->
+                <div id="infoPanel" class="info-panel">
+                    <div class="text-sm text-slalom-gray space-y-3">
+                        <p class="font-semibold text-base text-gray-900">Built different.</p>
+                        <p><span class="font-semibold text-slalom-blue">0 lines of code</span> written by a human.</p>
+                        <p>5,447 lines generated through conversation between a consultant with no coding background and Claude 4.5 Opus.</p>
+                        <div class="pt-3 border-t border-gray-100 space-y-2">
+                            <a href="our-story.html" class="block text-slalom-blue hover:underline font-medium">Read the full story →</a>
+                            <a href="https://me.slalom.com/career-navigator" target="_blank" class="block text-slalom-gray hover:text-slalom-blue">Me@Slalom Career Navigator ↗</a>
+                            <a href="mailto:josh.eberle@slalom.com?subject=Question%20on%20Calibration%20Tool" class="block text-slalom-gray hover:text-slalom-blue">Contact Josh</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Content Area -->
-        <main class="max-w-7xl mx-auto px-6 py-12">
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
             
             <!-- Page Title -->
             <div class="mb-10">
@@ -374,4 +285,111 @@
             </div>
 
         </main>
-    </d
+
+    <!-- Landscape Footer (visible when scrolled to bottom) -->
+    <footer class="w-full">
+        <svg class="w-full h-48" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+            <!-- Sky gradient -->
+            <defs>
+                <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect width="1440" height="200" fill="url(#skyGradient)"/>
+            
+            <!-- Distant mountains (light coral) -->
+            <path d="M0,160 L100,120 L200,140 L350,90 L500,120 L650,70 L800,100 L950,50 L1100,90 L1250,60 L1350,85 L1440,65 L1440,200 L0,200 Z" fill="#fecaca" opacity="0.4"/>
+            
+            <!-- Mid mountains (coral/pink) -->
+            <path d="M0,175 L150,135 L300,155 L450,110 L600,145 L750,100 L900,135 L1050,95 L1200,125 L1350,100 L1440,115 L1440,200 L0,200 Z" fill="#FF4D5F" opacity="0.25"/>
+            
+            <!-- City buildings (coral/red) -->
+            <g fill="#FF4D5F" opacity="0.7">
+                <!-- Left city cluster -->
+                <rect x="80" y="140" width="20" height="60" rx="2"/>
+                <rect x="105" y="125" width="16" height="75" rx="2"/>
+                <rect x="125" y="150" width="24" height="50" rx="2"/>
+                <rect x="154" y="135" width="18" height="65" rx="2"/>
+                <rect x="177" y="148" width="14" height="52" rx="2"/>
+                
+                <!-- Center city cluster -->
+                <rect x="550" y="130" width="22" height="70" rx="2"/>
+                <rect x="577" y="142" width="18" height="58" rx="2"/>
+                <rect x="600" y="118" width="28" height="82" rx="2"/>
+                <rect x="633" y="138" width="16" height="62" rx="2"/>
+                <rect x="654" y="150" width="20" height="50" rx="2"/>
+                
+                <!-- Right city cluster -->
+                <rect x="1050" y="132" width="24" height="68" rx="2"/>
+                <rect x="1079" y="145" width="18" height="55" rx="2"/>
+                <rect x="1102" y="122" width="22" height="78" rx="2"/>
+                <rect x="1129" y="140" width="16" height="60" rx="2"/>
+            </g>
+            
+            <!-- Green hills (foreground) -->
+            <path d="M0,175 L200,160 L400,172 L600,155 L800,168 L1000,152 L1200,165 L1440,148 L1440,200 L0,200 Z" fill="#86efac" opacity="0.8"/>
+            
+            <!-- Trees (darker green) - regular trees -->
+            <g fill="#22c55e">
+                <!-- Left trees -->
+                <path d="M50,200 L60,168 L70,200 Z"/>
+                <path d="M78,200 L90,162 L102,200 Z"/>
+                <path d="M250,200 L265,158 L280,200 Z"/>
+                <path d="M295,200 L308,170 L321,200 Z"/>
+                
+                <!-- Center trees -->
+                <path d="M450,200 L465,155 L480,200 Z"/>
+                <path d="M495,200 L507,172 L519,200 Z"/>
+                <path d="M750,200 L768,152 L786,200 Z"/>
+                <path d="M802,200 L816,168 L830,200 Z"/>
+                
+                <!-- Right trees (except last one) -->
+                <path d="M950,200 L968,158 L986,200 Z"/>
+                <path d="M1005,200 L1020,168 L1035,200 Z"/>
+                <path d="M1250,200 L1270,152 L1290,200 Z"/>
+                <path d="M1308,200 L1324,165 L1340,200 Z"/>
+            </g>
+            
+            <!-- SECRET TREE - Easter Egg (clickable, slightly different shade) -->
+            <a href="game.html" class="secret-tree">
+                <path d="M1378,200 L1396,160 L1414,200 Z" fill="#16a34a"/>
+                <path d="M1383,185 L1396,168 L1409,185 Z" fill="#15803d"/>
+            </a>
+            
+            <!-- Lighter green foreground strip -->
+            <path d="M0,188 L300,182 L600,188 L900,178 L1200,185 L1440,175 L1440,200 L0,200 Z" fill="#bbf7d0"/>
+        </svg>
+        
+        <!-- Footer text -->
+        <div class="bg-gradient-to-b from-[#bbf7d0] to-green-100 py-4 text-center">
+            <p class="text-sm text-slalom-gray">
+                <span class="font-medium">0 lines of code written by a human.</span> 
+                <a href="our-story.html" class="text-slalom-blue hover:underline ml-1">See how we built this →</a>
+            </p>
+            <p class="text-xs text-slalom-gray/70 mt-1">
+                <a href="https://me.slalom.com/career-navigator" target="_blank" class="hover:text-slalom-blue underline">Me@Slalom Career Navigator</a> 
+                • Have questions? <a href="mailto:josh.eberle@slalom.com?subject=Question%20on%20Calibration%20Tool" class="hover:text-slalom-blue underline">Contact Josh</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for info panel -->
+    <script>
+        function toggleInfoPanel() {
+            const panel = document.getElementById('infoPanel');
+            panel.classList.toggle('active');
+        }
+        
+        // Close panel when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('infoPanel');
+            const icon = document.querySelector('.info-icon');
+            if (!panel.contains(e.target) && !icon.contains(e.target)) {
+                panel.classList.remove('active');
+            }
+        });
+    </script>
+
+</body>
+</html>
