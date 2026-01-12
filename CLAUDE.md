@@ -4,32 +4,57 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Interactive role calibration tools for Slalom career tracks. This is a static HTML site hosted on GitHub Pages with password-protected content using StatiCrypt.
+Interactive role calibration tools for Slalom career tracks. This is a static HTML site hosted on GitHub Pages with password-protected content.
 
 **Repository:** https://github.com/JTEberle85/calibration-tools.git
 
 ## Architecture
 
 - **Static HTML files** - Each calibration tool is a self-contained HTML file with embedded CSS and JavaScript
-- **StatiCrypt encryption** - Most HTML files are encrypted client-side using StatiCrypt (AES-256-CBC with PBKDF2 key derivation)
+- **Gateway authentication** - Single password entry on `index.html`, other pages use localStorage auth check
 - **No build system** - Plain HTML/CSS/JS, no bundlers or frameworks
-- **`encrypted/` folder** - Contains unencrypted source versions of files for editing
+
+## Authentication Flow
+
+1. `index.html` is encrypted with StatiCrypt - this is the login page
+2. On successful password entry, sets `slalom-calibration-auth` token in localStorage (expires after 24 hours)
+3. All other pages check for this token on load; redirect to `index.html` if missing/expired
+4. Password: `***REDACTED***`
 
 ## Key Files
 
-- `*.html` (root) - Password-protected encrypted versions served to users
-- `encrypted/*.html` - Unencrypted source files for development/editing
+- `index.html` - Encrypted login page (StatiCrypt)
+- `*.html` (other) - Decrypted pages with auth-check script
+- `decrypted_pages/` - Working folder for decrypted source files
 - `.staticrypt.json` - Contains the salt used for encryption
 
-## Encryption Workflow
+## Re-encrypting index.html
 
-StatiCrypt is installed globally via npm. To encrypt a file:
+If you need to update the landing page content:
 
 ```bash
-staticrypt <input.html> -p "***REDACTED***" --salt 9a33add92f11f72ec2c82098ef4dc579
+# Decrypt current index.html
+staticrypt --decrypt -p "***REDACTED***" index.html -d decrypted_pages
+
+# Edit decrypted_pages/index.html
+
+# Re-encrypt
+staticrypt decrypted_pages/index.html -p "***REDACTED***" --salt 9a33add92f11f72ec2c82098ef4dc579 -d .
 ```
 
-To work on calibration tools:
-1. Edit the unencrypted version in `encrypted/`
-2. Re-encrypt with StatiCrypt using the same password and salt
-3. Replace the encrypted file in the root directory
+## Adding Auth Check to New Pages
+
+Add this script immediately after `<head>`:
+
+```html
+<script>
+    (function() {
+        var auth = localStorage.getItem('slalom-calibration-auth');
+        var authTime = localStorage.getItem('slalom-calibration-auth-time');
+        var maxAge = 24 * 60 * 60 * 1000; // 24 hours
+        if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+            window.location.href = 'index.html';
+        }
+    })();
+</script>
+```
