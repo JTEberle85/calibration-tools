@@ -896,7 +896,11 @@ exports.init = init;
 
                 const { isSuccessful } = await staticrypt.handleDecryptionOfPage(password, isRememberChecked);
 
-                if (!isSuccessful) {
+                if (isSuccessful) {
+                    // Set auth token for other pages to check
+                    localStorage.setItem('slalom-calibration-auth', 'authenticated');
+                    localStorage.setItem('slalom-calibration-auth-time', Date.now().toString());
+                } else {
                     alert(templateError);
                 }
             });
