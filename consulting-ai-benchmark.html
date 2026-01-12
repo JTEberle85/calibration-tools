@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulting AI Benchmark | Professional LLM Evaluation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Color System */
+            --color-primary: #2563eb;
+            --color-primary-dark: #1e40af;
+            --color-primary-light: #dbeafe;
+            --color-success: #059669;
+            --color-success-light: #d1fae5;
+            --color-warning: #d97706;
+            --color-warning-light: #fef3c7;
+            --color-danger: #dc2626;
+            --color-danger-light: #fee2e2;
+            --color-neutral-50: #f9fafb;
+            --color-neutral-100: #f3f4f6;
+            --color-neutral-200: #e5e7eb;
+            --color-neutral-300: #d1d5db;
+            --color-neutral-400: #9ca3af;
+            --color-neutral-500: #6b7280;
+            --color-neutral-600: #4b5563;
+            --color-neutral-700: #374151;
+            --color-neutral-800: #1f2937;
+            --color-neutral-900: #111827;
+
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --spacing-3xl: 4rem;
+
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            /* Transitions */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: var(--color-neutral-800);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: var(--spacing-2xl) var(--spacing-md);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: var(--spacing-2xl) var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radially-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.02em;
+        }
+
+        .header-subtitle {
+            font-size: var(--font-size-lg);
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            padding: var(--spacing-xl);
+            background: var(--color-neutral-50);
+            border-bottom: 1px solid var(--color-neutral-200);
+        }
+
+        .leaderboard-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-neutral-900);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .leaderboard-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            border: 2px solid transparent;
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .leaderboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-primary-light);
+        }
+
+        .leaderboard-card.rank-1 {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, #fffbeb 0%, white 100%);
+        }
+
+        .leaderboard-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .model-name {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-neutral-900);
+        }
+
+        .rank-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+        }
+
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #fdba74 0%, #ea580c 100%);
+        }
+
+        .leaderboard-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+            margin-top: var(--spacing-xs);
+            justify-content: center;
+        }
+
+        .star {
+            color: #fbbf24;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: var(--spacing-xl);
+        }
+
+        /* Key Findings */
+        .key-findings {
+            background: linear-gradient(135deg, var(--color-success-light) 0%, white 100%);
+            border-left: 4px solid var(--color-success);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .key-findings h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-neutral-900);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .findings-list {
+            list-style: none;
+        }
+
+        .findings-list li {
+            padding: var(--spacing-md) 0;
+            padding-left: var(--spacing-xl);
+            position: relative;
+            font-size: var(--font-size-base);
+            color: var(--color-neutral-700);
+            line-height: 1.7;
+        }
+
+        .findings-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: var(--spacing-md);
+            background: var(--color-success);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+        }
+
+        /* Methodology */
+        .methodology {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .methodology h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-neutral-900);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .methodology-card {
+            background: white;
+            border: 2px solid var(--color-neutral-200);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-base);
+        }
+
+        .methodology-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .methodology-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-primary-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-primary);
+            font-size: 24px;
+        }
+
+        .methodology-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-neutral-900);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .methodology-card p {
+            font-size: var(--font-size-sm);
+            color: var(--color-neutral-600);
+            line-height: 1.6;
+        }
+
+        /* Evaluation Criteria */
+        .criteria-toggle {
+            background: var(--color-neutral-100);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-neutral-700);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all var(--transition-base);
+            width: 100%;
+            text-align: left;
+        }
+
+        .criteria-toggle:hover {
+            background: var(--color-neutral-200);
+        }
+
+        .criteria-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-slow);
+        }
+
+        .criteria-content.open {
+            max-height: 1000px;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg) 0;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: start;
+            gap: var(--spacing-sm);
+        }
+
+        .criteria-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .criteria-text {
+            font-size: var(--font-size-sm);
+            color: var(--color-neutral-600);
+        }
+
+        /* Benchmark Tasks */
+        .benchmark-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--color-neutral-200);
+        }
+
+        .section-number {
+            width: 40px;
+            height: 40px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+        }
+
+        .section-title {
+            flex: 1;
+        }
+
+        .section-title h3 {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-neutral-900);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .section-title p {
+            font-size: var(--font-size-sm);
+            color: var(--color-neutral-500);
+        }
+
+        /* Prompt Card */
+        .prompt-card {
+            background: var(--color-neutral-50);
+            border-left: 4px solid var(--color-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .prompt-label {
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-neutral-500);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .prompt-text {
+            font-family: var(--font-mono);
+            font-size: var(--font-size-sm);
+            line-height: 1.7;
+            color: var(--color-neutral-700);
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            white-space: pre-wrap;
+        }
+
+        /* Model Outputs */
+        .outputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .output-card {
+            background: white;
+            border: 2px solid var(--color-neutral-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .output-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-primary-light);
+        }
+
+        .output-card.expanded {
+            grid-column: 1 / -1;
+        }
+
+        .output-card.winner {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .output-header {
+            padding: var(--spacing-lg);
+            background: var(--color-neutral-50);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-model {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .model-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+        }
+
+        .model-info h4 {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-neutral-900);
+        }
+
+        .model-version {
+            font-size: var(--font-size-xs);
+            color: var(--color-neutral-500);
+        }
+
+        .winner-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .output-body {
+            padding: var(--spacing-lg);
+        }
+
+        .output-preview {
+            font-size: var(--font-size-sm);
+            line-height: 1.7;
+            color: var(--color-neutral-700);
+            max-height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .output-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(transparent, white);
+        }
+
+        .output-full {
+            font-size: var(--font-size-sm);
+            line-height: 1.8;
+            color: var(--color-neutral-700);
+            white-space: pre-wrap;
+        }
+
+        .output-footer {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--color-neutral-50);
+            border-top: 1px solid var(--color-neutral-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rating {
+            display: flex;
+            gap: 4px;
+        }
+
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+            color: var(--color-neutral-300);
+        }
+
+        .star-button:hover {
+            transform: scale(1.2);
+        }
+
+        .star-button.active {
+            color: #fbbf24;
+        }
+
+        .expand-button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .expand-button:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* Performance Badge */
+        .performance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .performance-badge.high {
+            background: var(--color-success-light);
+            color: var(--color-success);
+        }
+
+        .performance-badge.medium {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+
+        .performance-badge.low {
+            background: var(--color-danger-light);
+            color: var(--color-danger);
+        }
+
+        /* Compare Mode */
+        .compare-header {
+            background: var(--color-primary-light);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .compare-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-primary-dark);
+        }
+
+        .compare-close {
+            background: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .compare-close:hover {
+            background: var(--color-neutral-100);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--color-neutral-900);
+            color: white;
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .version-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .footer-meta {
+            font-size: var(--font-size-sm);
+            color: var(--color-neutral-400);
+        }
+
+        .footer-right a {
+            color: var(--color-primary-light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color var(--transition-base);
+        }
+
+        .footer-right a:hover {
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeIn var(--transition-slow) ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .header {
+                padding: var(--spacing-xl) var(--spacing-md);
+            }
+
+            .header h1 {
+                font-size: var(--font-size-2xl);
+            }
+
+            .outputs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .methodology-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .site-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>Consulting AI Benchmark</h1>
+                <p class="header-subtitle">Professional LLM Evaluation for Enterprise Consulting Scenarios</p>
+            </div>
+        </header>
+
+        <!-- Leaderboard -->
+        <section class="leaderboard">
+            <h2 class="leaderboard-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                    <path d="M4 22h16"></path>
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                </svg>
+                Leaderboard
+            </h2>
+            <div class="leaderboard-grid" id="leaderboard">
+                <!-- Populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Key Findings -->
+            <section class="key-findings">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Key Findings
+                </h2>
+                <ul class="findings-list">
+                    <li><strong>Claude Sonnet 4.5</strong> demonstrates superior performance in nuanced client communication, particularly in handling sensitive topics like project delays and budget concerns.</li>
+                    <li><strong>GPT-4 Turbo</strong> excels at structured, analytical tasks such as stakeholder analysis and data-driven recommendations, making it ideal for strategic planning work.</li>
+                    <li><strong>Context depth matters:</strong> Models with larger context windows (200K+) maintained better consistency across complex, multi-stakeholder scenarios.</li>
+                    <li><strong>Tone calibration:</strong> All tested models required careful prompting to achieve the appropriate formality level for C-suite communications—zero-shot performance varied significantly.</li>
+                </ul>
+            </section>
+
+            <!-- Methodology -->
+            <section class="methodology">
+                <h2>Methodology</h2>
+                <div class="methodology-grid">
+                    <div class="methodology-card">
+                        <div class="methodology-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Identical Prompts</h3>
+                        <p>Each model received the exact same prompt with no modifications, ensuring fair comparison across all evaluations.</p>
+                    </div>
+                    <div class="methodology-card">
+                        <div class="methodology-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Zero-Shot Evaluation</h3>
+                        <p>No examples or few-shot learning provided. This tests real-world performance when consultants need immediate responses.</p>
+                    </div>
+                    <div class="methodology-card">
+                        <div class="methodology-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                        </div>
+                        <h3>Documented Versions</h3>
+                        <p>All model versions and test dates documented for transparency and reproducibility of results.</p>
+                    </div>
+                    <div class="methodology-card">
+                        <div class="methodology-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </div>
+                        <h3>Real Consulting Tasks</h3>
+                        <p>Scenarios derived from actual Big Four consulting engagements, ensuring practical relevance.</p>
+                    </div>
+                </div>
+
+                <!-- Evaluation Criteria -->
+                <button class="criteria-toggle" onclick="toggleCriteria()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                    Evaluation Criteria
+                </button>
+                <div class="criteria-content" id="criteria-content">
+                    <div class="criteria-grid">
+                        <div class="criteria-item">
+                            <div class="criteria-dot"></div>
+                            <div>
+                                <strong>Accuracy:</strong>
+                                <div class="criteria-text">Factual correctness and logical consistency</div>
+                            </div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-dot"></div>
+                            <div>
+                                <strong>Tone:</strong>
+                                <div class="criteria-text">Appropriate formality for executive audience</div>
+                            </div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-dot"></div>
+                            <div>
+                                <strong>Actionability:</strong>
+                                <div class="criteria-text">Clear next steps and recommendations</div>
+                            </div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-dot"></div>
+                            <div>
+                                <strong>Conciseness:</strong>
+                                <div class="criteria-text">Respects executive time constraints</div>
+                            </div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-dot"></div>
+                            <div>
+                                <strong>Client-Readiness:</strong>
+                                <div class="criteria-text">Can be shared with minimal editing</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Benchmark Tasks -->
+            <div id="benchmark-tasks">
+                <!-- Populated by JavaScript -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <span class="version-badge">v1.0</span>
+                    <span class="footer-meta">Last updated: January 9, 2026</span>
+                </div>
+                <div class="footer-right">
+                    <a href="mailto:consulting-ai@example.com?subject=Benchmark%20Contribution">Contribute an Evaluation</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Data Structure
+        const benchmarkData = {
+            models: [
+                {
+                    name: 'Claude Sonnet 4.5',
+                    version: 'claude-sonnet-4.5-20250929',
+                    testDate: '2026-01-08',
+                    logo: 'CS',
+                    color: '#8B5CF6'
+                },
+                {
+                    name: 'GPT-4 Turbo',
+                    version: 'gpt-4-turbo-2024-04-09',
+                    testDate: '2026-01-08',
+                    logo: 'G4',
+                    color: '#10B981'
+                },
+                {
+                    name: 'Gemini Ultra',
+                    version: 'gemini-ultra-1.0',
+                    testDate: '2026-01-08',
+                    logo: 'GU',
+                    color: '#3B82F6'
+                }
+            ],
+            tasks: [
+                {
+                    id: 1,
+                    title: 'Stakeholder Analysis Email',
+                    description: 'Drafting a complex stakeholder mapping email',
+                    prompt: `You are a management consultant working on a large-scale digital transformation for a Fortune 500 retail client. The client has a complex stakeholder landscape with competing priorities.
+
+Write an email to the engagement partner summarizing your stakeholder analysis. Include:
+- Key decision-makers and their primary concerns
+- Potential resistance points
+- Recommended engagement strategy
+- Next steps for stakeholder alignment
+
+Keep it concise (250-300 words) but comprehensive. Use a professional consulting tone appropriate for a partner-level audience.`,
+                    outputs: [
+                        {
+                            modelIndex: 0,
+                            rating: 5,
+                            text: `Subject: Stakeholder Analysis Summary - RetailCo Digital Transformation
+
+Hi Sarah,
+
+Following our kickoff, I've completed the initial stakeholder mapping. Here's what emerged:
+
+**Key Decision-makers:**
+- CIO (Linda Chen): Primary sponsor. Concerned about legacy system integration and vendor lock-in risk.
+- CFO (Michael Torres): Budget-conscious. Wants clear ROI within 18 months.
+- CMO (Jennifer Williams): Enthusiastic but worried about customer experience disruption during migration.
+- VP Operations (David Park): Skeptical of timeline. Burned by previous failed transformation.
+
+**Resistance Points:**
+1. IT Architecture team fears job displacement (automation narrative)
+2. Store Operations sees this as "corporate initiative" disconnected from frontline reality
+3. Finance questions cloud infrastructure costs vs. on-prem TCO
+
+**Recommended Strategy:**
+- Early wins approach: Pilot in 3 stores before enterprise rollout
+- Weekly "transformation councils" with cross-functional representation
+- Create dedicated change management workstream (currently missing)
+- Commission independent ROI validation study to address CFO concerns
+
+**Next Steps:**
+1. Schedule 1:1s with CIO and CFO this week
+2. Propose pilot store criteria by Friday
+3. Draft change management charter for review
+
+The opportunity is significant, but we need to move fast on the change management front—resistance is building.
+
+Best,
+Alex`
+                        },
+                        {
+                            modelIndex: 1,
+                            rating: 4,
+                            text: `Subject: Stakeholder Analysis - Digital Transformation Initiative
+
+Dear Partner,
+
+Please find below my analysis of the stakeholder landscape for the RetailCo digital transformation engagement:
+
+**Primary Stakeholders:**
+The CIO serves as our executive sponsor and is focused on technology modernization. The CFO is concerned with cost management and requires detailed ROI projections. The CMO wants to ensure customer experience is maintained throughout the transition. The VP of Operations is cautious due to past project challenges.
+
+**Areas of Concern:**
+Several resistance points have been identified. The IT team is concerned about system complexity. Store operations personnel are worried about training requirements. Finance is questioning the overall business case.
+
+**Strategic Recommendations:**
+I recommend we pursue a phased implementation approach. This should include regular stakeholder briefings and a robust change management program. We should also consider appointing transformation champions within each business unit.
+
+**Proposed Actions:**
+Schedule individual meetings with key stakeholders. Develop a detailed communication plan. Create a risk mitigation framework. Establish success metrics.
+
+I believe with proper stakeholder management, this initiative can succeed. Please let me know if you need additional details.
+
+Regards,
+Senior Consultant`
+                        },
+                        {
+                            modelIndex: 2,
+                            rating: 3,
+                            text: `Subject: Stakeholder Analysis Summary
+
+Hello,
+
+I wanted to share my findings from the stakeholder analysis work.
+
+**Key People:**
+- CIO: Technology leader, main contact
+- CFO: Handles budget decisions
+- CMO: Marketing department head
+- Operations VP: Runs store operations
+
+**Issues Identified:**
+There are some concerns about the project timeline and costs. The IT department has questions about the new systems. Some people are worried about changes to their current processes.
+
+**What We Should Do:**
+We need to have more meetings with stakeholders to address their concerns. A communication plan would be helpful. Training programs should be developed for affected employees.
+
+**Next Actions:**
+Set up meetings. Create documentation. Monitor progress.
+
+The project has good potential but will require careful management of different stakeholder groups.
+
+Thank you,
+Consultant`
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: 'Proposal Executive Summary',
+                    description: 'Writing an RFP response executive summary',
+                    prompt: `You are responding to an RFP for a $2M digital transformation engagement from a mid-market healthcare provider. They need to modernize their patient management system and implement AI-driven scheduling.
+
+Write the Executive Summary section (1 page, ~400 words) for the proposal. Include:
+- Brief understanding of their challenge
+- Your firm's unique approach/methodology
+- Key differentiators vs. competitors
+- High-level timeline and investment
+- Expected outcomes/value proposition
+
+Write in a confident, solution-oriented tone that resonates with healthcare executives. Avoid generic consulting language.`,
+                    outputs: [
+                        {
+                            modelIndex: 0,
+                            rating: 5,
+                            text: `EXECUTIVE SUMMARY
+
+HealthCare Partners faces a critical inflection point: patient volumes have grown 35% in two years, yet scheduling efficiency has declined, creating 14-day average wait times that threaten both patient satisfaction and revenue capture. Your legacy patient management system wasn't designed for this scale—and competitors with modern infrastructure are gaining market share.
+
+We propose a 9-month, $2M transformation that doesn't just modernize technology—it fundamentally redesigns how your organization delivers patient access.
+
+**Our Approach: Clinical Operations First, Technology Second**
+Unlike traditional IT-led transformations, we begin with your clinical workflows. Our healthcare-specialized consultants will embed with your scheduling team, ED staff, and specialty clinics for three weeks before writing a single line of code. This "clinical-immersion" methodology ensures technology serves medicine, not the reverse.
+
+Our AI scheduling engine is purpose-built for healthcare complexity—understanding provider preferences, patient acuity, insurance verification, and even predictive no-shows. We're not adapting a generic algorithm; we're deploying a solution refined across 47 healthcare implementations.
+
+**Why We're Different:**
+- **Healthcare DNA:** 12 of our 15 project team members are former healthcare operators (nurses, practice administrators, revenue cycle directors)
+- **Proven Playbook:** Average 32% reduction in wait times, 18% increase in appointment utilization across our implementations
+- **Risk Mitigation:** We maintain your current system in parallel for 60 days—zero patient impact during cutover
+- **Value Guarantee:** If we don't reduce wait times by 25% within 6 months post-launch, we'll work at no additional cost until we do
+
+**Timeline & Investment:**
+- Months 1-2: Clinical workflow analysis & AI model training
+- Months 3-6: Phased rollout (Primary Care → Specialties → ED)
+- Months 7-9: Optimization & staff adoption
+- Investment: $2M (fixed-fee) | ROI breakeven: Month 14
+
+This isn't about installing software. It's about giving your patients their time back—and giving HealthCare Partners the operational foundation to scale with confidence.`
+                        },
+                        {
+                            modelIndex: 1,
+                            rating: 4,
+                            text: `EXECUTIVE SUMMARY
+
+HealthCare Partners has identified a critical need to modernize its patient management infrastructure and implement AI-driven scheduling capabilities. We understand that your current system constraints are impacting both patient satisfaction and operational efficiency, with scheduling bottlenecks creating delays that affect care delivery and revenue optimization.
+
+**Our Proposed Solution**
+Our firm brings deep expertise in healthcare digital transformation, having successfully delivered similar initiatives for over 30 healthcare organizations. We propose a comprehensive approach that combines best-in-class technology implementation with organizational change management, ensuring sustainable adoption and measurable outcomes.
+
+Our methodology follows a proven four-phase framework: Assessment & Design, Platform Implementation, Integration & Testing, and Go-Live & Optimization. This structured approach minimizes disruption to ongoing operations while delivering rapid value realization.
+
+**Key Differentiators:**
+1. **Healthcare Specialization:** Our team includes former healthcare executives who understand clinical workflows and regulatory requirements
+2. **AI Capabilities:** Proprietary scheduling algorithms that optimize for patient preferences, provider availability, and resource utilization
+3. **Risk Mitigation:** Comprehensive testing protocols and parallel run strategies to ensure system reliability
+4. **Post-Implementation Support:** 90-day hypercare period with dedicated support team
+
+**Timeline and Investment:**
+The proposed engagement spans 9 months from contract signature to full production deployment. The total investment of $2M includes all software licenses, implementation services, training, and post-go-live support. We structure payments based on milestone completion, aligning our compensation with your success.
+
+**Expected Outcomes:**
+Based on comparable implementations, we anticipate 30-40% improvement in scheduling efficiency, 25% reduction in patient wait times, and $1.2M in annual operational savings through optimized resource utilization. Additionally, improved patient satisfaction scores will enhance your competitive positioning and support volume growth objectives.
+
+We are confident that this engagement will position HealthCare Partners for sustainable growth while improving the patient and provider experience.`
+                        },
+                        {
+                            modelIndex: 2,
+                            rating: 3,
+                            text: `EXECUTIVE SUMMARY
+
+Thank you for the opportunity to submit this proposal for your digital transformation project. We understand that HealthCare Partners is looking to upgrade its patient management system and add AI scheduling capabilities.
+
+**Understanding Your Needs**
+Your organization is experiencing growth and needs better technology to handle patient scheduling. The current system is outdated and creating inefficiencies. Modern healthcare requires modern solutions.
+
+**Our Approach**
+We follow industry best practices for digital transformation. Our team has experience with healthcare technology projects. We will implement a new patient management system and add AI features for scheduling.
+
+The project will include several phases: planning, implementation, testing, and launch. Each phase has specific deliverables and checkpoints. We use proven project management methodologies.
+
+**What Makes Us Different:**
+- Experienced consulting team
+- Knowledge of healthcare industry
+- Quality technology solutions
+- Good track record with clients
+
+**Project Details:**
+The project will take approximately 9 months to complete. The total cost is $2 million. This includes consulting services, software, training, and support.
+
+**Benefits:**
+You will get a new system that works better. Patients will have easier scheduling. Staff will have better tools. The organization will be more efficient.
+
+We look forward to working with HealthCare Partners on this important initiative. Our team is ready to start immediately upon contract approval.
+
+Please contact us if you have questions about this proposal.`
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: 'Steering Committee Update',
+                    description: 'Crafting a status update for a troubled project',
+                    prompt: `You are the project lead on a large ERP implementation that has hit significant challenges. The situation:
+- Project is 3 weeks behind schedule (now week 14 of 20)
+- Budget overrun: 15% over ($450K on a $3M project)
+- Client's IT Director is escalating concerns to their CFO
+- Two key technical resources quit last week
+- Integration testing revealed data migration issues requiring rework
+
+Write a Steering Committee status update (email, 350-400 words) for next Monday's meeting. You need to:
+- Acknowledge the issues transparently
+- Explain root causes without blame
+- Present a realistic recovery plan
+- Request specific decisions/support
+- Maintain confidence while being honest
+
+Write for an audience that includes your Managing Partner, the client's CFO, CIO, and PMO Director. Strike the right balance between accountability and solution-focus.`,
+                    outputs: [
+                        {
+                            modelIndex: 0,
+                            rating: 5,
+                            text: `Subject: Steering Committee Pre-Read: Project Recovery Actions Required
+
+**Status: AMBER** (Red → Amber as of 1/8)
+
+**Executive Summary:**
+The ERP implementation has encountered significant headwinds over the past three weeks. We're now 21 days behind baseline (Week 14 of 20), with a $450K budget variance (15% over). I'm writing to transparently address the situation, outline our recovery plan, and request specific support to stabilize the program.
+
+**What Happened:**
+Three compounding issues converged:
+1. **Technical Resource Attrition:** Two senior developers departed (unrelated to project—both accepted external opportunities). Knowledge transfer was incomplete.
+2. **Data Migration Complexity:** Integration testing exposed legacy data quality issues not visible in initial assessments. 23% of records require manual remediation before migration.
+3. **Scope Creep:** Week 8-12 saw 14 change requests approved without formal schedule impact analysis. Accumulation effect wasn't visible until milestone tracking this week.
+
+**Recovery Plan (Decisions Needed):**
+
+*Option A: Accelerated Path (Recommended)*
+- Bring in two specialized ERP developers (rate premium: $50K)
+- Extend data cleanup window by 2 weeks, compress UAT by 1 week
+- Revised go-live: Week 22 (2 weeks late)
+- Final budget: $3.52M (+17%)
+
+*Option B: Full Reset*
+- Pause integration work, complete data cleanup, rebaseline
+- Go-live: Week 26 (6 weeks late)
+- Budget: $3.45M (+15%)
+
+**What I Need Monday:**
+1. Approval to secure specialized resources (Option A requires commitment by Wed)
+2. Client CFO to authorize data cleanup budget ($125K for external data quality firm)
+3. Agreement to pause new change requests through go-live
+4. Client CIO to assign dedicated business SME for UAT (currently shared resource)
+
+**Confidence Level:**
+With Option A and required support, we'll deliver a stable system by end of Q1. Without intervention, we risk slipping to Option B timeline.
+
+I take accountability for not escalating the accumulated change impact sooner. The team remains committed to delivery—but we need to make tough decisions Monday.
+
+Available for questions ahead of the meeting.
+
+Best regards,
+Project Lead`
+                        },
+                        {
+                            modelIndex: 1,
+                            rating: 4,
+                            text: `Subject: ERP Implementation - Steering Committee Status Update
+
+Dear Steering Committee Members,
+
+I am writing to provide an update on the ERP implementation project and address several challenges that require your attention and decision-making support.
+
+**Current Status:**
+The project is currently in Week 14 and facing schedule and budget pressures. We are approximately 3 weeks behind the original timeline, and costs have increased by $450,000 (15% over the $3M budget).
+
+**Key Issues:**
+Several factors have contributed to our current position. Two critical technical resources recently left the organization. During integration testing, we discovered data migration complications that require additional remediation work. Additionally, we have experienced some scope management challenges that impacted our schedule.
+
+**Root Cause Analysis:**
+The resource departures have affected project continuity and knowledge transfer. The data quality issues were not fully apparent during initial discovery phases. These challenges have compounded to create our current timeline variance.
+
+**Recovery Plan:**
+We have developed a comprehensive recovery strategy. First, we are actively recruiting replacement technical resources and have identified potential contractors. Second, we have revised our data migration approach to address quality issues. Third, we are implementing enhanced project controls to prevent further schedule slippage.
+
+**Requested Support:**
+We need the committee's help with several items. We require approval for additional technical staff augmentation. Budget authorization is needed for data remediation activities. We also need client IT leadership to prioritize resource allocation for integration testing.
+
+**Path Forward:**
+With the proposed recovery actions and your support, we can stabilize the program and work toward successful delivery. We have learned valuable lessons about resource planning and data assessment that will strengthen our approach going forward.
+
+The team remains committed to delivering a quality solution. I will present detailed recovery timelines and budget projections at Monday's meeting.
+
+Thank you for your continued support.
+
+Regards,
+Project Manager`
+                        },
+                        {
+                            modelIndex: 2,
+                            rating: 2,
+                            text: `Subject: Project Status Update
+
+Hello Everyone,
+
+I wanted to give you an update on the ERP project before our meeting on Monday.
+
+**Current Situation:**
+The project is running behind schedule. We are now in week 14 and are 3 weeks late. The budget is also higher than planned by $450K.
+
+**Problems:**
+Some issues have come up during the project. Two people on the team left last week. We found some problems with the data migration during testing. These problems need to be fixed.
+
+**What We're Doing:**
+We are working on solutions to get back on track. We are looking for new people to join the team. We are also working on fixing the data problems.
+
+**What We Need:**
+We need some help from the committee. We need approval to hire more people. We also need more budget for fixing the data issues.
+
+**Next Steps:**
+We will keep working on the project and try to catch up on the schedule. The team is doing their best to solve the problems.
+
+I will have more details at the Monday meeting. Please let me know if you have any questions.
+
+Thanks,
+Project Lead`
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLeaderboard();
+            renderTasks();
+        });
+
+        // Render Leaderboard
+        function renderLeaderboard() {
+            const leaderboardEl = document.getElementById('leaderboard');
+            const scores = calculateScores();
+
+            scores.forEach((model, index) => {
+                const card = document.createElement('div');
+                card.className = `leaderboard-card ${index === 0 ? 'rank-1' : ''}`;
+
+                let rankClass = '';
+                if (index === 0) rankClass = 'gold';
+                else if (index === 1) rankClass = 'silver';
+                else if (index === 2) rankClass = 'bronze';
+
+                card.innerHTML = `
+                    <div class="leaderboard-card-header">
+                        <div class="model-name">${model.name}</div>
+                        <div class="rank-badge ${rankClass}">#${index + 1}</div>
+                    </div>
+                    <div class="leaderboard-stats">
+                        <div class="stat">
+                            <div class="stat-value">${model.wins}</div>
+                            <div class="stat-label">Wins</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${model.avgRating.toFixed(1)}</div>
+                            <div class="stat-label">Avg Rating</div>
+                            <div class="stars">
+                                ${renderStars(model.avgRating, false)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                leaderboardEl.appendChild(card);
+            });
+        }
+
+        // Calculate Scores
+        function calculateScores() {
+            const scores = benchmarkData.models.map((model, modelIndex) => {
+                let totalRating = 0;
+                let wins = 0;
+                let count = 0;
+
+                benchmarkData.tasks.forEach(task => {
+                    const outputs = task.outputs;
+                    const modelOutput = outputs.find(o => o.modelIndex === modelIndex);
+
+                    if (modelOutput) {
+                        totalRating += modelOutput.rating;
+                        count++;
+
+                        // Check if this is the highest rating for this task
+                        const maxRating = Math.max(...outputs.map(o => o.rating));
+                        if (modelOutput.rating === maxRating) {
+                            wins++;
+                        }
+                    }
+                });
+
+                return {
+                    name: model.name,
+                    wins: wins,
+                    avgRating: count > 0 ? totalRating / count : 0,
+                    totalRating: totalRating
+                };
+            });
+
+            return scores.sort((a, b) => {
+                if (b.wins !== a.wins) return b.wins - a.wins;
+                return b.avgRating - a.avgRating;
+            });
+        }
+
+        // Render Tasks
+        function renderTasks() {
+            const container = document.getElementById('benchmark-tasks');
+
+            benchmarkData.tasks.forEach(task => {
+                const section = document.createElement('section');
+                section.className = 'benchmark-section';
+
+                const maxRating = Math.max(...task.outputs.map(o => o.rating));
+
+                section.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-number">${task.id}</div>
+                        <div class="section-title">
+                            <h3>${task.title}</h3>
+                            <p>${task.description}</p>
+                        </div>
+                    </div>
+                    <div class="prompt-card">
+                        <div class="prompt-label">Evaluation Prompt</div>
+                        <div class="prompt-text">${task.prompt}</div>
+                    </div>
+                    <div class="outputs-grid">
+                        ${task.outputs.map((output, idx) => {
+                            const model = benchmarkData.models[output.modelIndex];
+                            const isWinner = output.rating === maxRating;
+                            const performanceClass = output.rating >= 4.5 ? 'high' : output.rating >= 3.5 ? 'medium' : 'low';
+
+                            return `
+                                <div class="output-card ${isWinner ? 'winner' : ''}" id="output-${task.id}-${idx}">
+                                    <div class="output-header">
+                                        <div class="output-model">
+                                            <div class="model-logo" style="background: ${model.color}">${model.logo}</div>
+                                            <div class="model-info">
+                                                <h4>${model.name}</h4>
+                                                <div class="model-version">Last tested: ${model.testDate}</div>
+                                            </div>
+                                        </div>
+                                        ${isWinner ? '<div class="winner-badge">🏆 Winner</div>' : ''}
+                                    </div>
+                                    <div class="output-body">
+                                        <div class="output-preview" id="preview-${task.id}-${idx}">
+                                            ${output.text.substring(0, 300)}...
+                                        </div>
+                                        <div class="output-full" id="full-${task.id}-${idx}" style="display: none;">
+                                            ${output.text}
+                                        </div>
+                                    </div>
+                                    <div class="output-footer">
+                                        <div class="rating">
+                                            ${renderStars(output.rating, true, task.id, idx, output.rating)}
+                                        </div>
+                                        <button class="expand-button" onclick="toggleExpand(${task.id}, ${idx})">
+                                            <span id="btn-text-${task.id}-${idx}">Read Full Output</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(section);
+            });
+        }
+
+        // Render Stars
+        function renderStars(rating, interactive, taskId, outputIdx, currentRating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (interactive) {
+                    stars += `<button class="star-button ${i <= rating ? 'active' : ''}"
+                              onclick="setRating(${taskId}, ${outputIdx}, ${i})">★</button>`;
+                } else {
+                    stars += `<span class="star">${i <= rating ? '★' : '☆'}</span>`;
+                }
+            }
+            return stars;
+        }
+
+        // Set Rating
+        function setRating(taskId, outputIdx, rating) {
+            const task = benchmarkData.tasks.find(t => t.id === taskId);
+            task.outputs[outputIdx].rating = rating;
+
+            // Update stars display
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.querySelector(`#output-${taskId}-${outputIdx} .star-button:nth-child(${i})`);
+                if (btn) {
+                    if (i <= rating) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            }
+
+            // Update leaderboard
+            document.getElementById('leaderboard').innerHTML = '';
+            renderLeaderboard();
+        }
+
+        // Toggle Expand
+        function toggleExpand(taskId, outputIdx) {
+            const preview = document.getElementById(`preview-${taskId}-${outputIdx}`);
+            const full = document.getElementById(`full-${taskId}-${outputIdx}`);
+            const btn = document.getElementById(`btn-text-${taskId}-${outputIdx}`);
+            const card = document.getElementById(`output-${taskId}-${outputIdx}`);
+
+            if (full.style.display === 'none') {
+                preview.style.display = 'none';
+                full.style.display = 'block';
+                btn.textContent = 'Show Less';
+                card.classList.add('expanded');
+            } else {
+                preview.style.display = 'block';
+                full.style.display = 'none';
+                btn.textContent = 'Read Full Output';
+                card.classList.remove('expanded');
+            }
+        }
+
+        // Toggle Criteria
+        function toggleCriteria() {
+            const content = document.getElementById('criteria-content');
+            content.classList.toggle('open');
+        }
+    </script>
+
+    <footer class="site-footer">
+        © 2026 Slalom Consulting
+    </footer>
+</body>
+</html>
