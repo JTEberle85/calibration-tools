@@ -14,9 +14,9 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🌲 Secret Grove</title>
+    <title>Secret Grove - Arcade</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -26,6 +26,12 @@
                             blue: '#0C62FB',
                             red: '#FF4D5F',
                             cyan: '#1BE1F2',
+                        },
+                        'arcade': {
+                            purple: '#667eea',
+                            pink: '#764ba2',
+                            dark: '#1a1a2e',
+                            neon: '#00ff88',
                         }
                     }
                 }
@@ -33,23 +39,28 @@
         }
     </script>
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
+        body {
+            font-family: 'Inter', sans-serif;
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
         }
-        
+
+        .retro-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+
         .game-container {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
+        /* 2048 Styles */
         .grid-cell {
             background: rgba(255,255,255,0.2);
             border-radius: 8px;
             transition: all 0.1s ease;
         }
-        
+
         .tile {
             position: absolute;
             display: flex;
@@ -59,7 +70,7 @@
             border-radius: 8px;
             transition: all 0.12s ease-out;
         }
-        
+
         .tile-2 { background: #eee4da; color: #776e65; }
         .tile-4 { background: #ede0c8; color: #776e65; }
         .tile-8 { background: #f2b179; color: #f9f6f2; }
@@ -72,38 +83,72 @@
         .tile-1024 { background: #edc53f; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.6); }
         .tile-2048 { background: #edc22e; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.7); }
         .tile-4096 { background: #3c3a32; color: #f9f6f2; }
-        .tile-8192 { background: #3c3a32; color: #f9f6f2; }
-        
-        .tile-new {
-            animation: pop 0.2s ease;
-        }
-        
-        .tile-merged {
-            animation: pulse 0.2s ease;
-        }
-        
+
+        .tile-new { animation: pop 0.2s ease; }
+        .tile-merged { animation: pulse 0.2s ease; }
+
         @keyframes pop {
             0% { transform: scale(0); opacity: 0; }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); opacity: 1; }
         }
-        
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
-        
+
+        /* Snake Styles */
+        .snake-board {
+            background: #1a1a2e;
+            border: 3px solid #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 60px rgba(0, 255, 136, 0.05);
+        }
+
+        .snake-cell {
+            border: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .snake-head {
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+            border-radius: 4px;
+        }
+
+        .snake-body {
+            background: #00cc6a;
+            border-radius: 3px;
+        }
+
+        .snake-food {
+            background: #ff4d5f;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff4d5f;
+            animation: foodPulse 0.5s ease infinite alternate;
+        }
+
+        @keyframes foodPulse {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+        /* Shared Styles */
         .game-over-overlay {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             animation: fadeIn 0.3s ease;
         }
-        
+
+        .snake-game-over {
+            background: rgba(26, 26, 46, 0.95);
+            border: 2px solid #00ff88;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+
         .btn-game {
             transition: all 0.15s ease;
         }
@@ -114,148 +159,293 @@
         .btn-game:active {
             transform: translateY(0);
         }
+
+        .btn-neon {
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            background: transparent;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        .btn-neon:hover {
+            background: #00ff88;
+            color: #1a1a2e;
+            text-shadow: none;
+        }
+
+        /* Game Selection Cards */
+        .game-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(255,255,255,0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .scanlines {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
     </style>
 </head>
-<body class="min-h-screen game-container flex flex-col items-center justify-center p-4">
-    
-    <!-- Back Link (subtle) -->
-    <a href="./" class="absolute top-4 left-4 text-white/60 hover:text-white text-sm flex items-center gap-1 transition-colors">
+<body class="min-h-screen game-container">
+
+    <!-- Back Link -->
+    <a href="./" class="fixed top-4 left-4 text-white/60 hover:text-white text-sm flex items-center gap-1 transition-colors z-50">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
         Back to Tools
     </a>
-    
-    <!-- Game Header -->
-    <div class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-white mb-1">🌲 Secret Grove</h1>
-        <p class="text-white/70 text-sm">You found the hidden game! Merge the tiles to reach 2048.</p>
-    </div>
-    
-    <!-- Score & Controls -->
-    <div class="flex items-center gap-4 mb-4 w-full max-w-md justify-between px-2">
-        <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
-            <div class="text-white/70 text-xs uppercase tracking-wider">Score</div>
-            <div id="score" class="text-white text-2xl font-bold">0</div>
+
+    <!-- ==================== GAME SELECTION SCREEN ==================== -->
+    <div id="gameSelect" class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">Secret Grove</h1>
+            <p class="text-white/70">You found the hidden arcade! Choose your game.</p>
         </div>
-        <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
-            <div class="text-white/70 text-xs uppercase tracking-wider">Best</div>
-            <div id="best" class="text-white text-2xl font-bold">0</div>
-        </div>
-        <button id="newGameBtn" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">
-            New Game
-        </button>
-    </div>
-    
-    <!-- Game Board -->
-    <div class="relative">
-        <div id="grid" class="grid grid-cols-4 gap-3 p-3 bg-white/10 rounded-xl backdrop-blur-sm" style="width: 320px; height: 320px;">
-            <!-- Empty cells -->
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-        </div>
-        
-        <!-- Tiles Container -->
-        <div id="tiles" class="absolute inset-3"></div>
-        
-        <!-- Game Over Overlay -->
-        <div id="gameOver" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
-            <div class="text-2xl font-bold text-gray-800 mb-2">Game Over!</div>
-            <div class="text-gray-600 mb-4">Final Score: <span id="finalScore">0</span></div>
-            <button id="tryAgainBtn" class="btn-game bg-slalom-blue text-white font-semibold px-6 py-2 rounded-lg">
-                Try Again
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl w-full px-4">
+            <!-- 2048 Card -->
+            <button onclick="startGame('2048')" class="game-card rounded-2xl p-6 text-left group">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                        2048
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">2048</h2>
+                        <p class="text-white/60 text-sm">Merge the tiles!</p>
+                    </div>
+                </div>
+                <p class="text-white/70 text-sm mb-4">Slide numbered tiles on a grid to combine them and create a tile with the number 2048.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-white/50">Use arrow keys or swipe</span>
+                    <span class="text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all">Play &rarr;</span>
+                </div>
+            </button>
+
+            <!-- Snake Card -->
+            <button onclick="startGame('snake')" class="game-card rounded-2xl p-6 text-left group">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 bg-arcade-dark rounded-xl flex items-center justify-center shadow-lg border-2 border-arcade-neon relative overflow-hidden">
+                        <div class="scanlines"></div>
+                        <span class="text-3xl">&#127822;</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Snake</h2>
+                        <p class="text-white/60 text-sm">Classic '80s arcade!</p>
+                    </div>
+                </div>
+                <p class="text-white/70 text-sm mb-4">Guide the snake to eat food and grow longer. Don't hit the walls or yourself!</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-white/50">Use arrow keys or swipe</span>
+                    <span class="text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all">Play &rarr;</span>
+                </div>
             </button>
         </div>
-        
-        <!-- Win Overlay -->
-        <div id="winOverlay" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
-            <div class="text-3xl font-bold text-yellow-500 mb-2">🎉 You Won!</div>
-            <div class="text-gray-600 mb-4">You reached 2048!</div>
-            <div class="flex gap-2">
-                <button id="keepPlayingBtn" class="btn-game bg-green-500 text-white font-semibold px-4 py-2 rounded-lg">
-                    Keep Playing
-                </button>
-                <button id="newGameWinBtn" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">
-                    New Game
-                </button>
+
+        <p class="text-white/40 text-xs mt-8">Press 1 for 2048 or 2 for Snake</p>
+    </div>
+
+    <!-- ==================== 2048 GAME ==================== -->
+    <div id="game2048" class="hidden min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-white mb-1">2048</h1>
+            <p class="text-white/70 text-sm">Merge the tiles to reach 2048!</p>
+        </div>
+
+        <div class="flex items-center gap-4 mb-4 w-full max-w-md justify-between px-2">
+            <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-white/70 text-xs uppercase tracking-wider">Score</div>
+                <div id="score2048" class="text-white text-2xl font-bold">0</div>
+            </div>
+            <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-white/70 text-xs uppercase tracking-wider">Best</div>
+                <div id="best2048" class="text-white text-2xl font-bold">0</div>
+            </div>
+            <button onclick="init2048()" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">
+                New Game
+            </button>
+        </div>
+
+        <div class="relative">
+            <div id="grid2048" class="grid grid-cols-4 gap-3 p-3 bg-white/10 rounded-xl backdrop-blur-sm" style="width: 320px; height: 320px;">
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+            </div>
+            <div id="tiles2048" class="absolute inset-3"></div>
+
+            <div id="gameOver2048" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
+                <div class="text-2xl font-bold text-gray-800 mb-2">Game Over!</div>
+                <div class="text-gray-600 mb-4">Final Score: <span id="finalScore2048">0</span></div>
+                <div class="flex gap-2">
+                    <button onclick="init2048()" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">Try Again</button>
+                    <button onclick="backToMenu()" class="btn-game bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg">Menu</button>
+                </div>
+            </div>
+
+            <div id="winOverlay2048" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
+                <div class="text-3xl font-bold text-yellow-500 mb-2">You Won!</div>
+                <div class="text-gray-600 mb-4">You reached 2048!</div>
+                <div class="flex gap-2">
+                    <button id="keepPlaying2048" class="btn-game bg-green-500 text-white font-semibold px-4 py-2 rounded-lg">Keep Playing</button>
+                    <button onclick="init2048()" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">New Game</button>
+                </div>
             </div>
         </div>
+
+        <div class="mt-6 flex gap-4">
+            <button onclick="backToMenu()" class="text-white/60 hover:text-white text-sm transition-colors">
+                &larr; Back to Games
+            </button>
+        </div>
     </div>
-    
-    <!-- Instructions -->
-    <div class="mt-6 text-center text-white/60 text-sm max-w-md">
-        <p><strong>How to play:</strong> Use arrow keys or swipe to move tiles.</p>
-        <p>Tiles with the same number merge when they collide!</p>
+
+    <!-- ==================== SNAKE GAME ==================== -->
+    <div id="gameSnake" class="hidden min-h-screen flex flex-col items-center justify-center p-4" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+        <div class="text-center mb-6">
+            <h1 class="retro-font text-2xl text-arcade-neon mb-2" style="text-shadow: 0 0 20px #00ff88;">SNAKE</h1>
+            <p class="text-white/50 text-sm">Classic Arcade - Est. 1976</p>
+        </div>
+
+        <div class="flex items-center gap-4 mb-4 w-full max-w-md justify-between px-2">
+            <div class="bg-arcade-dark border border-arcade-neon/30 rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-arcade-neon/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Score</div>
+                <div id="scoreSnake" class="text-arcade-neon text-2xl font-bold retro-font">0</div>
+            </div>
+            <div class="bg-arcade-dark border border-arcade-neon/30 rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-arcade-neon/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Best</div>
+                <div id="bestSnake" class="text-arcade-neon text-2xl font-bold retro-font">0</div>
+            </div>
+            <button onclick="initSnake()" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font text-xs">
+                NEW GAME
+            </button>
+        </div>
+
+        <div class="relative">
+            <canvas id="snakeCanvas" class="snake-board rounded-lg" width="320" height="320"></canvas>
+            <div class="scanlines rounded-lg"></div>
+
+            <div id="gameOverSnake" class="absolute inset-0 rounded-lg hidden flex-col items-center justify-center snake-game-over">
+                <div class="retro-font text-arcade-neon text-xl mb-2" style="text-shadow: 0 0 10px #00ff88;">GAME OVER</div>
+                <div class="text-white/70 mb-4">Score: <span id="finalScoreSnake" class="text-arcade-neon">0</span></div>
+                <div class="flex gap-2">
+                    <button onclick="initSnake()" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font text-xs">RETRY</button>
+                    <button onclick="backToMenu()" class="btn-game border-2 border-white/30 text-white/70 font-semibold px-4 py-2 rounded-lg retro-font text-xs hover:bg-white/10">MENU</button>
+                </div>
+            </div>
+
+            <div id="snakeStart" class="absolute inset-0 rounded-lg flex flex-col items-center justify-center snake-game-over">
+                <div class="retro-font text-arcade-neon text-sm mb-4" style="text-shadow: 0 0 10px #00ff88;">PRESS SPACE TO START</div>
+                <div class="text-white/50 text-xs">or tap the screen</div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <p class="text-white/40 text-xs mb-4">Arrow keys or swipe to move</p>
+            <button onclick="backToMenu()" class="text-white/40 hover:text-arcade-neon text-sm transition-colors">
+                &larr; Back to Games
+            </button>
+        </div>
     </div>
 
     <script>
-        const GRID_SIZE = 4;
-        const CELL_SIZE = 65; // (320 - 24 padding - 36 gaps) / 4 = 260/4 = 65
-        const GAP = 12;
-        
-        let grid = [];
-        let score = 0;
-        let best = parseInt(localStorage.getItem('merge2048Best') || '0');
-        let gameWon = false;
-        let gameOver = false;
-        
-        const tilesContainer = document.getElementById('tiles');
-        const scoreEl = document.getElementById('score');
-        const bestEl = document.getElementById('best');
-        const gameOverEl = document.getElementById('gameOver');
-        const winOverlayEl = document.getElementById('winOverlay');
-        const finalScoreEl = document.getElementById('finalScore');
-        
-        // Initialize
-        function init() {
-            grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
-            score = 0;
-            gameWon = false;
-            gameOver = false;
-            updateScore();
-            bestEl.textContent = best;
-            gameOverEl.classList.add('hidden');
-            gameOverEl.classList.remove('flex');
-            winOverlayEl.classList.add('hidden');
-            winOverlayEl.classList.remove('flex');
-            tilesContainer.innerHTML = '';
-            addRandomTile();
-            addRandomTile();
+        // ==================== GAME SELECTION ====================
+        let currentGame = null;
+
+        function startGame(game) {
+            document.getElementById('gameSelect').classList.add('hidden');
+            document.getElementById('game2048').classList.add('hidden');
+            document.getElementById('gameSnake').classList.add('hidden');
+
+            currentGame = game;
+
+            if (game === '2048') {
+                document.getElementById('game2048').classList.remove('hidden');
+                init2048();
+            } else if (game === 'snake') {
+                document.getElementById('gameSnake').classList.remove('hidden');
+                initSnake();
+            }
         }
-        
-        // Add random tile
-        function addRandomTile() {
+
+        function backToMenu() {
+            currentGame = null;
+            document.getElementById('gameSelect').classList.remove('hidden');
+            document.getElementById('game2048').classList.add('hidden');
+            document.getElementById('gameSnake').classList.add('hidden');
+
+            // Stop snake game loop if running
+            if (snakeGameLoop) {
+                clearInterval(snakeGameLoop);
+                snakeGameLoop = null;
+            }
+        }
+
+        // Keyboard shortcut for game selection
+        document.addEventListener('keydown', (e) => {
+            if (!currentGame) {
+                if (e.key === '1') startGame('2048');
+                if (e.key === '2') startGame('snake');
+            }
+        });
+
+        // ==================== 2048 GAME ====================
+        const GRID_SIZE = 4;
+        const CELL_SIZE = 65;
+        const GAP = 12;
+
+        let grid2048 = [];
+        let score2048 = 0;
+        let best2048 = parseInt(localStorage.getItem('merge2048Best') || '0');
+        let gameWon2048 = false;
+        let gameOver2048State = false;
+
+        function init2048() {
+            grid2048 = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+            score2048 = 0;
+            gameWon2048 = false;
+            gameOver2048State = false;
+            updateScore2048();
+            document.getElementById('best2048').textContent = best2048;
+            document.getElementById('gameOver2048').classList.add('hidden');
+            document.getElementById('gameOver2048').classList.remove('flex');
+            document.getElementById('winOverlay2048').classList.add('hidden');
+            document.getElementById('winOverlay2048').classList.remove('flex');
+            document.getElementById('tiles2048').innerHTML = '';
+            addRandomTile2048();
+            addRandomTile2048();
+        }
+
+        function addRandomTile2048() {
             const emptyCells = [];
             for (let r = 0; r < GRID_SIZE; r++) {
                 for (let c = 0; c < GRID_SIZE; c++) {
-                    if (!grid[r][c]) emptyCells.push({r, c});
+                    if (!grid2048[r][c]) emptyCells.push({r, c});
                 }
             }
             if (emptyCells.length === 0) return;
-            
+
             const {r, c} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
             const value = Math.random() < 0.9 ? 2 : 4;
-            
-            grid[r][c] = { value, id: Date.now() + Math.random() };
-            renderTile(r, c, grid[r][c], true);
+            grid2048[r][c] = { value, id: Date.now() + Math.random() };
+            renderTile2048(r, c, grid2048[r][c], true);
         }
-        
-        // Render a tile
-        function renderTile(row, col, tile, isNew = false) {
+
+        function renderTile2048(row, col, tile, isNew = false) {
             const el = document.createElement('div');
             el.className = `tile tile-${tile.value} ${isNew ? 'tile-new' : ''}`;
             el.id = `tile-${tile.id}`;
@@ -265,11 +455,10 @@
             el.style.top = `${row * (CELL_SIZE + GAP)}px`;
             el.style.fontSize = tile.value >= 1000 ? '20px' : tile.value >= 100 ? '26px' : '32px';
             el.textContent = tile.value;
-            tilesContainer.appendChild(el);
+            document.getElementById('tiles2048').appendChild(el);
         }
-        
-        // Update tile position
-        function updateTilePosition(tile, row, col, merged = false) {
+
+        function updateTilePosition2048(tile, row, col, merged = false) {
             const el = document.getElementById(`tile-${tile.id}`);
             if (el) {
                 el.style.left = `${col * (CELL_SIZE + GAP)}px`;
@@ -280,9 +469,8 @@
                 }
             }
         }
-        
-        // Update tile value
-        function updateTileValue(tile) {
+
+        function updateTileValue2048(tile) {
             const el = document.getElementById(`tile-${tile.id}`);
             if (el) {
                 el.className = `tile tile-${tile.value}`;
@@ -290,28 +478,18 @@
                 el.textContent = tile.value;
             }
         }
-        
-        // Remove tile
-        function removeTile(tile) {
+
+        function removeTile2048(tile) {
             const el = document.getElementById(`tile-${tile.id}`);
             if (el) el.remove();
         }
-        
-        // Move tiles
-        function move(direction) {
-            if (gameOver) return;
-            
+
+        function move2048(direction) {
+            if (gameOver2048State || currentGame !== '2048') return;
+
             let moved = false;
             const mergedThisTurn = new Set();
-            
-            const traverse = (callback) => {
-                for (let i = 0; i < GRID_SIZE; i++) {
-                    for (let j = 0; j < GRID_SIZE; j++) {
-                        callback(i, j);
-                    }
-                }
-            };
-            
+
             const getVector = () => {
                 switch(direction) {
                     case 'up': return {r: -1, c: 0};
@@ -320,199 +498,344 @@
                     case 'right': return {r: 0, c: 1};
                 }
             };
-            
+
             const vector = getVector();
-            
-            // Build traversal order
             const rows = [], cols = [];
-            for (let i = 0; i < GRID_SIZE; i++) {
-                rows.push(i);
-                cols.push(i);
-            }
+            for (let i = 0; i < GRID_SIZE; i++) { rows.push(i); cols.push(i); }
             if (vector.r === 1) rows.reverse();
             if (vector.c === 1) cols.reverse();
-            
+
             rows.forEach(row => {
                 cols.forEach(col => {
-                    const tile = grid[row][col];
+                    const tile = grid2048[row][col];
                     if (!tile) return;
-                    
-                    let newRow = row;
-                    let newCol = col;
-                    
-                    // Find furthest position
+
+                    let newRow = row, newCol = col;
+
                     while (true) {
                         const nextRow = newRow + vector.r;
                         const nextCol = newCol + vector.c;
-                        
                         if (nextRow < 0 || nextRow >= GRID_SIZE || nextCol < 0 || nextCol >= GRID_SIZE) break;
-                        
-                        const nextTile = grid[nextRow][nextCol];
-                        
-                        if (!nextTile) {
-                            newRow = nextRow;
-                            newCol = nextCol;
-                        } else if (nextTile.value === tile.value && !mergedThisTurn.has(`${nextRow},${nextCol}`)) {
-                            // Merge!
-                            newRow = nextRow;
-                            newCol = nextCol;
-                            break;
-                        } else {
-                            break;
-                        }
+                        const nextTile = grid2048[nextRow][nextCol];
+                        if (!nextTile) { newRow = nextRow; newCol = nextCol; }
+                        else if (nextTile.value === tile.value && !mergedThisTurn.has(`${nextRow},${nextCol}`)) {
+                            newRow = nextRow; newCol = nextCol; break;
+                        } else break;
                     }
-                    
+
                     if (newRow !== row || newCol !== col) {
                         moved = true;
-                        
-                        const targetTile = grid[newRow][newCol];
-                        grid[row][col] = null;
-                        
+                        const targetTile = grid2048[newRow][newCol];
+                        grid2048[row][col] = null;
+
                         if (targetTile) {
-                            // Merge
                             const newValue = tile.value * 2;
-                            score += newValue;
-                            
-                            // Move the current tile to merge position, then remove it
-                            updateTilePosition(tile, newRow, newCol);
-                            setTimeout(() => removeTile(tile), 100);
-                            
-                            // Update target tile
+                            score2048 += newValue;
+                            updateTilePosition2048(tile, newRow, newCol);
+                            setTimeout(() => removeTile2048(tile), 100);
                             targetTile.value = newValue;
-                            updateTileValue(targetTile);
-                            updateTilePosition(targetTile, newRow, newCol, true);
-                            
+                            updateTileValue2048(targetTile);
+                            updateTilePosition2048(targetTile, newRow, newCol, true);
                             mergedThisTurn.add(`${newRow},${newCol}`);
-                            
-                            // Check win
-                            if (newValue === 2048 && !gameWon) {
-                                gameWon = true;
-                                setTimeout(showWin, 300);
+                            if (newValue === 2048 && !gameWon2048) {
+                                gameWon2048 = true;
+                                setTimeout(showWin2048, 300);
                             }
                         } else {
-                            // Just move
-                            grid[newRow][newCol] = tile;
-                            updateTilePosition(tile, newRow, newCol);
+                            grid2048[newRow][newCol] = tile;
+                            updateTilePosition2048(tile, newRow, newCol);
                         }
                     }
                 });
             });
-            
+
             if (moved) {
-                updateScore();
+                updateScore2048();
                 setTimeout(() => {
-                    addRandomTile();
-                    if (isGameOver()) {
-                        showGameOver();
-                    }
+                    addRandomTile2048();
+                    if (isGameOver2048()) showGameOver2048();
                 }, 150);
             }
         }
-        
-        // Update score
-        function updateScore() {
-            scoreEl.textContent = score;
-            if (score > best) {
-                best = score;
-                bestEl.textContent = best;
-                localStorage.setItem('merge2048Best', best.toString());
+
+        function updateScore2048() {
+            document.getElementById('score2048').textContent = score2048;
+            if (score2048 > best2048) {
+                best2048 = score2048;
+                document.getElementById('best2048').textContent = best2048;
+                localStorage.setItem('merge2048Best', best2048.toString());
             }
         }
-        
-        // Check if game over
-        function isGameOver() {
-            // Check for empty cells
+
+        function isGameOver2048() {
             for (let r = 0; r < GRID_SIZE; r++) {
                 for (let c = 0; c < GRID_SIZE; c++) {
-                    if (!grid[r][c]) return false;
+                    if (!grid2048[r][c]) return false;
                 }
             }
-            
-            // Check for possible merges
             for (let r = 0; r < GRID_SIZE; r++) {
                 for (let c = 0; c < GRID_SIZE; c++) {
-                    const tile = grid[r][c];
-                    // Check right
-                    if (c < GRID_SIZE - 1 && grid[r][c + 1] && grid[r][c + 1].value === tile.value) return false;
-                    // Check down
-                    if (r < GRID_SIZE - 1 && grid[r + 1][c] && grid[r + 1][c].value === tile.value) return false;
+                    const tile = grid2048[r][c];
+                    if (c < GRID_SIZE - 1 && grid2048[r][c + 1] && grid2048[r][c + 1].value === tile.value) return false;
+                    if (r < GRID_SIZE - 1 && grid2048[r + 1][c] && grid2048[r + 1][c].value === tile.value) return false;
                 }
             }
-            
             return true;
         }
-        
-        // Show game over
-        function showGameOver() {
-            gameOver = true;
-            finalScoreEl.textContent = score;
-            gameOverEl.classList.remove('hidden');
-            gameOverEl.classList.add('flex');
+
+        function showGameOver2048() {
+            gameOver2048State = true;
+            document.getElementById('finalScore2048').textContent = score2048;
+            document.getElementById('gameOver2048').classList.remove('hidden');
+            document.getElementById('gameOver2048').classList.add('flex');
         }
-        
-        // Show win
-        function showWin() {
-            winOverlayEl.classList.remove('hidden');
-            winOverlayEl.classList.add('flex');
+
+        function showWin2048() {
+            document.getElementById('winOverlay2048').classList.remove('hidden');
+            document.getElementById('winOverlay2048').classList.add('flex');
         }
-        
-        // Event listeners
+
+        document.getElementById('keepPlaying2048').addEventListener('click', () => {
+            document.getElementById('winOverlay2048').classList.add('hidden');
+            document.getElementById('winOverlay2048').classList.remove('flex');
+        });
+
+        // ==================== SNAKE GAME ====================
+        const canvas = document.getElementById('snakeCanvas');
+        const ctx = canvas.getContext('2d');
+        const SNAKE_CELL = 16;
+        const SNAKE_COLS = canvas.width / SNAKE_CELL;
+        const SNAKE_ROWS = canvas.height / SNAKE_CELL;
+
+        let snake = [];
+        let food = {};
+        let direction = 'right';
+        let nextDirection = 'right';
+        let scoreSnake = 0;
+        let bestSnake = parseInt(localStorage.getItem('snakeBest') || '0');
+        let snakeGameLoop = null;
+        let snakeStarted = false;
+        let snakeGameOver = false;
+
+        function initSnake() {
+            snake = [
+                {x: 10, y: 10},
+                {x: 9, y: 10},
+                {x: 8, y: 10}
+            ];
+            direction = 'right';
+            nextDirection = 'right';
+            scoreSnake = 0;
+            snakeStarted = false;
+            snakeGameOver = false;
+            document.getElementById('scoreSnake').textContent = scoreSnake;
+            document.getElementById('bestSnake').textContent = bestSnake;
+            document.getElementById('gameOverSnake').classList.add('hidden');
+            document.getElementById('gameOverSnake').classList.remove('flex');
+            document.getElementById('snakeStart').classList.remove('hidden');
+            document.getElementById('snakeStart').classList.add('flex');
+            placeFood();
+            drawSnake();
+
+            if (snakeGameLoop) {
+                clearInterval(snakeGameLoop);
+                snakeGameLoop = null;
+            }
+        }
+
+        function startSnakeGame() {
+            if (snakeStarted || snakeGameOver) return;
+            snakeStarted = true;
+            document.getElementById('snakeStart').classList.add('hidden');
+            document.getElementById('snakeStart').classList.remove('flex');
+            snakeGameLoop = setInterval(gameLoopSnake, 100);
+        }
+
+        function placeFood() {
+            do {
+                food = {
+                    x: Math.floor(Math.random() * SNAKE_COLS),
+                    y: Math.floor(Math.random() * SNAKE_ROWS)
+                };
+            } while (snake.some(seg => seg.x === food.x && seg.y === food.y));
+        }
+
+        function drawSnake() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(0, 255, 136, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= SNAKE_COLS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * SNAKE_CELL, 0);
+                ctx.lineTo(i * SNAKE_CELL, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= SNAKE_ROWS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * SNAKE_CELL);
+                ctx.lineTo(canvas.width, i * SNAKE_CELL);
+                ctx.stroke();
+            }
+
+            // Draw food
+            ctx.fillStyle = '#ff4d5f';
+            ctx.shadowColor = '#ff4d5f';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(food.x * SNAKE_CELL + SNAKE_CELL/2, food.y * SNAKE_CELL + SNAKE_CELL/2, SNAKE_CELL/2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Draw snake
+            snake.forEach((seg, i) => {
+                if (i === 0) {
+                    ctx.fillStyle = '#00ff88';
+                    ctx.shadowColor = '#00ff88';
+                    ctx.shadowBlur = 10;
+                } else {
+                    ctx.fillStyle = '#00cc6a';
+                    ctx.shadowBlur = 0;
+                }
+                ctx.fillRect(seg.x * SNAKE_CELL + 1, seg.y * SNAKE_CELL + 1, SNAKE_CELL - 2, SNAKE_CELL - 2);
+            });
+            ctx.shadowBlur = 0;
+        }
+
+        function gameLoopSnake() {
+            direction = nextDirection;
+
+            const head = {x: snake[0].x, y: snake[0].y};
+
+            switch(direction) {
+                case 'up': head.y--; break;
+                case 'down': head.y++; break;
+                case 'left': head.x--; break;
+                case 'right': head.x++; break;
+            }
+
+            // Check wall collision
+            if (head.x < 0 || head.x >= SNAKE_COLS || head.y < 0 || head.y >= SNAKE_ROWS) {
+                endSnakeGame();
+                return;
+            }
+
+            // Check self collision
+            if (snake.some(seg => seg.x === head.x && seg.y === head.y)) {
+                endSnakeGame();
+                return;
+            }
+
+            snake.unshift(head);
+
+            // Check food
+            if (head.x === food.x && head.y === food.y) {
+                scoreSnake += 10;
+                document.getElementById('scoreSnake').textContent = scoreSnake;
+                if (scoreSnake > bestSnake) {
+                    bestSnake = scoreSnake;
+                    document.getElementById('bestSnake').textContent = bestSnake;
+                    localStorage.setItem('snakeBest', bestSnake.toString());
+                }
+                placeFood();
+            } else {
+                snake.pop();
+            }
+
+            drawSnake();
+        }
+
+        function endSnakeGame() {
+            snakeGameOver = true;
+            clearInterval(snakeGameLoop);
+            snakeGameLoop = null;
+            document.getElementById('finalScoreSnake').textContent = scoreSnake;
+            document.getElementById('gameOverSnake').classList.remove('hidden');
+            document.getElementById('gameOverSnake').classList.add('flex');
+        }
+
+        function changeSnakeDirection(newDir) {
+            const opposites = {up: 'down', down: 'up', left: 'right', right: 'left'};
+            if (newDir !== opposites[direction]) {
+                nextDirection = newDir;
+            }
+        }
+
+        // ==================== INPUT HANDLING ====================
         document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowUp': e.preventDefault(); move('up'); break;
-                case 'ArrowDown': e.preventDefault(); move('down'); break;
-                case 'ArrowLeft': e.preventDefault(); move('left'); break;
-                case 'ArrowRight': e.preventDefault(); move('right'); break;
+            if (currentGame === '2048') {
+                switch(e.key) {
+                    case 'ArrowUp': e.preventDefault(); move2048('up'); break;
+                    case 'ArrowDown': e.preventDefault(); move2048('down'); break;
+                    case 'ArrowLeft': e.preventDefault(); move2048('left'); break;
+                    case 'ArrowRight': e.preventDefault(); move2048('right'); break;
+                }
+            } else if (currentGame === 'snake') {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!snakeStarted) startSnakeGame();
+                    else if (snakeGameOver) initSnake();
+                }
+                switch(e.key) {
+                    case 'ArrowUp': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('up'); break;
+                    case 'ArrowDown': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('down'); break;
+                    case 'ArrowLeft': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('left'); break;
+                    case 'ArrowRight': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('right'); break;
+                }
             }
         });
-        
+
         // Touch/swipe support
         let touchStartX, touchStartY;
-        
+
         document.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
+
+            // Start snake game on tap
+            if (currentGame === 'snake' && !snakeStarted && !snakeGameOver) {
+                startSnakeGame();
+            }
         }, { passive: true });
-        
+
         document.addEventListener('touchend', (e) => {
             if (!touchStartX || !touchStartY) return;
-            
+
             const touchEndX = e.changedTouches[0].clientX;
             const touchEndY = e.changedTouches[0].clientY;
-            
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
-            
-            const minSwipe = 50;
-            
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (Math.abs(deltaX) > minSwipe) {
-                    move(deltaX > 0 ? 'right' : 'left');
-                }
-            } else {
-                if (Math.abs(deltaY) > minSwipe) {
-                    move(deltaY > 0 ? 'down' : 'up');
-                }
+            const minSwipe = 30;
+
+            if (Math.abs(deltaX) < minSwipe && Math.abs(deltaY) < minSwipe) {
+                touchStartX = null;
+                touchStartY = null;
+                return;
             }
-            
+
+            let dir;
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                dir = deltaX > 0 ? 'right' : 'left';
+            } else {
+                dir = deltaY > 0 ? 'down' : 'up';
+            }
+
+            if (currentGame === '2048') {
+                move2048(dir);
+            } else if (currentGame === 'snake') {
+                if (!snakeStarted) startSnakeGame();
+                changeSnakeDirection(dir);
+            }
+
             touchStartX = null;
             touchStartY = null;
         }, { passive: true });
-        
-        // Buttons
-        document.getElementById('newGameBtn').addEventListener('click', init);
-        document.getElementById('tryAgainBtn').addEventListener('click', init);
-        document.getElementById('keepPlayingBtn').addEventListener('click', () => {
-            winOverlayEl.classList.add('hidden');
-            winOverlayEl.classList.remove('flex');
-        });
-        document.getElementById('newGameWinBtn').addEventListener('click', init);
-        
-        // Start game
-        init();
+
+        // Initialize best scores display
+        document.getElementById('best2048').textContent = best2048;
+        document.getElementById('bestSnake').textContent = bestSnake;
     </script>
-    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.05); padding: 12px; text-align: center; font-size: 12px; color: #666;">
-        © 2026 Slalom Consulting
-    </footer>
 </body>
 </html>
