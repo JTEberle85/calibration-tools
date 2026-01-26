@@ -188,8 +188,8 @@
             text-align: justify;
         }
 
-        /* Dancing bears */
-        .dancing-bears {
+        /* Dancing skulls */
+        .dancing-skulls {
             display: flex;
             justify-content: center;
             gap: 1rem;
@@ -197,19 +197,53 @@
             flex-wrap: wrap;
         }
 
-        .bear {
+        .skull {
             font-size: 2rem;
             animation: dance 1s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
-        .bear:nth-child(2) { animation-delay: 0.1s; }
-        .bear:nth-child(3) { animation-delay: 0.2s; }
-        .bear:nth-child(4) { animation-delay: 0.3s; }
-        .bear:nth-child(5) { animation-delay: 0.4s; }
+        .skull:nth-child(2) { animation-delay: 0.1s; }
+        .skull:nth-child(3) { animation-delay: 0.2s; }
+        .skull:nth-child(4) { animation-delay: 0.3s; }
+        .skull:nth-child(5) { animation-delay: 0.4s; }
 
         @keyframes dance {
             0%, 100% { transform: translateY(0) rotate(-5deg); }
             50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        /* Photo section */
+        .bobby-photo {
+            float: right;
+            margin: 0 0 1.5rem 2rem;
+            max-width: 280px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            border: 4px solid var(--dead-gold);
+        }
+
+        .bobby-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .bobby-photo figcaption {
+            background: var(--dead-blue);
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .bobby-photo {
+                float: none;
+                margin: 0 auto 1.5rem;
+                max-width: 100%;
+            }
         }
 
         /* Song list */
@@ -387,16 +421,22 @@
             <cite>~ "Scarlet Begonias"</cite>
         </div>
 
-        <div class="dancing-bears">
-            <span class="bear" style="color: var(--dead-red);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-orange);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-gold);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-teal);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-purple);">&#128059;</span>
+        <div class="dancing-skulls">
+            <span class="skull" style="color: var(--dead-red);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-orange);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-gold);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-teal);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-purple);">&#128128;</span>
         </div>
 
         <section class="section">
             <h2>The Man, The Music, The Legend</h2>
+            <figure class="bobby-photo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Bob_Weir_2016.jpg/440px-Bob_Weir_2016.jpg"
+                     alt="Bob Weir performing live"
+                     loading="lazy">
+                <figcaption>Bob Weir performing live, 2016</figcaption>
+            </figure>
             <p>
                 Robert Hall Weir, known to Deadheads worldwide simply as "Bobby," stands as one of rock music's most
                 distinctive and enduring rhythm guitarists. As a founding member of the Grateful Dead, Weir helped
@@ -524,12 +564,12 @@
             </div>
         </section>
 
-        <div class="dancing-bears">
-            <span class="bear" style="color: var(--dead-purple);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-teal);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-gold);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-orange);">&#128059;</span>
-            <span class="bear" style="color: var(--dead-red);">&#128059;</span>
+        <div class="dancing-skulls">
+            <span class="skull" style="color: var(--dead-purple);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-teal);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-gold);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-orange);">&#128128;</span>
+            <span class="skull" style="color: var(--dead-red);">&#128128;</span>
         </div>
     </main>
 
