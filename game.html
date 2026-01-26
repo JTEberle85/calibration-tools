@@ -39,24 +39,192 @@
         }
     </script>
     <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-cyan: #05d9e8;
+            --neon-purple: #d300c5;
+            --neon-blue: #0ff;
+            --neon-green: #00ff88;
+            --arcade-dark: #0d0221;
+            --arcade-darker: #05010f;
+            --grid-color: rgba(5, 217, 232, 0.15);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
+            overflow-x: hidden;
         }
 
         .retro-font {
             font-family: 'Press Start 2P', cursive;
         }
 
-        .game-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* ====== 80s ARCADE BACKGROUND ====== */
+        .arcade-bg {
+            background: linear-gradient(180deg, #0d0221 0%, #150734 40%, #1a0a3e 70%, #2d1b4e 100%);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* 2048 Styles */
+        /* Animated starfield */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .stars-layer {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 230px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 50px 160px, #fff, transparent),
+                radial-gradient(2px 2px at 120px 200px, rgba(255,255,255,0.8), transparent);
+            background-size: 350px 350px;
+            animation: twinkle 8s ease-in-out infinite;
+        }
+
+        .stars-layer:nth-child(2) {
+            background-image:
+                radial-gradient(1px 1px at 100px 50px, var(--neon-cyan), transparent),
+                radial-gradient(1px 1px at 200px 150px, var(--neon-pink), transparent),
+                radial-gradient(2px 2px at 300px 100px, #fff, transparent),
+                radial-gradient(1px 1px at 50px 200px, var(--neon-cyan), transparent),
+                radial-gradient(2px 2px at 250px 50px, var(--neon-pink), transparent);
+            background-size: 400px 400px;
+            animation: twinkle 12s ease-in-out infinite reverse;
+            opacity: 0.7;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-10px); }
+        }
+
+        /* Neon grid floor effect */
+        .neon-grid {
+            position: fixed;
+            bottom: 0;
+            left: -50%;
+            width: 200%;
+            height: 50%;
+            background:
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px) 0 0 / 60px 60px,
+                linear-gradient(var(--grid-color) 1px, transparent 1px) 0 0 / 60px 60px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 80%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 80%);
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 60px 60px, 60px 60px; }
+        }
+
+        /* Horizon glow */
+        .horizon-glow {
+            position: fixed;
+            bottom: 20%;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top,
+                rgba(255, 42, 109, 0.3) 0%,
+                rgba(211, 0, 197, 0.2) 30%,
+                transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Sun/moon effect */
+        .retro-sun {
+            position: fixed;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(180deg, #ff2a6d 0%, #d300c5 50%, #05d9e8 100%);
+            border-radius: 50%;
+            box-shadow:
+                0 0 60px rgba(255, 42, 109, 0.5),
+                0 0 120px rgba(211, 0, 197, 0.3);
+            z-index: 0;
+            opacity: 0.8;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+
+        .retro-sun::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 8px,
+                rgba(13, 2, 33, 0.4) 8px,
+                rgba(13, 2, 33, 0.4) 12px
+            );
+            border-radius: 50%;
+        }
+
+        /* CRT Scanlines overlay */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.05),
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
+
+        /* Vignette effect */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 60%, rgba(0,0,0,0.4) 100%);
+        }
+
+        /* Content wrapper */
+        .game-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ====== 2048 NEON STYLES ====== */
         .grid-cell {
-            background: rgba(255,255,255,0.2);
+            background: rgba(5, 217, 232, 0.1);
+            border: 1px solid rgba(5, 217, 232, 0.2);
             border-radius: 8px;
             transition: all 0.1s ease;
         }
@@ -69,20 +237,27 @@
             font-weight: 700;
             border-radius: 8px;
             transition: all 0.12s ease-out;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .tile-2 { background: #eee4da; color: #776e65; }
-        .tile-4 { background: #ede0c8; color: #776e65; }
-        .tile-8 { background: #f2b179; color: #f9f6f2; }
-        .tile-16 { background: #f59563; color: #f9f6f2; }
-        .tile-32 { background: #f67c5f; color: #f9f6f2; }
-        .tile-64 { background: #f65e3b; color: #f9f6f2; }
-        .tile-128 { background: #edcf72; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.3); }
-        .tile-256 { background: #edcc61; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.4); }
-        .tile-512 { background: #edc850; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.5); }
-        .tile-1024 { background: #edc53f; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.6); }
-        .tile-2048 { background: #edc22e; color: #f9f6f2; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.7); }
-        .tile-4096 { background: #3c3a32; color: #f9f6f2; }
+        /* Neon-styled tiles */
+        .tile-2 { background: linear-gradient(135deg, #1a1a3e 0%, #2d2d5a 100%); color: var(--neon-cyan); border: 2px solid var(--neon-cyan); box-shadow: 0 0 10px rgba(5, 217, 232, 0.3); }
+        .tile-4 { background: linear-gradient(135deg, #1a1a3e 0%, #2d2d5a 100%); color: var(--neon-pink); border: 2px solid var(--neon-pink); box-shadow: 0 0 10px rgba(255, 42, 109, 0.3); }
+        .tile-8 { background: linear-gradient(135deg, #2a1a3e 0%, #4a2d5a 100%); color: #fff; border: 2px solid var(--neon-purple); box-shadow: 0 0 15px rgba(211, 0, 197, 0.4); text-shadow: 0 0 10px var(--neon-purple); }
+        .tile-16 { background: linear-gradient(135deg, #3a1a3e 0%, #5a2d5a 100%); color: #fff; border: 2px solid var(--neon-pink); box-shadow: 0 0 20px rgba(255, 42, 109, 0.5); text-shadow: 0 0 10px var(--neon-pink); }
+        .tile-32 { background: linear-gradient(135deg, #4a1a2e 0%, #6a2d4a 100%); color: #fff; border: 2px solid #ff6b35; box-shadow: 0 0 20px rgba(255, 107, 53, 0.5); text-shadow: 0 0 10px #ff6b35; }
+        .tile-64 { background: linear-gradient(135deg, #5a1a1e 0%, #7a2d3a 100%); color: #fff; border: 2px solid #ff2a6d; box-shadow: 0 0 25px rgba(255, 42, 109, 0.6); text-shadow: 0 0 15px #ff2a6d; }
+        .tile-128 { background: linear-gradient(135deg, #1a3a3e 0%, #2d5a5a 100%); color: #fff; border: 2px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(5, 217, 232, 0.6), inset 0 0 20px rgba(5, 217, 232, 0.2); text-shadow: 0 0 15px var(--neon-cyan); }
+        .tile-256 { background: linear-gradient(135deg, #1a4a4e 0%, #2d6a6a 100%); color: #fff; border: 2px solid var(--neon-green); box-shadow: 0 0 35px rgba(0, 255, 136, 0.6), inset 0 0 25px rgba(0, 255, 136, 0.2); text-shadow: 0 0 15px var(--neon-green); }
+        .tile-512 { background: linear-gradient(135deg, #2a1a4e 0%, #4a2d7a 100%); color: #fff; border: 2px solid #bf00ff; box-shadow: 0 0 40px rgba(191, 0, 255, 0.6), inset 0 0 30px rgba(191, 0, 255, 0.2); text-shadow: 0 0 20px #bf00ff; }
+        .tile-1024 { background: linear-gradient(135deg, #3a2a1e 0%, #5a4a3a 100%); color: #ffd700; border: 2px solid #ffd700; box-shadow: 0 0 45px rgba(255, 215, 0, 0.7), inset 0 0 35px rgba(255, 215, 0, 0.3); text-shadow: 0 0 20px #ffd700; }
+        .tile-2048 { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #000; border: 2px solid #fff; box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 140, 0, 0.5); text-shadow: none; animation: winGlow 1s ease infinite alternate; }
+        .tile-4096 { background: linear-gradient(135deg, #ff2a6d 0%, #d300c5 100%); color: #fff; border: 2px solid #fff; box-shadow: 0 0 60px rgba(255, 42, 109, 0.8); }
+
+        @keyframes winGlow {
+            from { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 140, 0, 0.5); }
+            to { box-shadow: 0 0 70px rgba(255, 215, 0, 1), 0 0 140px rgba(255, 140, 0, 0.7); }
+        }
 
         .tile-new { animation: pop 0.2s ease; }
         .tile-merged { animation: pulse 0.2s ease; }
@@ -99,49 +274,36 @@
             100% { transform: scale(1); }
         }
 
-        /* Snake Styles */
+        /* 2048 board neon style */
+        .board-2048 {
+            background: rgba(13, 2, 33, 0.9);
+            border: 3px solid var(--neon-cyan);
+            box-shadow:
+                0 0 20px rgba(5, 217, 232, 0.3),
+                inset 0 0 60px rgba(5, 217, 232, 0.05);
+        }
+
+        /* ====== SNAKE STYLES ====== */
         .snake-board {
-            background: #1a1a2e;
-            border: 3px solid #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 60px rgba(0, 255, 136, 0.05);
+            background: var(--arcade-darker);
+            border: 3px solid var(--neon-green);
+            box-shadow:
+                0 0 30px rgba(0, 255, 136, 0.4),
+                inset 0 0 80px rgba(0, 255, 136, 0.05);
         }
 
-        .snake-cell {
-            border: 1px solid rgba(0, 255, 136, 0.1);
-        }
-
-        .snake-head {
-            background: #00ff88;
-            box-shadow: 0 0 10px #00ff88;
-            border-radius: 4px;
-        }
-
-        .snake-body {
-            background: #00cc6a;
-            border-radius: 3px;
-        }
-
-        .snake-food {
-            background: #ff4d5f;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ff4d5f;
-            animation: foodPulse 0.5s ease infinite alternate;
-        }
-
-        @keyframes foodPulse {
-            from { transform: scale(0.8); }
-            to { transform: scale(1); }
-        }
-
-        /* Shared Styles */
+        /* ====== SHARED STYLES ====== */
         .game-over-overlay {
-            background: rgba(255,255,255,0.95);
+            background: rgba(13, 2, 33, 0.95);
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.5);
             animation: fadeIn 0.3s ease;
         }
 
         .snake-game-over {
-            background: rgba(26, 26, 46, 0.95);
-            border: 2px solid #00ff88;
+            background: rgba(13, 2, 33, 0.95);
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
         }
 
         @keyframes fadeIn {
@@ -151,38 +313,76 @@
 
         .btn-game {
             transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .btn-game:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(5, 217, 232, 0.4);
         }
         .btn-game:active {
             transform: translateY(0);
         }
 
         .btn-neon {
-            border: 2px solid #00ff88;
-            color: #00ff88;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
             background: transparent;
-            text-shadow: 0 0 10px #00ff88;
+            text-shadow: 0 0 10px var(--neon-green);
         }
         .btn-neon:hover {
-            background: #00ff88;
-            color: #1a1a2e;
+            background: var(--neon-green);
+            color: var(--arcade-dark);
             text-shadow: none;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        }
+
+        .btn-cyan {
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            background: rgba(5, 217, 232, 0.1);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        .btn-cyan:hover {
+            background: var(--neon-cyan);
+            color: var(--arcade-dark);
+            text-shadow: none;
+            box-shadow: 0 0 30px rgba(5, 217, 232, 0.6);
+        }
+
+        .btn-pink {
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            background: rgba(255, 42, 109, 0.1);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+        .btn-pink:hover {
+            background: var(--neon-pink);
+            color: #fff;
+            text-shadow: none;
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.6);
         }
 
         /* Game Selection Cards */
         .game-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(13, 2, 33, 0.8);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(5, 217, 232, 0.3);
             transition: all 0.3s ease;
         }
         .game-card:hover {
             transform: translateY(-5px) scale(1.02);
-            border-color: rgba(255,255,255,0.5);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: var(--neon-cyan);
+            box-shadow:
+                0 0 30px rgba(5, 217, 232, 0.3),
+                0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .game-card-snake:hover {
+            border-color: var(--neon-green);
+            box-shadow:
+                0 0 30px rgba(0, 255, 136, 0.3),
+                0 20px 40px rgba(0,0,0,0.5);
         }
 
         .scanlines {
@@ -191,96 +391,134 @@
             inset: 0;
             background: repeating-linear-gradient(
                 0deg,
-                rgba(0, 0, 0, 0.1),
-                rgba(0, 0, 0, 0.1) 1px,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
                 transparent 1px,
                 transparent 2px
             );
         }
+
+        /* Neon text glow */
+        .neon-text-cyan {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+        }
+
+        .neon-text-pink {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
+        }
+
+        .neon-text-green {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 40px var(--neon-green);
+        }
+
+        /* Score boxes */
+        .score-box {
+            background: rgba(13, 2, 33, 0.9);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+        }
+
+        .score-box-green {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
     </style>
 </head>
-<body class="min-h-screen game-container">
+<body class="min-h-screen arcade-bg">
+    <!-- 80s Arcade Background Effects -->
+    <div class="stars">
+        <div class="stars-layer"></div>
+        <div class="stars-layer"></div>
+    </div>
+    <div class="retro-sun"></div>
+    <div class="neon-grid"></div>
+    <div class="horizon-glow"></div>
+    <div class="vignette"></div>
+    <div class="crt-overlay"></div>
 
     <!-- Back Link -->
-    <a href="./" class="fixed top-4 left-4 text-white/60 hover:text-white text-sm flex items-center gap-1 transition-colors z-50">
+    <a href="./" class="fixed top-4 left-4 text-cyan-400/60 hover:text-cyan-400 text-sm flex items-center gap-1 transition-colors z-50 retro-font" style="font-size: 10px;">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        Back to Tools
+        EXIT
     </a>
 
     <!-- ==================== GAME SELECTION SCREEN ==================== -->
-    <div id="gameSelect" class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div id="gameSelect" class="min-h-screen flex flex-col items-center justify-center p-4 game-content">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-white mb-2">Secret Grove</h1>
-            <p class="text-white/70">You found the hidden arcade! Choose your game.</p>
+            <h1 class="retro-font text-3xl md:text-4xl neon-text-cyan mb-4">ARCADE</h1>
+            <p class="text-cyan-300/70 retro-font" style="font-size: 10px;">SELECT YOUR GAME</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl w-full px-4">
             <!-- 2048 Card -->
             <button onclick="startGame('2048')" class="game-card rounded-2xl p-6 text-left group">
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                        2048
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg border-2 relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a3e 0%, #2d2d5a 100%); border-color: var(--neon-cyan);">
+                        <span class="retro-font text-lg neon-text-cyan">2048</span>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-white">2048</h2>
-                        <p class="text-white/60 text-sm">Merge the tiles!</p>
+                        <h2 class="text-xl font-bold neon-text-cyan retro-font" style="font-size: 14px;">2048</h2>
+                        <p class="text-cyan-300/60 text-sm">Merge the tiles!</p>
                     </div>
                 </div>
-                <p class="text-white/70 text-sm mb-4">Slide numbered tiles on a grid to combine them and create a tile with the number 2048.</p>
+                <p class="text-cyan-200/50 text-sm mb-4">Slide numbered tiles on a grid to combine them and reach 2048.</p>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-white/50">Use arrow keys or swipe</span>
-                    <span class="text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all">Play &rarr;</span>
+                    <span class="text-xs text-cyan-400/40 retro-font" style="font-size: 8px;">ARROWS / SWIPE</span>
+                    <span class="text-cyan-400/70 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all retro-font" style="font-size: 10px;">PLAY &rarr;</span>
                 </div>
             </button>
 
             <!-- Snake Card -->
-            <button onclick="startGame('snake')" class="game-card rounded-2xl p-6 text-left group">
+            <button onclick="startGame('snake')" class="game-card game-card-snake rounded-2xl p-6 text-left group">
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="w-16 h-16 bg-arcade-dark rounded-xl flex items-center justify-center shadow-lg border-2 border-arcade-neon relative overflow-hidden">
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg border-2 relative overflow-hidden" style="background: var(--arcade-darker); border-color: var(--neon-green);">
                         <div class="scanlines"></div>
-                        <span class="text-3xl">&#127822;</span>
+                        <span class="text-3xl" style="filter: drop-shadow(0 0 8px #00ff88);">&#127822;</span>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-white">Snake</h2>
-                        <p class="text-white/60 text-sm">Classic '80s arcade!</p>
+                        <h2 class="text-xl font-bold neon-text-green retro-font" style="font-size: 14px;">SNAKE</h2>
+                        <p class="text-green-300/60 text-sm">Classic '80s arcade!</p>
                     </div>
                 </div>
-                <p class="text-white/70 text-sm mb-4">Guide the snake to eat food and grow longer. Don't hit the walls or yourself!</p>
+                <p class="text-green-200/50 text-sm mb-4">Guide the snake to eat food and grow. Don't hit the walls!</p>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-white/50">Use arrow keys or swipe</span>
-                    <span class="text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all">Play &rarr;</span>
+                    <span class="text-xs text-green-400/40 retro-font" style="font-size: 8px;">ARROWS / SWIPE</span>
+                    <span class="text-green-400/70 group-hover:text-green-400 group-hover:translate-x-1 transition-all retro-font" style="font-size: 10px;">PLAY &rarr;</span>
                 </div>
             </button>
         </div>
 
-        <p class="text-white/40 text-xs mt-8">Press 1 for 2048 or 2 for Snake</p>
+        <p class="text-cyan-400/30 text-xs mt-8 retro-font" style="font-size: 8px;">PRESS 1 OR 2 TO SELECT</p>
     </div>
 
     <!-- ==================== 2048 GAME ==================== -->
-    <div id="game2048" class="hidden min-h-screen flex flex-col items-center justify-center p-4">
+    <div id="game2048" class="hidden min-h-screen flex flex-col items-center justify-center p-4 game-content">
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-white mb-1">2048</h1>
-            <p class="text-white/70 text-sm">Merge the tiles to reach 2048!</p>
+            <h1 class="retro-font text-2xl neon-text-cyan mb-2">2048</h1>
+            <p class="text-cyan-300/50 text-sm retro-font" style="font-size: 8px;">MERGE TO WIN</p>
         </div>
 
         <div class="flex items-center gap-4 mb-4 w-full max-w-md justify-between px-2">
-            <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
-                <div class="text-white/70 text-xs uppercase tracking-wider">Score</div>
-                <div id="score2048" class="text-white text-2xl font-bold">0</div>
+            <div class="score-box rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-cyan-400/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Score</div>
+                <div id="score2048" class="neon-text-cyan text-xl font-bold retro-font">0</div>
             </div>
-            <div class="bg-white/20 rounded-lg px-4 py-2 text-center min-w-24">
-                <div class="text-white/70 text-xs uppercase tracking-wider">Best</div>
-                <div id="best2048" class="text-white text-2xl font-bold">0</div>
+            <div class="score-box rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-cyan-400/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Best</div>
+                <div id="best2048" class="neon-text-pink text-xl font-bold retro-font">0</div>
             </div>
-            <button onclick="init2048()" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">
-                New Game
+            <button onclick="init2048()" class="btn-game btn-cyan font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">
+                NEW
             </button>
         </div>
 
         <div class="relative">
-            <div id="grid2048" class="grid grid-cols-4 gap-3 p-3 bg-white/10 rounded-xl backdrop-blur-sm" style="width: 320px; height: 320px;">
+            <div id="grid2048" class="grid grid-cols-4 gap-3 p-3 board-2048 rounded-xl" style="width: 320px; height: 320px;">
                 <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
                 <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
                 <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
@@ -289,49 +527,49 @@
             <div id="tiles2048" class="absolute inset-3"></div>
 
             <div id="gameOver2048" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
-                <div class="text-2xl font-bold text-gray-800 mb-2">Game Over!</div>
-                <div class="text-gray-600 mb-4">Final Score: <span id="finalScore2048">0</span></div>
+                <div class="retro-font text-xl neon-text-pink mb-2">GAME OVER</div>
+                <div class="text-cyan-300/70 mb-4 retro-font" style="font-size: 10px;">SCORE: <span id="finalScore2048" class="neon-text-cyan">0</span></div>
                 <div class="flex gap-2">
-                    <button onclick="init2048()" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">Try Again</button>
-                    <button onclick="backToMenu()" class="btn-game bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg">Menu</button>
+                    <button onclick="init2048()" class="btn-game btn-cyan font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">RETRY</button>
+                    <button onclick="backToMenu()" class="btn-game btn-pink font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">MENU</button>
                 </div>
             </div>
 
-            <div id="winOverlay2048" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay">
-                <div class="text-3xl font-bold text-yellow-500 mb-2">You Won!</div>
-                <div class="text-gray-600 mb-4">You reached 2048!</div>
+            <div id="winOverlay2048" class="absolute inset-0 rounded-xl hidden flex-col items-center justify-center game-over-overlay" style="border-color: #ffd700; box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);">
+                <div class="retro-font text-2xl mb-2" style="color: #ffd700; text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;">YOU WIN!</div>
+                <div class="text-cyan-300/70 mb-4 retro-font" style="font-size: 10px;">YOU REACHED 2048!</div>
                 <div class="flex gap-2">
-                    <button id="keepPlaying2048" class="btn-game bg-green-500 text-white font-semibold px-4 py-2 rounded-lg">Keep Playing</button>
-                    <button onclick="init2048()" class="btn-game bg-slalom-blue text-white font-semibold px-4 py-2 rounded-lg">New Game</button>
+                    <button id="keepPlaying2048" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">CONTINUE</button>
+                    <button onclick="init2048()" class="btn-game btn-cyan font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">NEW</button>
                 </div>
             </div>
         </div>
 
         <div class="mt-6 flex gap-4">
-            <button onclick="backToMenu()" class="text-white/60 hover:text-white text-sm transition-colors">
-                &larr; Back to Games
+            <button onclick="backToMenu()" class="text-cyan-400/50 hover:text-cyan-400 text-sm transition-colors retro-font" style="font-size: 10px;">
+                &larr; MENU
             </button>
         </div>
     </div>
 
     <!-- ==================== SNAKE GAME ==================== -->
-    <div id="gameSnake" class="hidden min-h-screen flex flex-col items-center justify-center p-4" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+    <div id="gameSnake" class="hidden min-h-screen flex flex-col items-center justify-center p-4 game-content">
         <div class="text-center mb-6">
-            <h1 class="retro-font text-2xl text-arcade-neon mb-2" style="text-shadow: 0 0 20px #00ff88;">SNAKE</h1>
-            <p class="text-white/50 text-sm">Classic Arcade - Est. 1976</p>
+            <h1 class="retro-font text-2xl neon-text-green mb-2">SNAKE</h1>
+            <p class="text-green-300/50 text-sm retro-font" style="font-size: 8px;">CLASSIC ARCADE - 1976</p>
         </div>
 
         <div class="flex items-center gap-4 mb-4 w-full max-w-md justify-between px-2">
-            <div class="bg-arcade-dark border border-arcade-neon/30 rounded-lg px-4 py-2 text-center min-w-24">
-                <div class="text-arcade-neon/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Score</div>
-                <div id="scoreSnake" class="text-arcade-neon text-2xl font-bold retro-font">0</div>
+            <div class="score-box score-box-green rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-green-400/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Score</div>
+                <div id="scoreSnake" class="neon-text-green text-xl font-bold retro-font">0</div>
             </div>
-            <div class="bg-arcade-dark border border-arcade-neon/30 rounded-lg px-4 py-2 text-center min-w-24">
-                <div class="text-arcade-neon/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Best</div>
-                <div id="bestSnake" class="text-arcade-neon text-2xl font-bold retro-font">0</div>
+            <div class="score-box score-box-green rounded-lg px-4 py-2 text-center min-w-24">
+                <div class="text-green-400/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Best</div>
+                <div id="bestSnake" class="neon-text-green text-xl font-bold retro-font">0</div>
             </div>
-            <button onclick="initSnake()" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font text-xs">
-                NEW GAME
+            <button onclick="initSnake()" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">
+                NEW
             </button>
         </div>
 
@@ -340,24 +578,24 @@
             <div class="scanlines rounded-lg"></div>
 
             <div id="gameOverSnake" class="absolute inset-0 rounded-lg hidden flex-col items-center justify-center snake-game-over">
-                <div class="retro-font text-arcade-neon text-xl mb-2" style="text-shadow: 0 0 10px #00ff88;">GAME OVER</div>
-                <div class="text-white/70 mb-4">Score: <span id="finalScoreSnake" class="text-arcade-neon">0</span></div>
+                <div class="retro-font text-xl neon-text-pink mb-2">GAME OVER</div>
+                <div class="text-green-300/70 mb-4 retro-font" style="font-size: 10px;">SCORE: <span id="finalScoreSnake" class="neon-text-green">0</span></div>
                 <div class="flex gap-2">
-                    <button onclick="initSnake()" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font text-xs">RETRY</button>
-                    <button onclick="backToMenu()" class="btn-game border-2 border-white/30 text-white/70 font-semibold px-4 py-2 rounded-lg retro-font text-xs hover:bg-white/10">MENU</button>
+                    <button onclick="initSnake()" class="btn-game btn-neon font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">RETRY</button>
+                    <button onclick="backToMenu()" class="btn-game btn-pink font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">MENU</button>
                 </div>
             </div>
 
             <div id="snakeStart" class="absolute inset-0 rounded-lg flex flex-col items-center justify-center snake-game-over">
-                <div class="retro-font text-arcade-neon text-sm mb-4" style="text-shadow: 0 0 10px #00ff88;">PRESS SPACE TO START</div>
-                <div class="text-white/50 text-xs">or tap the screen</div>
+                <div class="retro-font neon-text-green text-sm mb-4">PRESS SPACE</div>
+                <div class="text-green-400/50 text-xs retro-font" style="font-size: 8px;">OR TAP TO START</div>
             </div>
         </div>
 
         <div class="mt-6 text-center">
-            <p class="text-white/40 text-xs mb-4">Arrow keys or swipe to move</p>
-            <button onclick="backToMenu()" class="text-white/40 hover:text-arcade-neon text-sm transition-colors">
-                &larr; Back to Games
+            <p class="text-green-400/30 text-xs mb-4 retro-font" style="font-size: 8px;">ARROWS OR SWIPE</p>
+            <button onclick="backToMenu()" class="text-green-400/50 hover:text-green-400 text-sm transition-colors retro-font" style="font-size: 10px;">
+                &larr; MENU
             </button>
         </div>
     </div>
