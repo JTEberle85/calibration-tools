@@ -152,7 +152,7 @@
             pointer-events: none;
         }
 
-        /* Sun/moon effect */
+        /* Sun/moon effect - hidden link to Bobby tribute */
         .retro-sun {
             position: fixed;
             bottom: 15%;
@@ -165,10 +165,20 @@
             box-shadow:
                 0 0 60px rgba(255, 42, 109, 0.5),
                 0 0 120px rgba(211, 0, 197, 0.3);
-            z-index: 0;
+            z-index: 5;
             opacity: 0.8;
             mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            transition: all 0.5s ease;
+            display: block;
+        }
+
+        .retro-sun:hover {
+            opacity: 1;
+            box-shadow:
+                0 0 80px rgba(255, 42, 109, 0.7),
+                0 0 160px rgba(211, 0, 197, 0.5);
+            transform: translateX(-50%) scale(1.05);
         }
 
         .retro-sun::before {
@@ -433,14 +443,14 @@
         <div class="stars-layer"></div>
         <div class="stars-layer"></div>
     </div>
-    <div class="retro-sun"></div>
+    <a href="bobby.html" class="retro-sun" title="..." style="cursor: default;"></a>
     <div class="neon-grid"></div>
     <div class="horizon-glow"></div>
     <div class="vignette"></div>
     <div class="crt-overlay"></div>
 
     <!-- Back Link -->
-    <a href="./" class="fixed top-4 left-4 text-cyan-400/60 hover:text-cyan-400 text-sm flex items-center gap-1 transition-colors z-50 retro-font" style="font-size: 10px;">
+    <a href="javascript:history.back()" class="fixed top-4 left-4 text-cyan-400/60 hover:text-cyan-400 text-sm flex items-center gap-1 transition-colors z-50 retro-font" style="font-size: 10px;">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>

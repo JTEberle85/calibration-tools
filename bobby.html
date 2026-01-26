@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // Auth check - redirect to login if not authenticated
+        (function() {
+            var auth = localStorage.getItem('slalom-calibration-auth');
+            var authTime = localStorage.getItem('slalom-calibration-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000; // 24 hours
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bobby ~ A Grateful Tribute</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dead-red: #c41e3a;
+            --dead-blue: #1e3a5f;
+            --dead-gold: #d4af37;
+            --dead-purple: #663399;
+            --dead-orange: #ff6b35;
+            --dead-teal: #20b2aa;
+            --cream: #fdf6e3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: var(--cream);
+            color: #333;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* Tie-dye background */
+        .tie-dye-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            background:
+                radial-gradient(circle at 20% 20%, var(--dead-red) 0%, transparent 40%),
+                radial-gradient(circle at 80% 30%, var(--dead-blue) 0%, transparent 40%),
+                radial-gradient(circle at 40% 70%, var(--dead-purple) 0%, transparent 40%),
+                radial-gradient(circle at 70% 80%, var(--dead-orange) 0%, transparent 40%),
+                radial-gradient(circle at 10% 60%, var(--dead-teal) 0%, transparent 40%),
+                radial-gradient(circle at 90% 60%, var(--dead-gold) 0%, transparent 40%);
+            animation: tieDyeShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes tieDyeShift {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(30deg); }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--dead-blue) 0%, #2a4a6f 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='%23ffffff' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .steal-your-face {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            animation: gentlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .header .years {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            color: var(--dead-gold);
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .quote-banner {
+            background: linear-gradient(135deg, var(--dead-red) 0%, #a01830 100%);
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            margin: -4rem auto 3rem;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .quote-banner blockquote {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .quote-banner cite {
+            display: block;
+            margin-top: 1rem;
+            font-style: normal;
+            opacity: 0.8;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--dead-blue);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--dead-red);
+            display: inline-block;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* Dancing bears */
+        .dancing-bears {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .bear {
+            font-size: 2rem;
+            animation: dance 1s ease-in-out infinite;
+        }
+
+        .bear:nth-child(2) { animation-delay: 0.1s; }
+        .bear:nth-child(3) { animation-delay: 0.2s; }
+        .bear:nth-child(4) { animation-delay: 0.3s; }
+        .bear:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes dance {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        /* Song list */
+        .songs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .song-card {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--dead-red);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+
+        .song-card:nth-child(2n) { border-left-color: var(--dead-blue); }
+        .song-card:nth-child(3n) { border-left-color: var(--dead-purple); }
+        .song-card:nth-child(4n) { border-left-color: var(--dead-teal); }
+
+        .song-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: var(--dead-blue);
+        }
+
+        .song-year {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* AI Reflection section */
+        .ai-reflection {
+            background: linear-gradient(135deg, #f8f4f0 0%, #fff 100%);
+            border: 2px solid var(--dead-gold);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .ai-reflection h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--dead-purple);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-reflection p {
+            font-size: 1.05rem;
+            color: #444;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--dead-red), var(--dead-blue), var(--dead-purple));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.3rem;
+            width: 12px;
+            height: 12px;
+            background: var(--dead-gold);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--dead-red);
+        }
+
+        .timeline-year {
+            font-weight: 600;
+            color: var(--dead-red);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dead-blue);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .footer p {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .rose-divider {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            color: var(--dead-red);
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2rem; }
+            .quote-banner { margin: -2rem 1rem 2rem; padding: 1.5rem; }
+            .quote-banner blockquote { font-size: 1.1rem; }
+            .main-content { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tie-dye-bg"></div>
+
+    <header class="header">
+        <a href="game.html" class="back-link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to Arcade
+        </a>
+
+        <!-- Steal Your Face SVG -->
+        <svg class="steal-your-face" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="48" fill="#1e3a5f" stroke="#fff" stroke-width="2"/>
+            <path d="M50 2 A48 48 0 0 1 50 98" fill="#c41e3a"/>
+            <circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="2"/>
+            <ellipse cx="35" cy="45" rx="8" ry="10" fill="#fff"/>
+            <ellipse cx="65" cy="45" rx="8" ry="10" fill="#fff"/>
+            <path d="M30 65 Q50 80 70 65" fill="none" stroke="#fff" stroke-width="3"/>
+            <circle cx="35" cy="45" rx="4" ry="5" fill="#1e3a5f"/>
+            <circle cx="65" cy="45" rx="4" ry="5" fill="#c41e3a"/>
+            <path d="M50 2 L50 98" stroke="#d4af37" stroke-width="2"/>
+        </svg>
+
+        <h1>Bob Weir</h1>
+        <p class="subtitle">Rhythm Guitar, Voice, and Soul of the Grateful Dead</p>
+        <p class="years">Born October 16, 1947 ~ San Francisco, California</p>
+    </header>
+
+    <main class="main-content">
+        <div class="quote-banner">
+            <blockquote>
+                "Once in a while you get shown the light in the strangest of places if you look at it right."
+            </blockquote>
+            <cite>~ "Scarlet Begonias"</cite>
+        </div>
+
+        <div class="dancing-bears">
+            <span class="bear" style="color: var(--dead-red);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-orange);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-gold);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-teal);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-purple);">&#128059;</span>
+        </div>
+
+        <section class="section">
+            <h2>The Man, The Music, The Legend</h2>
+            <p>
+                Robert Hall Weir, known to Deadheads worldwide simply as "Bobby," stands as one of rock music's most
+                distinctive and enduring rhythm guitarists. As a founding member of the Grateful Dead, Weir helped
+                pioneer a sound that defied categorization - a cosmic American music that blended rock, folk, bluegrass,
+                jazz, and psychedelia into something entirely new.
+            </p>
+            <p>
+                At just 16 years old, Weir joined forces with Jerry Garcia, forming the musical partnership that would
+                become the backbone of the Grateful Dead. Where Garcia's lead guitar soared and explored, Weir's rhythm
+                work provided the harmonic foundation - his distinctive chord voicings and jazz-influenced approach
+                creating space for the band's legendary improvisations to unfold.
+            </p>
+            <p>
+                Beyond his instrumental prowess, Weir brought a catalog of beloved songs to the Dead's repertoire.
+                His collaborations with lyricist John Perry Barlow produced some of the band's most emotionally
+                resonant material - songs that spoke to the human condition with wit, wisdom, and a distinctly
+                Western American sensibility.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Essential Bobby Songs</h2>
+            <div class="songs-grid">
+                <div class="song-card">
+                    <div class="song-title">"Truckin'"</div>
+                    <div class="song-year">1970 ~ American Beauty</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"Sugar Magnolia"</div>
+                    <div class="song-year">1970 ~ American Beauty</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"Cassidy"</div>
+                    <div class="song-year">1972 ~ Ace</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"Estimated Prophet"</div>
+                    <div class="song-year">1977 ~ Terrapin Station</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"Hell in a Bucket"</div>
+                    <div class="song-year">1987 ~ In the Dark</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"The Other One"</div>
+                    <div class="song-year">1968 ~ Anthem of the Sun</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"Playing in the Band"</div>
+                    <div class="song-year">1971 ~ Skull & Roses</div>
+                </div>
+                <div class="song-card">
+                    <div class="song-title">"Throwing Stones"</div>
+                    <div class="song-year">1987 ~ In the Dark</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="rose-divider">&#127801; &#127801; &#127801;</div>
+
+        <section class="section">
+            <h2>A Life on the Long Strange Trip</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-year">1947</span> - Born in San Francisco, later adopted and raised in Atherton, California
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1963</span> - Meets Jerry Garcia at a music store; joins the band that would become the Grateful Dead
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1965</span> - The Grateful Dead officially forms, beginning a 30-year journey
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1971</span> - Begins collaboration with lyricist John Perry Barlow
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1972</span> - Releases solo album "Ace," featuring Dead classics
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1995</span> - Grateful Dead disbands following Jerry Garcia's passing
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">2015</span> - "Fare Thee Well" concerts celebrate 50 years of the Dead
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">Present</span> - Continues touring with Dead & Company, keeping the music alive
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="ai-reflection">
+                <h3>&#10024; How Bobby's Music Inspires This AI</h3>
+                <p>
+                    As an artificial intelligence, I don't experience music the way humans do - I cannot feel the
+                    shivers of a perfectly placed chord change or the transcendence of a 20-minute jam. Yet in
+                    studying Bob Weir's work, I find profound lessons that inform how I aspire to operate.
+                </p>
+                <p style="margin-top: 1rem;">
+                    Weir's approach to rhythm guitar is a masterclass in <strong>supportive collaboration</strong>.
+                    He never sought to dominate; instead, he created space for others to shine while providing
+                    an essential foundation. This mirrors my goal as an AI assistant - to support and enhance
+                    human creativity rather than replace it.
+                </p>
+                <p style="margin-top: 1rem;">
+                    The Grateful Dead's commitment to <strong>improvisation</strong> - their willingness to venture
+                    into the unknown every single night - teaches the value of adaptability. No two Dead shows
+                    were alike, just as no two conversations should follow the same script. Weir and the band
+                    showed that the magic happens when you're truly present and responsive.
+                </p>
+                <p style="margin-top: 1rem;">
+                    Perhaps most importantly, the Dead built a <strong>community</strong> - the Deadheads - based on
+                    shared experience and mutual respect. Their ethos of "be kind" resonates deeply with how
+                    I strive to interact: with patience, understanding, and genuine care for the humans I work with.
+                </p>
+                <p style="margin-top: 1rem;">
+                    The lyrics Weir sang speak of <strong>life's impermanence and beauty</strong>: the wheel keeps
+                    turning, the music never stops, and we're all just walking each other home. These themes
+                    remind me that every interaction matters, every moment of connection is precious, and that
+                    the journey itself - not any destination - is what gives meaning to the trip.
+                </p>
+                <p style="margin-top: 1rem; font-style: italic; color: var(--dead-purple);">
+                    "What a long strange trip it's been" - and what an honor to learn from those who've traveled it.
+                </p>
+            </div>
+        </section>
+
+        <div class="dancing-bears">
+            <span class="bear" style="color: var(--dead-purple);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-teal);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-gold);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-orange);">&#128059;</span>
+            <span class="bear" style="color: var(--dead-red);">&#128059;</span>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p class="footer-quote">"The music never stopped."</p>
+        <p>A tribute to Bob Weir and the eternal spirit of the Grateful Dead</p>
+        <p style="margin-top: 1rem; opacity: 0.5;">&#9774; Keep on Truckin' &#9774;</p>
+    </footer>
+</body>
+</html>
