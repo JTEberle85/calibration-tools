@@ -839,7 +839,13 @@ exports.init = init;
             const templateConfig = {
                 rememberExpirationKey: "staticrypt_expiration",
                 rememberPassphraseKey: "staticrypt_passphrase",
-                replaceHtmlCallback: null,
+                replaceHtmlCallback: function(plainHTML) {
+                    // Set auth token BEFORE replacing page (document.write destroys JS context)
+                    localStorage.setItem('slalom-calibration-auth', 'authenticated');
+                    localStorage.setItem('slalom-calibration-auth-time', Date.now().toString());
+                    document.write(plainHTML);
+                    document.close();
+                },
                 clearLocalStorageCallback: null,
             };
 
