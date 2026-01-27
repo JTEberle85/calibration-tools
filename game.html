@@ -436,6 +436,91 @@
             border-color: var(--neon-green);
             box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
         }
+
+        /* ====== JUNGLE MAZE STYLES ====== */
+        :root {
+            --jungle-green: #228B22;
+            --jungle-brown: #8B4513;
+            --jungle-gold: #FFD700;
+            --jungle-dark: #1a3a1a;
+        }
+
+        .neon-text-jungle {
+            color: var(--jungle-gold);
+            text-shadow: 0 0 10px var(--jungle-gold), 0 0 20px var(--jungle-green), 0 0 40px var(--jungle-green);
+        }
+
+        .game-card-jungle:hover {
+            border-color: var(--jungle-gold);
+            box-shadow:
+                0 0 30px rgba(255, 215, 0, 0.3),
+                0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .score-box-jungle {
+            border-color: var(--jungle-gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .maze-board {
+            background: #0a1f0a;
+            border: 4px solid var(--jungle-gold);
+            box-shadow:
+                0 0 30px rgba(255, 215, 0, 0.3),
+                inset 0 0 80px rgba(34, 139, 34, 0.1);
+            image-rendering: pixelated;
+        }
+
+        .btn-jungle {
+            border: 2px solid var(--jungle-gold);
+            color: var(--jungle-gold);
+            background: rgba(34, 139, 34, 0.2);
+            text-shadow: 0 0 10px var(--jungle-gold);
+        }
+        .btn-jungle:hover {
+            background: var(--jungle-gold);
+            color: #1a1a1a;
+            text-shadow: none;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .maze-game-over {
+            background: rgba(10, 31, 10, 0.95);
+            border: 2px solid var(--jungle-gold);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-btn {
+            transition: all 0.2s ease;
+            border: 3px solid transparent;
+        }
+        .character-btn:hover, .character-btn.selected {
+            border-color: var(--jungle-gold);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .difficulty-btn {
+            transition: all 0.2s ease;
+        }
+        .difficulty-btn:hover, .difficulty-btn.selected {
+            transform: scale(1.05);
+        }
+
+        @keyframes firework {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .gremlin-wake {
+            animation: bounce 0.3s ease 3;
+        }
     </style>
 </head>
 <body class="min-h-screen arcade-bg">
@@ -465,7 +550,7 @@
             <p class="text-cyan-300/70 retro-font" style="font-size: 10px;">SELECT YOUR GAME</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl w-full px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full px-4">
             <!-- 2048 Card -->
             <button onclick="startGame('2048')" class="game-card rounded-2xl p-6 text-left group">
                 <div class="flex items-center gap-4 mb-4">
@@ -502,9 +587,28 @@
                     <span class="text-green-400/70 group-hover:text-green-400 group-hover:translate-x-1 transition-all retro-font" style="font-size: 10px;">PLAY &rarr;</span>
                 </div>
             </button>
+
+            <!-- Jungle Maze Card -->
+            <button onclick="startGame('maze')" class="game-card game-card-jungle rounded-2xl p-6 text-left group">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg border-2 relative overflow-hidden" style="background: linear-gradient(135deg, #1a3a1a 0%, #2d5a2d 100%); border-color: var(--jungle-gold);">
+                        <div class="scanlines"></div>
+                        <span class="text-3xl" style="filter: drop-shadow(0 0 8px #FFD700);">&#127795;</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold neon-text-jungle retro-font" style="font-size: 12px;">JUNGLE MAZE</h2>
+                        <p class="text-yellow-300/60 text-sm">Escape the gremlins!</p>
+                    </div>
+                </div>
+                <p class="text-yellow-200/50 text-sm mb-4">Navigate the jungle maze. Wake the gremlins... if you dare!</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-yellow-400/40 retro-font" style="font-size: 8px;">ARROWS / SWIPE</span>
+                    <span class="text-yellow-400/70 group-hover:text-yellow-400 group-hover:translate-x-1 transition-all retro-font" style="font-size: 10px;">PLAY &rarr;</span>
+                </div>
+            </button>
         </div>
 
-        <p class="text-cyan-400/30 text-xs mt-8 retro-font" style="font-size: 8px;">PRESS 1 OR 2 TO SELECT</p>
+        <p class="text-cyan-400/30 text-xs mt-8 retro-font" style="font-size: 8px;">PRESS 1, 2 OR 3 TO SELECT</p>
     </div>
 
     <!-- ==================== 2048 GAME ==================== -->
@@ -611,6 +715,109 @@
         </div>
     </div>
 
+    <!-- ==================== JUNGLE MAZE GAME ==================== -->
+    <div id="gameMaze" class="hidden min-h-screen flex flex-col items-center justify-center p-4 game-content">
+        <!-- Character Selection Screen -->
+        <div id="mazeCharSelect" class="text-center">
+            <h1 class="retro-font text-2xl neon-text-jungle mb-2">JUNGLE MAZE</h1>
+            <p class="text-yellow-300/50 text-sm retro-font mb-6" style="font-size: 10px;">CHOOSE YOUR EXPLORER</p>
+
+            <div class="flex gap-6 justify-center mb-8">
+                <button onclick="selectMazeChar('butterfly')" class="character-btn rounded-xl p-4 bg-jungle-dark/50 flex flex-col items-center" style="background: rgba(26, 58, 26, 0.8);">
+                    <span class="text-5xl mb-2">&#129419;</span>
+                    <span class="retro-font text-yellow-300/70" style="font-size: 10px;">BUTTERFLY</span>
+                </button>
+                <button onclick="selectMazeChar('snake')" class="character-btn rounded-xl p-4 bg-jungle-dark/50 flex flex-col items-center" style="background: rgba(26, 58, 26, 0.8);">
+                    <span class="text-5xl mb-2">&#128013;</span>
+                    <span class="retro-font text-yellow-300/70" style="font-size: 10px;">SNAKE</span>
+                </button>
+                <button onclick="selectMazeChar('giraffe')" class="character-btn rounded-xl p-4 bg-jungle-dark/50 flex flex-col items-center" style="background: rgba(26, 58, 26, 0.8);">
+                    <span class="text-5xl mb-2">&#129426;</span>
+                    <span class="retro-font text-yellow-300/70" style="font-size: 10px;">GIRAFFE</span>
+                </button>
+            </div>
+
+            <button onclick="backToMenu()" class="text-yellow-400/50 hover:text-yellow-400 text-sm transition-colors retro-font" style="font-size: 10px;">
+                &larr; MENU
+            </button>
+        </div>
+
+        <!-- Difficulty Selection Screen -->
+        <div id="mazeDiffSelect" class="hidden text-center">
+            <h1 class="retro-font text-2xl neon-text-jungle mb-2">JUNGLE MAZE</h1>
+            <p class="text-yellow-300/50 text-sm retro-font mb-6" style="font-size: 10px;">SELECT DIFFICULTY</p>
+
+            <div class="flex flex-col gap-4 mb-8">
+                <button onclick="selectMazeDiff('easy')" class="difficulty-btn btn-game btn-jungle px-8 py-3 rounded-lg retro-font" style="font-size: 12px;">
+                    EASY <span class="text-yellow-300/50" style="font-size: 8px;">- SLOW GREMLINS</span>
+                </button>
+                <button onclick="selectMazeDiff('medium')" class="difficulty-btn btn-game btn-jungle px-8 py-3 rounded-lg retro-font" style="font-size: 12px;">
+                    MEDIUM <span class="text-yellow-300/50" style="font-size: 8px;">- FASTER GREMLINS</span>
+                </button>
+                <button onclick="selectMazeDiff('hard')" class="difficulty-btn btn-game btn-jungle px-8 py-3 rounded-lg retro-font" style="font-size: 12px;">
+                    HARD <span class="text-yellow-300/50" style="font-size: 8px;">- AGGRESSIVE!</span>
+                </button>
+            </div>
+
+            <button onclick="showMazeCharSelect()" class="text-yellow-400/50 hover:text-yellow-400 text-sm transition-colors retro-font" style="font-size: 10px;">
+                &larr; BACK
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="mazeGameScreen" class="hidden">
+            <div class="text-center mb-4">
+                <h1 class="retro-font text-xl neon-text-jungle mb-1">JUNGLE MAZE</h1>
+                <p id="mazeLevel" class="text-yellow-300/50 text-sm retro-font" style="font-size: 8px;">LEVEL 1</p>
+            </div>
+
+            <div class="flex items-center gap-4 mb-4 w-full justify-center">
+                <div class="score-box score-box-jungle rounded-lg px-4 py-2 text-center min-w-24">
+                    <div class="text-yellow-400/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Time</div>
+                    <div id="mazeTime" class="neon-text-jungle text-xl font-bold retro-font">0:00</div>
+                </div>
+                <div id="mazeStatus" class="score-box score-box-jungle rounded-lg px-4 py-2 text-center min-w-32">
+                    <div class="text-yellow-400/70 text-xs uppercase tracking-wider retro-font" style="font-size: 8px;">Status</div>
+                    <div id="mazeStatusText" class="text-yellow-300 text-sm retro-font" style="font-size: 10px;">FIND CENTER</div>
+                </div>
+            </div>
+
+            <div class="relative">
+                <canvas id="mazeCanvas" class="maze-board rounded-lg" width="500" height="500"></canvas>
+                <div class="scanlines rounded-lg"></div>
+
+                <!-- Game Over Overlay -->
+                <div id="gameOverMaze" class="absolute inset-0 rounded-lg hidden flex-col items-center justify-center maze-game-over">
+                    <div class="retro-font text-xl neon-text-pink mb-2">CAUGHT!</div>
+                    <div class="text-yellow-300/70 mb-4 retro-font" style="font-size: 10px;">THE GREMLINS GOT YOU!</div>
+                    <div class="flex gap-2">
+                        <button onclick="restartMaze()" class="btn-game btn-jungle font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">RETRY</button>
+                        <button onclick="backToMenu()" class="btn-game btn-pink font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">MENU</button>
+                    </div>
+                </div>
+
+                <!-- Win Overlay -->
+                <div id="winOverlayMaze" class="absolute inset-0 rounded-lg hidden flex-col items-center justify-center maze-game-over" style="border-color: #ffd700;">
+                    <canvas id="fireworksCanvas" class="absolute inset-0 pointer-events-none" width="500" height="500"></canvas>
+                    <div class="text-6xl mb-4" id="goldenMonkey">&#128018;</div>
+                    <div class="retro-font text-2xl mb-2" style="color: #ffd700; text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;">YOU ESCAPED!</div>
+                    <div class="text-yellow-300/70 mb-4 retro-font" style="font-size: 10px;">GOLDEN MONKEY UNLOCKED!</div>
+                    <div class="flex gap-2">
+                        <button id="nextLevelBtn" onclick="nextMazeLevel()" class="btn-game btn-jungle font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">LEVEL 2</button>
+                        <button onclick="backToMenu()" class="btn-game btn-pink font-semibold px-4 py-2 rounded-lg retro-font" style="font-size: 10px;">MENU</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-yellow-400/30 text-xs mb-2 retro-font" style="font-size: 8px;">ARROWS OR SWIPE TO MOVE</p>
+                <button onclick="backToMenu()" class="text-yellow-400/50 hover:text-yellow-400 text-sm transition-colors retro-font" style="font-size: 10px;">
+                    &larr; MENU
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== GAME SELECTION ====================
         let currentGame = null;
@@ -619,6 +826,7 @@
             document.getElementById('gameSelect').classList.add('hidden');
             document.getElementById('game2048').classList.add('hidden');
             document.getElementById('gameSnake').classList.add('hidden');
+            document.getElementById('gameMaze').classList.add('hidden');
             document.querySelector('.retro-sun').style.display = 'none';
 
             currentGame = game;
@@ -629,6 +837,9 @@
             } else if (game === 'snake') {
                 document.getElementById('gameSnake').classList.remove('hidden');
                 initSnake();
+            } else if (game === 'maze') {
+                document.getElementById('gameMaze').classList.remove('hidden');
+                showMazeCharSelect();
             }
         }
 
@@ -637,12 +848,23 @@
             document.getElementById('gameSelect').classList.remove('hidden');
             document.getElementById('game2048').classList.add('hidden');
             document.getElementById('gameSnake').classList.add('hidden');
+            document.getElementById('gameMaze').classList.add('hidden');
             document.querySelector('.retro-sun').style.display = 'block';
 
             // Stop snake game loop if running
             if (snakeGameLoop) {
                 clearInterval(snakeGameLoop);
                 snakeGameLoop = null;
+            }
+
+            // Stop maze game loops if running
+            if (mazeGameLoop) {
+                clearInterval(mazeGameLoop);
+                mazeGameLoop = null;
+            }
+            if (mazeTimerLoop) {
+                clearInterval(mazeTimerLoop);
+                mazeTimerLoop = null;
             }
         }
 
@@ -651,6 +873,7 @@
             if (!currentGame) {
                 if (e.key === '1') startGame('2048');
                 if (e.key === '2') startGame('snake');
+                if (e.key === '3') startGame('maze');
             }
         });
 
@@ -1014,6 +1237,489 @@
             }
         }
 
+        // ==================== JUNGLE MAZE GAME ====================
+        const mazeCanvas = document.getElementById('mazeCanvas');
+        const mazeCtx = mazeCanvas.getContext('2d');
+        const MAZE_CELL = 20;
+        const MAZE_WIDTH = mazeCanvas.width / MAZE_CELL;
+        const MAZE_HEIGHT = mazeCanvas.height / MAZE_CELL;
+
+        let mazePlayer = { x: 1, y: 1 };
+        let mazeChar = 'butterfly';
+        let mazeDifficulty = 'easy';
+        let mazeLevel = 1;
+        let gremlins = [];
+        let gremlinsAwake = false;
+        let mazeGameLoop = null;
+        let mazeTimerLoop = null;
+        let mazeTime = 0;
+        let mazeGameOver = false;
+        let mazeWon = false;
+        let maze = [];
+        let mazeCenter = { x: 12, y: 12 };
+        let mazeExit = { x: 23, y: 23 };
+
+        const charEmojis = {
+            butterfly: '\u{1F98B}',
+            snake: '\u{1F40D}',
+            giraffe: '\u{1F992}'
+        };
+
+        // Audio context for beep
+        let audioCtx = null;
+
+        function playBeep() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 440;
+            osc.type = 'square';
+            gain.gain.value = 0.3;
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function playWinSound() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            [523, 659, 784, 1047].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'square';
+                gain.gain.value = 0.2;
+                osc.start(audioCtx.currentTime + i * 0.15);
+                osc.stop(audioCtx.currentTime + i * 0.15 + 0.15);
+            });
+        }
+
+        // Level 1 maze (1 = wall, 0 = path, 2 = center, 3 = exit)
+        const maze1 = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1],
+            [1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1],
+            [1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,0,0,0,0,1],
+            [1,1,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,1,0,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
+            [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+            [1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        // Level 2 maze (larger, more complex)
+        const maze2 = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1],
+            [1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+            [1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+            [1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1],
+            [1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+            [1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+            [1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1],
+            [1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
+            [1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        function showMazeCharSelect() {
+            document.getElementById('mazeCharSelect').classList.remove('hidden');
+            document.getElementById('mazeDiffSelect').classList.add('hidden');
+            document.getElementById('mazeGameScreen').classList.add('hidden');
+        }
+
+        function selectMazeChar(char) {
+            mazeChar = char;
+            document.querySelectorAll('.character-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.character-btn').classList.add('selected');
+            setTimeout(() => {
+                document.getElementById('mazeCharSelect').classList.add('hidden');
+                document.getElementById('mazeDiffSelect').classList.remove('hidden');
+            }, 200);
+        }
+
+        function selectMazeDiff(diff) {
+            mazeDifficulty = diff;
+            document.getElementById('mazeDiffSelect').classList.add('hidden');
+            document.getElementById('mazeGameScreen').classList.remove('hidden');
+            initMaze();
+        }
+
+        function initMaze() {
+            mazeLevel = 1;
+            loadMazeLevel();
+        }
+
+        function loadMazeLevel() {
+            maze = mazeLevel === 1 ? JSON.parse(JSON.stringify(maze1)) : JSON.parse(JSON.stringify(maze2));
+            mazePlayer = { x: 1, y: 1 };
+            mazeCenter = { x: 12, y: 11 };
+            mazeExit = { x: 24, y: 23 };
+            gremlinsAwake = false;
+            mazeGameOver = false;
+            mazeWon = false;
+            mazeTime = 0;
+
+            // Place gremlins (more on level 2)
+            const gremlinCount = mazeLevel === 1 ? 4 : 6;
+            const gremlinPositions = mazeLevel === 1 ?
+                [{x:5, y:5}, {x:19, y:5}, {x:5, y:19}, {x:19, y:19}] :
+                [{x:3, y:3}, {x:21, y:3}, {x:3, y:21}, {x:21, y:21}, {x:12, y:5}, {x:12, y:19}];
+
+            gremlins = gremlinPositions.slice(0, gremlinCount).map(pos => ({
+                x: pos.x,
+                y: pos.y,
+                awake: false,
+                jumpFrame: 0
+            }));
+
+            document.getElementById('mazeLevel').textContent = 'LEVEL ' + mazeLevel;
+            document.getElementById('mazeStatusText').textContent = 'FIND CENTER';
+            document.getElementById('gameOverMaze').classList.add('hidden');
+            document.getElementById('gameOverMaze').classList.remove('flex');
+            document.getElementById('winOverlayMaze').classList.add('hidden');
+            document.getElementById('winOverlayMaze').classList.remove('flex');
+            document.getElementById('nextLevelBtn').textContent = mazeLevel === 1 ? 'LEVEL 2' : 'PLAY AGAIN';
+
+            updateMazeTime();
+            drawMaze();
+
+            if (mazeGameLoop) clearInterval(mazeGameLoop);
+            if (mazeTimerLoop) clearInterval(mazeTimerLoop);
+
+            const speeds = { easy: 300, medium: 200, hard: 120 };
+            mazeGameLoop = setInterval(updateMaze, speeds[mazeDifficulty]);
+            mazeTimerLoop = setInterval(() => {
+                if (!mazeGameOver && !mazeWon) {
+                    mazeTime++;
+                    updateMazeTime();
+                }
+            }, 1000);
+        }
+
+        function updateMazeTime() {
+            const mins = Math.floor(mazeTime / 60);
+            const secs = mazeTime % 60;
+            document.getElementById('mazeTime').textContent = mins + ':' + secs.toString().padStart(2, '0');
+        }
+
+        function drawMaze() {
+            mazeCtx.imageSmoothingEnabled = false;
+
+            // Background
+            mazeCtx.fillStyle = '#0a1f0a';
+            mazeCtx.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+
+            // Draw maze cells
+            for (let y = 0; y < MAZE_HEIGHT; y++) {
+                for (let x = 0; x < MAZE_WIDTH; x++) {
+                    const cell = maze[y][x];
+                    const px = x * MAZE_CELL;
+                    const py = y * MAZE_CELL;
+
+                    if (cell === 1) {
+                        // Wall - jungle brown with vine texture
+                        mazeCtx.fillStyle = '#5D4037';
+                        mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+                        mazeCtx.fillStyle = '#4E342E';
+                        mazeCtx.fillRect(px + 2, py + 2, MAZE_CELL - 4, MAZE_CELL - 4);
+                        // Vine detail
+                        mazeCtx.fillStyle = '#2E7D32';
+                        if (Math.random() > 0.7) {
+                            mazeCtx.fillRect(px + 8, py, 4, MAZE_CELL);
+                        }
+                    } else if (cell === 2) {
+                        // Center - golden glow
+                        mazeCtx.fillStyle = '#1a3a1a';
+                        mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+                        mazeCtx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                        mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+                        mazeCtx.fillStyle = '#FFD700';
+                        mazeCtx.beginPath();
+                        mazeCtx.arc(px + MAZE_CELL/2, py + MAZE_CELL/2, 4, 0, Math.PI * 2);
+                        mazeCtx.fill();
+                    } else if (cell === 3) {
+                        // Exit - bright green
+                        mazeCtx.fillStyle = '#00ff88';
+                        mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+                        mazeCtx.fillStyle = '#00cc6a';
+                        mazeCtx.fillRect(px + 4, py + 4, MAZE_CELL - 8, MAZE_CELL - 8);
+                    } else {
+                        // Path - dark jungle floor
+                        mazeCtx.fillStyle = '#1a3a1a';
+                        mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+                    }
+                }
+            }
+
+            // Draw sleeping/awake gremlins
+            gremlins.forEach(g => {
+                const gx = g.x * MAZE_CELL;
+                const gy = g.y * MAZE_CELL - (g.awake ? g.jumpFrame * 2 : 0);
+
+                mazeCtx.font = '16px Arial';
+                mazeCtx.textAlign = 'center';
+                mazeCtx.textBaseline = 'middle';
+
+                if (!g.awake) {
+                    // Sleeping gremlin
+                    mazeCtx.fillText('\u{1F47F}', gx + MAZE_CELL/2, gy + MAZE_CELL/2);
+                    // Zzz
+                    mazeCtx.font = '8px Press Start 2P';
+                    mazeCtx.fillStyle = '#aaa';
+                    mazeCtx.fillText('z', gx + MAZE_CELL - 2, gy);
+                    mazeCtx.fillText('Z', gx + MAZE_CELL + 4, gy - 6);
+                } else {
+                    // Awake gremlin - angry!
+                    mazeCtx.fillText('\u{1F47A}', gx + MAZE_CELL/2, gy + MAZE_CELL/2);
+                }
+            });
+
+            // Draw player
+            const px = mazePlayer.x * MAZE_CELL;
+            const py = mazePlayer.y * MAZE_CELL;
+            mazeCtx.font = '16px Arial';
+            mazeCtx.textAlign = 'center';
+            mazeCtx.textBaseline = 'middle';
+            mazeCtx.fillText(charEmojis[mazeChar], px + MAZE_CELL/2, py + MAZE_CELL/2);
+        }
+
+        function updateMaze() {
+            if (mazeGameOver || mazeWon) return;
+
+            // Update gremlin jump animation
+            gremlins.forEach(g => {
+                if (g.awake) {
+                    g.jumpFrame = (g.jumpFrame + 1) % 4;
+                }
+            });
+
+            // Move gremlins toward player if awake
+            if (gremlinsAwake) {
+                gremlins.forEach(g => {
+                    if (!g.awake) return;
+
+                    // Simple chase AI
+                    const dx = mazePlayer.x - g.x;
+                    const dy = mazePlayer.y - g.y;
+
+                    let newX = g.x;
+                    let newY = g.y;
+
+                    // Randomly choose to move horizontally or vertically
+                    if (Math.random() > 0.5 && dx !== 0) {
+                        newX = g.x + (dx > 0 ? 1 : -1);
+                    } else if (dy !== 0) {
+                        newY = g.y + (dy > 0 ? 1 : -1);
+                    } else if (dx !== 0) {
+                        newX = g.x + (dx > 0 ? 1 : -1);
+                    }
+
+                    // Check if can move (gremlins can sometimes jump walls on hard mode)
+                    const canJump = mazeDifficulty === 'hard' && Math.random() > 0.8;
+                    if (maze[newY] && (maze[newY][newX] !== 1 || canJump)) {
+                        g.x = newX;
+                        g.y = newY;
+                    }
+
+                    // Check collision with player
+                    if (g.x === mazePlayer.x && g.y === mazePlayer.y) {
+                        gameOverMaze();
+                    }
+                });
+            }
+
+            drawMaze();
+        }
+
+        function moveMazePlayer(dir) {
+            if (mazeGameOver || mazeWon || currentGame !== 'maze') return;
+
+            let newX = mazePlayer.x;
+            let newY = mazePlayer.y;
+
+            switch(dir) {
+                case 'up': newY--; break;
+                case 'down': newY++; break;
+                case 'left': newX--; break;
+                case 'right': newX++; break;
+            }
+
+            // Check bounds and walls
+            if (newX >= 0 && newX < MAZE_WIDTH && newY >= 0 && newY < MAZE_HEIGHT) {
+                if (maze[newY][newX] !== 1) {
+                    mazePlayer.x = newX;
+                    mazePlayer.y = newY;
+
+                    // Check if reached center (wake gremlins!)
+                    if (maze[newY][newX] === 2 && !gremlinsAwake) {
+                        wakeGremlins();
+                    }
+
+                    // Check if reached exit
+                    if (maze[newY][newX] === 3 && gremlinsAwake) {
+                        winMaze();
+                    }
+
+                    // Check gremlin collision
+                    gremlins.forEach(g => {
+                        if (g.x === mazePlayer.x && g.y === mazePlayer.y && g.awake) {
+                            gameOverMaze();
+                        }
+                    });
+
+                    drawMaze();
+                }
+            }
+        }
+
+        function wakeGremlins() {
+            gremlinsAwake = true;
+            playBeep();
+            document.getElementById('mazeStatusText').textContent = 'ESCAPE!';
+            document.getElementById('mazeStatus').style.borderColor = '#ff4d5f';
+
+            // Wake all gremlins with staggered animation
+            gremlins.forEach((g, i) => {
+                setTimeout(() => {
+                    g.awake = true;
+                    drawMaze();
+                }, i * 200);
+            });
+        }
+
+        function gameOverMaze() {
+            mazeGameOver = true;
+            clearInterval(mazeGameLoop);
+            clearInterval(mazeTimerLoop);
+            document.getElementById('gameOverMaze').classList.remove('hidden');
+            document.getElementById('gameOverMaze').classList.add('flex');
+        }
+
+        function winMaze() {
+            mazeWon = true;
+            clearInterval(mazeGameLoop);
+            clearInterval(mazeTimerLoop);
+            playWinSound();
+            document.getElementById('winOverlayMaze').classList.remove('hidden');
+            document.getElementById('winOverlayMaze').classList.add('flex');
+            startFireworks();
+        }
+
+        function restartMaze() {
+            loadMazeLevel();
+        }
+
+        function nextMazeLevel() {
+            if (mazeLevel === 1) {
+                mazeLevel = 2;
+                loadMazeLevel();
+            } else {
+                mazeLevel = 1;
+                loadMazeLevel();
+            }
+        }
+
+        // Fireworks animation
+        let fireworks = [];
+        let fireworksLoop = null;
+
+        function startFireworks() {
+            const fwCanvas = document.getElementById('fireworksCanvas');
+            const fwCtx = fwCanvas.getContext('2d');
+            fireworks = [];
+
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    fireworks.push({
+                        x: Math.random() * 500,
+                        y: Math.random() * 300 + 50,
+                        color: ['#FFD700', '#FF4D5F', '#00FF88', '#05D9E8', '#FF2A6D'][Math.floor(Math.random() * 5)],
+                        size: 0,
+                        maxSize: Math.random() * 30 + 20,
+                        alpha: 1
+                    });
+                }, i * 150);
+            }
+
+            fireworksLoop = setInterval(() => {
+                fwCtx.clearRect(0, 0, 500, 500);
+
+                fireworks = fireworks.filter(fw => fw.alpha > 0);
+
+                fireworks.forEach(fw => {
+                    fw.size += 2;
+                    if (fw.size > fw.maxSize) {
+                        fw.alpha -= 0.05;
+                    }
+
+                    fwCtx.globalAlpha = fw.alpha;
+                    fwCtx.fillStyle = fw.color;
+                    fwCtx.beginPath();
+
+                    // Draw star burst
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (i / 8) * Math.PI * 2;
+                        const x = fw.x + Math.cos(angle) * fw.size;
+                        const y = fw.y + Math.sin(angle) * fw.size;
+                        fwCtx.moveTo(fw.x, fw.y);
+                        fwCtx.lineTo(x, y);
+                    }
+                    fwCtx.strokeStyle = fw.color;
+                    fwCtx.lineWidth = 3;
+                    fwCtx.stroke();
+
+                    // Draw particles
+                    for (let i = 0; i < 12; i++) {
+                        const angle = (i / 12) * Math.PI * 2;
+                        const x = fw.x + Math.cos(angle) * fw.size;
+                        const y = fw.y + Math.sin(angle) * fw.size;
+                        fwCtx.beginPath();
+                        fwCtx.arc(x, y, 3, 0, Math.PI * 2);
+                        fwCtx.fill();
+                    }
+                });
+
+                fwCtx.globalAlpha = 1;
+
+                if (fireworks.length === 0) {
+                    clearInterval(fireworksLoop);
+                }
+            }, 30);
+        }
+
         // ==================== INPUT HANDLING ====================
         document.addEventListener('keydown', (e) => {
             if (currentGame === '2048') {
@@ -1034,6 +1740,13 @@
                     case 'ArrowDown': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('down'); break;
                     case 'ArrowLeft': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('left'); break;
                     case 'ArrowRight': e.preventDefault(); if (!snakeStarted) startSnakeGame(); changeSnakeDirection('right'); break;
+                }
+            } else if (currentGame === 'maze') {
+                switch(e.key) {
+                    case 'ArrowUp': e.preventDefault(); moveMazePlayer('up'); break;
+                    case 'ArrowDown': e.preventDefault(); moveMazePlayer('down'); break;
+                    case 'ArrowLeft': e.preventDefault(); moveMazePlayer('left'); break;
+                    case 'ArrowRight': e.preventDefault(); moveMazePlayer('right'); break;
                 }
             }
         });
@@ -1078,6 +1791,8 @@
             } else if (currentGame === 'snake') {
                 if (!snakeStarted) startSnakeGame();
                 changeSnakeDirection(dir);
+            } else if (currentGame === 'maze') {
+                moveMazePlayer(dir);
             }
 
             touchStartX = null;
