@@ -1438,11 +1438,15 @@
         function drawMaze() {
             mazeCtx.imageSmoothingEnabled = false;
 
-            // Background
-            mazeCtx.fillStyle = '#0a1f0a';
+            // 90s style gradient background
+            const bgGrad = mazeCtx.createLinearGradient(0, 0, 0, mazeCanvas.height);
+            bgGrad.addColorStop(0, '#0d2818');
+            bgGrad.addColorStop(0.5, '#1a4d2e');
+            bgGrad.addColorStop(1, '#0d2818');
+            mazeCtx.fillStyle = bgGrad;
             mazeCtx.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
 
-            // Draw maze cells
+            // Draw maze cells with 90s SNES/Genesis style
             for (let y = 0; y < MAZE_HEIGHT; y++) {
                 for (let x = 0; x < MAZE_WIDTH; x++) {
                     const cell = maze[y][x];
@@ -1450,67 +1454,190 @@
                     const py = y * MAZE_CELL;
 
                     if (cell === 1) {
-                        // Wall - jungle brown with vine texture
-                        mazeCtx.fillStyle = '#5D4037';
+                        // Wall - vibrant 90s jungle style with 3D effect
+                        // Base stone/temple wall
+                        const wallGrad = mazeCtx.createLinearGradient(px, py, px + MAZE_CELL, py + MAZE_CELL);
+                        wallGrad.addColorStop(0, '#7B5B3A');
+                        wallGrad.addColorStop(0.3, '#5D4E37');
+                        wallGrad.addColorStop(0.7, '#4A3728');
+                        wallGrad.addColorStop(1, '#3D2B1F');
+                        mazeCtx.fillStyle = wallGrad;
                         mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
-                        mazeCtx.fillStyle = '#4E342E';
-                        mazeCtx.fillRect(px + 2, py + 2, MAZE_CELL - 4, MAZE_CELL - 4);
-                        // Vine detail
-                        mazeCtx.fillStyle = '#2E7D32';
-                        if (Math.random() > 0.7) {
-                            mazeCtx.fillRect(px + 8, py, 4, MAZE_CELL);
+
+                        // Highlight edge (3D effect)
+                        mazeCtx.fillStyle = '#9B7B5A';
+                        mazeCtx.fillRect(px, py, MAZE_CELL, 2);
+                        mazeCtx.fillRect(px, py, 2, MAZE_CELL);
+
+                        // Shadow edge
+                        mazeCtx.fillStyle = '#2A1F15';
+                        mazeCtx.fillRect(px + MAZE_CELL - 2, py, 2, MAZE_CELL);
+                        mazeCtx.fillRect(px, py + MAZE_CELL - 2, MAZE_CELL, 2);
+
+                        // Vine/moss overlay (random but consistent per cell)
+                        const vineChance = ((x * 7 + y * 13) % 10) / 10;
+                        if (vineChance > 0.6) {
+                            mazeCtx.fillStyle = '#2E8B57';
+                            mazeCtx.fillRect(px + 3, py, 3, MAZE_CELL);
+                            mazeCtx.fillStyle = '#228B22';
+                            mazeCtx.fillRect(px + 5, py + 2, 2, MAZE_CELL - 4);
+                        }
+                        if (vineChance > 0.8) {
+                            mazeCtx.fillStyle = '#32CD32';
+                            mazeCtx.fillRect(px + 12, py, 4, 8);
                         }
                     } else if (cell === 2) {
-                        // Center - golden glow
-                        mazeCtx.fillStyle = '#1a3a1a';
+                        // Center - glowing treasure spot with pulsing effect
+                        mazeCtx.fillStyle = '#1a4d2e';
                         mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
-                        mazeCtx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-                        mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+
+                        // Animated glow
+                        const pulse = Math.sin(Date.now() / 200) * 0.3 + 0.7;
+                        const glowGrad = mazeCtx.createRadialGradient(
+                            px + MAZE_CELL/2, py + MAZE_CELL/2, 0,
+                            px + MAZE_CELL/2, py + MAZE_CELL/2, MAZE_CELL
+                        );
+                        glowGrad.addColorStop(0, `rgba(255, 215, 0, ${pulse})`);
+                        glowGrad.addColorStop(0.5, `rgba(255, 165, 0, ${pulse * 0.5})`);
+                        glowGrad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+                        mazeCtx.fillStyle = glowGrad;
+                        mazeCtx.fillRect(px - 5, py - 5, MAZE_CELL + 10, MAZE_CELL + 10);
+
+                        // Golden gem in center
                         mazeCtx.fillStyle = '#FFD700';
                         mazeCtx.beginPath();
-                        mazeCtx.arc(px + MAZE_CELL/2, py + MAZE_CELL/2, 4, 0, Math.PI * 2);
+                        mazeCtx.moveTo(px + MAZE_CELL/2, py + 4);
+                        mazeCtx.lineTo(px + MAZE_CELL - 4, py + MAZE_CELL/2);
+                        mazeCtx.lineTo(px + MAZE_CELL/2, py + MAZE_CELL - 4);
+                        mazeCtx.lineTo(px + 4, py + MAZE_CELL/2);
+                        mazeCtx.closePath();
+                        mazeCtx.fill();
+                        mazeCtx.fillStyle = '#FFF8DC';
+                        mazeCtx.beginPath();
+                        mazeCtx.arc(px + MAZE_CELL/2 - 2, py + MAZE_CELL/2 - 2, 2, 0, Math.PI * 2);
                         mazeCtx.fill();
                     } else if (cell === 3) {
-                        // Exit - bright green
-                        mazeCtx.fillStyle = '#00ff88';
+                        // Exit - vibrant portal with glow
+                        const exitGrad = mazeCtx.createRadialGradient(
+                            px + MAZE_CELL/2, py + MAZE_CELL/2, 0,
+                            px + MAZE_CELL/2, py + MAZE_CELL/2, MAZE_CELL
+                        );
+                        exitGrad.addColorStop(0, '#00FF7F');
+                        exitGrad.addColorStop(0.4, '#00FA9A');
+                        exitGrad.addColorStop(0.7, '#00C878');
+                        exitGrad.addColorStop(1, '#008B45');
+                        mazeCtx.fillStyle = exitGrad;
                         mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
-                        mazeCtx.fillStyle = '#00cc6a';
-                        mazeCtx.fillRect(px + 4, py + 4, MAZE_CELL - 8, MAZE_CELL - 8);
+
+                        // Sparkle effect
+                        mazeCtx.fillStyle = '#FFFFFF';
+                        const sparkle = Date.now() % 500 < 250;
+                        if (sparkle) {
+                            mazeCtx.fillRect(px + 8, py + 5, 3, 3);
+                            mazeCtx.fillRect(px + 4, py + 12, 2, 2);
+                        }
+
+                        // Arrow indicator
+                        mazeCtx.fillStyle = '#FFFFFF';
+                        mazeCtx.beginPath();
+                        mazeCtx.moveTo(px + MAZE_CELL - 4, py + MAZE_CELL/2);
+                        mazeCtx.lineTo(px + MAZE_CELL - 10, py + 6);
+                        mazeCtx.lineTo(px + MAZE_CELL - 10, py + MAZE_CELL - 6);
+                        mazeCtx.closePath();
+                        mazeCtx.fill();
                     } else {
-                        // Path - dark jungle floor
-                        mazeCtx.fillStyle = '#1a3a1a';
+                        // Path - detailed jungle floor with texture
+                        mazeCtx.fillStyle = '#1a4d2e';
                         mazeCtx.fillRect(px, py, MAZE_CELL, MAZE_CELL);
+
+                        // Floor texture pattern
+                        const tilePattern = ((x + y) % 2 === 0);
+                        if (tilePattern) {
+                            mazeCtx.fillStyle = '#165c36';
+                            mazeCtx.fillRect(px + 2, py + 2, MAZE_CELL - 4, MAZE_CELL - 4);
+                        }
+
+                        // Occasional floor details
+                        const detailChance = ((x * 3 + y * 7) % 10) / 10;
+                        if (detailChance > 0.85) {
+                            // Small stone
+                            mazeCtx.fillStyle = '#4a5568';
+                            mazeCtx.beginPath();
+                            mazeCtx.arc(px + 10, py + 12, 3, 0, Math.PI * 2);
+                            mazeCtx.fill();
+                        } else if (detailChance > 0.75) {
+                            // Grass tuft
+                            mazeCtx.fillStyle = '#22c55e';
+                            mazeCtx.fillRect(px + 6, py + 8, 2, 6);
+                            mazeCtx.fillRect(px + 10, py + 10, 2, 5);
+                        }
                     }
                 }
             }
 
-            // Draw sleeping/awake gremlins
+            // Draw sleeping/awake gremlins with glow effects
             gremlins.forEach(g => {
                 const gx = g.x * MAZE_CELL;
-                const gy = g.y * MAZE_CELL - (g.awake ? g.jumpFrame * 2 : 0);
+                const gy = g.y * MAZE_CELL - (g.awake ? g.jumpFrame * 3 : 0);
 
-                mazeCtx.font = '16px Arial';
+                // Glow under gremlin
+                if (g.awake) {
+                    const gremGlow = mazeCtx.createRadialGradient(
+                        gx + MAZE_CELL/2, gy + MAZE_CELL/2 + 5, 0,
+                        gx + MAZE_CELL/2, gy + MAZE_CELL/2 + 5, 20
+                    );
+                    gremGlow.addColorStop(0, 'rgba(255, 0, 0, 0.4)');
+                    gremGlow.addColorStop(1, 'rgba(255, 0, 0, 0)');
+                    mazeCtx.fillStyle = gremGlow;
+                    mazeCtx.fillRect(gx - 10, gy - 10, MAZE_CELL + 20, MAZE_CELL + 20);
+                }
+
+                mazeCtx.font = '18px Arial';
                 mazeCtx.textAlign = 'center';
                 mazeCtx.textBaseline = 'middle';
 
                 if (!g.awake) {
-                    // Sleeping gremlin
+                    // Sleeping gremlin with shadow
+                    mazeCtx.fillStyle = 'rgba(0,0,0,0.3)';
+                    mazeCtx.beginPath();
+                    mazeCtx.ellipse(gx + MAZE_CELL/2, gy + MAZE_CELL - 2, 8, 3, 0, 0, Math.PI * 2);
+                    mazeCtx.fill();
                     mazeCtx.fillText('\u{1F47F}', gx + MAZE_CELL/2, gy + MAZE_CELL/2);
-                    // Zzz
-                    mazeCtx.font = '8px Press Start 2P';
-                    mazeCtx.fillStyle = '#aaa';
-                    mazeCtx.fillText('z', gx + MAZE_CELL - 2, gy);
-                    mazeCtx.fillText('Z', gx + MAZE_CELL + 4, gy - 6);
+                    // Animated Zzz
+                    const zOffset = Math.sin(Date.now() / 300) * 2;
+                    mazeCtx.font = '10px Press Start 2P';
+                    mazeCtx.fillStyle = '#88ccff';
+                    mazeCtx.fillText('z', gx + MAZE_CELL + 2, gy + zOffset);
+                    mazeCtx.fillStyle = '#aaddff';
+                    mazeCtx.fillText('Z', gx + MAZE_CELL + 8, gy - 6 + zOffset);
                 } else {
-                    // Awake gremlin - angry!
+                    // Awake gremlin - larger and angrier!
+                    mazeCtx.font = '20px Arial';
                     mazeCtx.fillText('\u{1F47A}', gx + MAZE_CELL/2, gy + MAZE_CELL/2);
                 }
             });
 
-            // Draw player
+            // Draw player with glow and shadow
             const px = mazePlayer.x * MAZE_CELL;
             const py = mazePlayer.y * MAZE_CELL;
-            mazeCtx.font = '16px Arial';
+
+            // Player shadow
+            mazeCtx.fillStyle = 'rgba(0,0,0,0.3)';
+            mazeCtx.beginPath();
+            mazeCtx.ellipse(px + MAZE_CELL/2, py + MAZE_CELL - 2, 7, 3, 0, 0, Math.PI * 2);
+            mazeCtx.fill();
+
+            // Player glow
+            const playerGlow = mazeCtx.createRadialGradient(
+                px + MAZE_CELL/2, py + MAZE_CELL/2, 0,
+                px + MAZE_CELL/2, py + MAZE_CELL/2, 15
+            );
+            playerGlow.addColorStop(0, 'rgba(255, 255, 200, 0.3)');
+            playerGlow.addColorStop(1, 'rgba(255, 255, 200, 0)');
+            mazeCtx.fillStyle = playerGlow;
+            mazeCtx.fillRect(px - 5, py - 5, MAZE_CELL + 10, MAZE_CELL + 10);
+
+            mazeCtx.font = '18px Arial';
             mazeCtx.textAlign = 'center';
             mazeCtx.textBaseline = 'middle';
             mazeCtx.fillText(charEmojis[mazeChar], px + MAZE_CELL/2, py + MAZE_CELL/2);
@@ -1624,8 +1751,84 @@
             mazeGameOver = true;
             clearInterval(mazeGameLoop);
             clearInterval(mazeTimerLoop);
-            document.getElementById('gameOverMaze').classList.remove('hidden');
-            document.getElementById('gameOverMaze').classList.add('flex');
+            playExplosionSound();
+            startExplosion(mazePlayer.x * MAZE_CELL + MAZE_CELL/2, mazePlayer.y * MAZE_CELL + MAZE_CELL/2);
+            setTimeout(() => {
+                document.getElementById('gameOverMaze').classList.remove('hidden');
+                document.getElementById('gameOverMaze').classList.add('flex');
+            }, 800);
+        }
+
+        function playExplosionSound() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // Noise burst for explosion
+            const bufferSize = audioCtx.sampleRate * 0.3;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.4;
+            noise.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        }
+
+        function startExplosion(cx, cy) {
+            let explosionFrame = 0;
+            const explosionColors = ['#FF4500', '#FF6B35', '#FFD700', '#FF0000', '#FFA500', '#FFFF00'];
+            const explosionLoop = setInterval(() => {
+                explosionFrame++;
+
+                // Draw explosion on maze canvas
+                mazeCtx.save();
+
+                // Multiple expanding rings
+                for (let ring = 0; ring < 3; ring++) {
+                    const radius = explosionFrame * 8 - ring * 15;
+                    if (radius > 0) {
+                        const alpha = Math.max(0, 1 - explosionFrame / 20);
+                        mazeCtx.globalAlpha = alpha;
+                        mazeCtx.strokeStyle = explosionColors[(explosionFrame + ring) % explosionColors.length];
+                        mazeCtx.lineWidth = 6 - ring;
+                        mazeCtx.beginPath();
+                        mazeCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+                        mazeCtx.stroke();
+                    }
+                }
+
+                // Particles flying outward
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i / 12) * Math.PI * 2 + explosionFrame * 0.1;
+                    const dist = explosionFrame * 6;
+                    const px = cx + Math.cos(angle) * dist;
+                    const py = cy + Math.sin(angle) * dist;
+                    const alpha = Math.max(0, 1 - explosionFrame / 15);
+                    mazeCtx.globalAlpha = alpha;
+                    mazeCtx.fillStyle = explosionColors[i % explosionColors.length];
+                    mazeCtx.beginPath();
+                    mazeCtx.arc(px, py, 5 - explosionFrame * 0.2, 0, Math.PI * 2);
+                    mazeCtx.fill();
+                }
+
+                // Center flash
+                if (explosionFrame < 5) {
+                    mazeCtx.globalAlpha = 1 - explosionFrame / 5;
+                    mazeCtx.fillStyle = '#FFFFFF';
+                    mazeCtx.beginPath();
+                    mazeCtx.arc(cx, cy, 30 - explosionFrame * 4, 0, Math.PI * 2);
+                    mazeCtx.fill();
+                }
+
+                mazeCtx.restore();
+
+                if (explosionFrame > 20) {
+                    clearInterval(explosionLoop);
+                }
+            }, 40);
         }
 
         function winMaze() {
