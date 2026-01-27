@@ -585,7 +585,7 @@
         </div>
 
         <div class="relative">
-            <canvas id="snakeCanvas" class="snake-board rounded-lg" width="320" height="320"></canvas>
+            <canvas id="snakeCanvas" class="snake-board rounded-lg" width="400" height="400"></canvas>
             <div class="scanlines rounded-lg"></div>
 
             <div id="gameOverSnake" class="absolute inset-0 rounded-lg hidden flex-col items-center justify-center snake-game-over">
@@ -854,7 +854,7 @@
         // ==================== SNAKE GAME ====================
         const canvas = document.getElementById('snakeCanvas');
         const ctx = canvas.getContext('2d');
-        const SNAKE_CELL = 16;
+        const SNAKE_CELL = 20;
         const SNAKE_COLS = canvas.width / SNAKE_CELL;
         const SNAKE_ROWS = canvas.height / SNAKE_CELL;
 
@@ -899,7 +899,7 @@
             snakeStarted = true;
             document.getElementById('snakeStart').classList.add('hidden');
             document.getElementById('snakeStart').classList.remove('flex');
-            snakeGameLoop = setInterval(gameLoopSnake, 100);
+            snakeGameLoop = setInterval(gameLoopSnake, 150);
         }
 
         function placeFood() {
