@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+See `~/.claude/josh-profile.md` for Josh's communication preferences (casual, punchy, step-by-step CLI guidance).
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
@@ -19,7 +21,7 @@ Interactive role calibration tools for Slalom career tracks. This is a static HT
 1. `index.html` is encrypted with StatiCrypt - this is the login page
 2. On successful password entry, sets `slalom-calibration-auth` token in localStorage (expires after 24 hours)
 3. All other pages check for this token on load; redirect to `index.html` if missing/expired
-4. Password: `***REDACTED***`
+4. Password: See `~/.claude/josh-profile.md` (not stored in repo)
 
 ## Key Files
 
@@ -34,12 +36,12 @@ If you need to update the landing page content:
 
 ```bash
 # Decrypt current index.html
-staticrypt --decrypt -p "***REDACTED***" index.html -d decrypted_pages
+staticrypt --decrypt -p "YOUR_PASSWORD" index.html -d decrypted_pages
 
 # Edit decrypted_pages/index.html
 
 # Re-encrypt
-staticrypt decrypted_pages/index.html -p "***REDACTED***" --salt 9a33add92f11f72ec2c82098ef4dc579 -d .
+staticrypt decrypted_pages/index.html -p "YOUR_PASSWORD" --salt 9a33add92f11f72ec2c82098ef4dc579 -d .
 ```
 
 ## Adding Auth Check to New Pages
