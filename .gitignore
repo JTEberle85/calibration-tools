@@ -1,0 +1,27 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*.backup
+*~
+
+# Keep decrypted files local
+decrypted_pages/
+decrypted_*.html
+
+# Secrets and API keys
+.env
+.env.*
+*.key
+secrets.js
+secrets.json
+
+# Claude Code project notes (may contain secrets)
+CLAUDE.md
